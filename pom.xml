@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.github.vcap</groupId>
+	<artifactId>java-vcap-component-parent</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Java Framework for Building VCAP Components</name>
+	<description>A framework for building Java based VCAP (Cloud Foundry) components.</description>
+	<url>https://github.com/mheath/vcap-java-component</url>
+
+	<properties>
+		<jackson.version>1.9.8</jackson.version>
+		<nats.version>0.3-SNAPSHOT</nats.version>
+		<netty.version>3.5.3.Final</netty.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
+		<testng.version>6.3.1</testng.version>
+		<java.version>1.6</java.version>
+	</properties>
+
+	<modules>
+		<module>nats-vcap</module>
+		<module>vcap-spring</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jnats</groupId>
+				<artifactId>nats-client</artifactId>
+				<version>${nats.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jnats</groupId>
+				<artifactId>nats-client-spring</artifactId>
+				<version>${nats.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.vcap</groupId>
+				<artifactId>nats-vcap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://mheath@github.com/mheath/jnats.git</url>
+		<connection>https://github.com/mheath/jnats</connection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>Mike Heath</name>
+			<email>elcapo@gmail.com</email>
+		</developer>
+	</developers>
+
+</project>
