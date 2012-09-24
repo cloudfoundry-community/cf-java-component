@@ -1,6 +1,9 @@
-*.class
+*~
+\#*\#
+.\#*
+*.rbc
+.rbx
+.bundle
+*.gem
+.DS_Store
 
-# Package Files #
-*.jar
-*.war
-*.ear
