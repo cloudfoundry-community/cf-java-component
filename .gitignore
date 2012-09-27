@@ -1,9 +1,6 @@
-*~
-\#*\#
-.\#*
-*.rbc
-.rbx
-.bundle
-*.gem
-.DS_Store
-
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+target/
