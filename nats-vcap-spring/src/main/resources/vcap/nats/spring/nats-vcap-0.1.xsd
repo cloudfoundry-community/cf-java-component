@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://mheath.github.com/nats-vcap-spring/schema/spring/nats-vcap"
+            xmlns:nats="http://mheath.github.com/jnats/schema/spring/nats"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://mheath.github.com/nats-vcap-spring/schema/spring/nats-vcap"
+            elementFormDefault="qualified" attributeFormDefault="unqualified"
+>
+
+	<xsd:import namespace="http://mheath.github.com/jnats/schema/spring/nats" schemaLocation="http://mheath.github.com/jnats/schema/spring/nats-0.3.xsd" />
+
+	<xsd:element name="nats-vcap">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="subscription" minOccurs="0" maxOccurs="unbounded" type="subscription" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:string" default="natsVcap" />
+			<xsd:attribute name="nats-ref" default="nats" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="subscription">
+		<xsd:attribute name="ref" type="xsd:string" use="required" />
+		<xsd:attribute name="method" type="xsd:string" use="required" />
+		<xsd:attribute name="queue-group" type="xsd:string" use="optional" />
+	</xsd:complexType>
+
+</xsd:schema>

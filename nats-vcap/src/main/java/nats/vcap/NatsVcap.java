@@ -19,32 +19,41 @@ import java.util.concurrent.TimeUnit;
 public class NatsVcap {
 
 	private final Nats nats;
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper;
 
 	public NatsVcap(Nats nats) {
 		this.nats = nats;
+
+		// Configure the Jackson JSON mapper
+		mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
-	public Publication publish(Object message) {
+	public Publication publish(VcapMessageBody message) {
+		if (message == null) {
+			throw new IllegalArgumentException("message cannot be null");
+		}
 		final String subject = getSubject(message.getClass());
+		if (subject == null) {
+			throw new NatsException("Unable to publish message of type " + message.getClass().getName() + ", missing annotation " + NatsSubject.class.getName());
+		}
 		final String encoding = encode(message);
 		return nats.publish(subject, encoding);
 	}
 
-	public <T> Subscription subscribe(Class<T> type, VcapMessageHandler<T> handler) {
+	public <T extends VcapMessageBody<R>, R> Subscription subscribe(Class<T> type, VcapMessageHandler<T, R> handler) {
 		return subscribe(type, null, null, handler);
 	}
 
-	public <T> Subscription subscribe(Class<T> type, Integer maxMessages, VcapMessageHandler<T> handler) {
+	public <T extends VcapMessageBody<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, VcapMessageHandler<T, R> handler) {
 		return subscribe(type, null, maxMessages, handler);
 	}
 
-	public <T> Subscription subscribe(Class<T> type, String queueGroup, VcapMessageHandler<T> handler) {
+	public <T extends VcapMessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, VcapMessageHandler<T, R> handler) {
 		return subscribe(type, queueGroup, null, handler);
 	}
 
-	public <T> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final VcapMessageHandler<T> handler) {
+	public <T extends VcapMessageBody<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final VcapMessageHandler<T, R> handler) {
 		final Subscription subscribe = nats.subscribe(getSubject(type), queueGroup, maxMessages);
 		final ObjectReader reader = mapper.reader(type);
 		subscribe.addMessageHandler(new MessageHandler() {
@@ -53,7 +62,7 @@ public class NatsVcap {
 				final String body = message.getBody();
 				try {
 					final T vcapMessage = reader.readValue(body);
-					handler.onMessage(new VcapMessage<T>() {
+					handler.onMessage(new VcapMessage<T, R>() {
 						@Override
 						public Message getNatsMessage() {
 							return message;
@@ -65,12 +74,12 @@ public class NatsVcap {
 						}
 
 						@Override
-						public Publication reply(Object replyMessage) {
+						public Publication reply(R replyMessage) {
 							return message.reply(encode(replyMessage));
 						}
 
 						@Override
-						public Publication reply(Object replyMessage, long delay, TimeUnit unit) {
+						public Publication reply(R replyMessage, long delay, TimeUnit unit) {
 							return message.reply(encode(replyMessage), delay, unit);
 						}
 					});
@@ -92,7 +101,7 @@ public class NatsVcap {
 	}
 
 	private String getSubject(Class<?> type) {
-		final NatsSubject subject = type.getAnnotation(NatsSubject.class);
+		NatsSubject subject = type.getAnnotation(NatsSubject.class);
 		return subject.value();
 	}
 }

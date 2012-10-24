@@ -22,7 +22,7 @@
 
 	<properties>
 		<jackson.version>1.9.8</jackson.version>
-		<nats.version>0.3-SNAPSHOT</nats.version>
+		<nats.version>0.4-SNAPSHOT</nats.version>
 		<netty.version>3.5.3.Final</netty.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
@@ -31,7 +31,7 @@
 
 	<modules>
 		<module>nats-vcap</module>
-		<module>vcap-spring</module>
+		<module>nats-vcap-spring</module>
 	</modules>
 
 	<build>

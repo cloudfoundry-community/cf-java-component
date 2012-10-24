@@ -1,4 +1,4 @@
-package nats.vcap.spring;
+package vcap.nats.spring;
 
 import nats.vcap.VcapMessage;
 
@@ -10,10 +10,8 @@ public class VcapSubscriptionConfig {
 	private final Object bean;
 	private final String methodName;
 	private final String queueGroup;
-	private final Class<VcapMessage> type;
 
-	public VcapSubscriptionConfig(Class<VcapMessage> type, Object bean, String methodName, String queueGroup) {
-		this.type = type;
+	public VcapSubscriptionConfig(Object bean, String methodName, String queueGroup) {
 		this.bean = bean;
 		this.methodName = methodName;
 		this.queueGroup = queueGroup;
@@ -31,7 +29,4 @@ public class VcapSubscriptionConfig {
 		return queueGroup;
 	}
 
-	public Class<VcapMessage> getType() {
-		return type;
-	}
 }

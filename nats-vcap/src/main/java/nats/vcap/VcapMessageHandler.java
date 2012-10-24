@@ -5,8 +5,8 @@ import nats.client.Message;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessageHandler<T> {
+public interface VcapMessageHandler<T extends VcapMessageBody<R>, R> {
 
-	void onMessage(VcapMessage<T> message);
+	void onMessage(VcapMessage<T, R> message);
 
 }

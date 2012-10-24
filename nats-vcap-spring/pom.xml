@@ -13,7 +13,7 @@
 
 	<artifactId>nats-vcap-spring</artifactId>
 
-	<name>Spring integration for Java NATS VCAP</name>
+	<name>Java NATS VCAP Spring Integration</name>
 	<description>Spring integration for working with VCAP (Cloud Foundry).</description>
 
 	<build>
@@ -33,6 +33,15 @@
 		<dependency>
 			<groupId>com.github.vcap</groupId>
 			<artifactId>nats-vcap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jnats</groupId>
+			<artifactId>nats-client-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

@@ -8,14 +8,14 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessage<T> {
+public interface VcapMessage<T extends VcapMessageBody<R>, R> {
 
 	Message getNatsMessage();
 
 	T getMessage();
 
-	Publication reply(Object message);
+	Publication reply(R message);
 
-	Publication reply(Object message, long delay, TimeUnit unit);
+	Publication reply(R message, long delay, TimeUnit unit);
 
 }

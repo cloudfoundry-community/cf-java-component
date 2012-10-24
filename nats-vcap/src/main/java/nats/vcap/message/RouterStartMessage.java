@@ -1,6 +1,7 @@
 package nats.vcap.message;
 
 import nats.vcap.NatsSubject;
+import nats.vcap.VcapMessageBody;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -10,7 +11,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.start")
-public class RouterStartMessage {
+public class RouterStartMessage implements VcapMessageBody<Void> {
 	private final String id;
 	private final String version;
 
