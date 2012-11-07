@@ -26,12 +26,13 @@
 		<netty.version>3.5.3.Final</netty.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
-		<java.version>1.6</java.version>
+		<java.version>1.7</java.version>
 	</properties>
 
 	<modules>
 		<module>nats-vcap</module>
 		<module>nats-vcap-spring</module>
+		<module>vcap-component</module>
 	</modules>
 
 	<build>
