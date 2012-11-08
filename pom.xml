@@ -24,6 +24,7 @@
 		<jackson.version>1.9.8</jackson.version>
 		<nats.version>0.4-SNAPSHOT</nats.version>
 		<netty.version>3.5.3.Final</netty.version>
+		<netty4.version>4.0.0.Alpha5</netty4.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
 		<java.version>1.7</java.version>
@@ -55,7 +56,7 @@
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty</artifactId>
-				<version>${netty.version}</version>
+				<version>${netty4.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>

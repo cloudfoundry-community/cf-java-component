@@ -14,5 +14,11 @@
     <artifactId>vcap-component</artifactId>
     <version>0.1-SNAPSHOT</version>
 
+	<dependencies>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>
