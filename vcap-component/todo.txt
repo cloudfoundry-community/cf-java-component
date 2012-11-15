@@ -1,2 +1,3 @@
-- Add support for publishing JMX info via /varz similar to UAA
--
+- Write a JMX VarzUpdater similar to what UAA does
+- Write a JVM VarzUpdater that adds jvm version, heap free, heap used, etc.
+- Write a project VarzUpdater that pulls version information from Maven manifest
