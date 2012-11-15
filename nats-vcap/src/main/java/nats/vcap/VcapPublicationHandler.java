@@ -19,5 +19,8 @@ package nats.vcap;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessage<R> {
+public interface VcapPublicationHandler<T extends VcapMessage<R>, R> {
+
+	void onMessage(VcapPublication<T, R> publication);
+
 }

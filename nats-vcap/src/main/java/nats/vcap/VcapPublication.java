@@ -16,8 +16,22 @@
  */
 package nats.vcap;
 
+import nats.client.Message;
+import nats.client.Publication;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessage<R> {
+public interface VcapPublication<T extends VcapMessage<R>, R> {
+
+	Message getNatsMessage();
+
+	T getMessage();
+
+	Publication reply(R message);
+
+	Publication reply(R message, long delay, TimeUnit unit);
+
 }

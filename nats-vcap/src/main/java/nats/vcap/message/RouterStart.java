@@ -14,10 +14,34 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package nats.vcap.message;
+
+import nats.vcap.NatsSubject;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
+ * See http://apidocs.cloudfoundry.com/router/publish-router-start.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessage<R> {
+@NatsSubject("router.start")
+public class RouterStart extends AbstractJsonMessage<Void> {
+	private final String id;
+	private final String version;
+
+	@JsonCreator
+	public RouterStart(@JsonProperty("id") String id, @JsonProperty("version") String version) {
+		this.id = id;
+		this.version = version;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
 }

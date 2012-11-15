@@ -17,7 +17,10 @@
 package nats.vcap;
 
 /**
+ * Indicates that the NATS message has a JSON payload.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapMessage<R> {
+public interface VcapJsonMessage<R> extends VcapMessage<R> {
+
 }
