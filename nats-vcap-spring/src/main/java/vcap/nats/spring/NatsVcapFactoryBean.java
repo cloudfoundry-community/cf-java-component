@@ -1,11 +1,27 @@
+/*
+ *   Copyright (c) 2012 Mike Heath.  All rights reserved.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
 package vcap.nats.spring;
 
 import nats.NatsException;
 import nats.client.Nats;
 import nats.vcap.NatsVcap;
 import nats.vcap.VcapMessage;
-import nats.vcap.VcapMessageBody;
-import nats.vcap.VcapMessageHandler;
+import nats.vcap.VcapPublication;
+import nats.vcap.VcapPublicationHandler;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -49,15 +65,15 @@ public class NatsVcapFactoryBean implements FactoryBean<NatsVcap>, InitializingB
 		for (VcapSubscriptionConfig subscription : subscriptions) {
 			final Object bean = subscription.getBean();
 			final String methodName = subscription.getMethodName();
-			final Method method = bean.getClass().getMethod(methodName, VcapMessage.class);
+			final Method method = bean.getClass().getMethod(methodName, VcapPublication.class);
 			final ParameterizedType parameterTypes = (ParameterizedType) method.getGenericParameterTypes()[0];
-			Class<VcapMessageBody<Object>> parameterType = (Class<VcapMessageBody<Object>>) parameterTypes.getActualTypeArguments()[0];
+			Class<VcapMessage<Object>> parameterType = (Class<VcapMessage<Object>>) parameterTypes.getActualTypeArguments()[0];
 			final String queueGroup = subscription.getQueueGroup();
-			vcap.subscribe(parameterType, queueGroup, new VcapMessageHandler<VcapMessageBody<Object>, Object>() {
+			vcap.subscribe(parameterType, queueGroup, new VcapPublicationHandler<VcapMessage<Object>, Object>() {
 				@Override
-				public void onMessage(VcapMessage<VcapMessageBody<Object>, Object> message) {
+				public void onMessage(VcapPublication publication) {
 					try {
-						method.invoke(bean, message);
+						method.invoke(bean, publication);
 					} catch (IllegalAccessException e) {
 						throw new Error(e);
 					} catch (InvocationTargetException e) {
