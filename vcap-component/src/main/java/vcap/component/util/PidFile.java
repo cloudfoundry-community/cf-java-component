@@ -18,19 +18,13 @@ public class PidFile implements Closeable {
 	private final Integer pid;
 
 	public PidFile(String pidFileName) throws IOException {
-		final String pidString;
-		try {
-			// Open the symlink /proc/self and follow symlink to determine pid -- This will only work on Unix based systems.
-			final Path pidPath = Paths.get("/proc", "self").toRealPath();
-			pidString = pidPath.getFileName().toString();
-		} catch (Exception e) {
-			pid = null;
+		pid = processId();
+		if (pid == null) {
 			pidFile = null;
-			return;
+		} else {
+			pidFile = Paths.get(pidFileName);
+			Files.write(pidFile, pid.toString().getBytes(), StandardOpenOption.CREATE);
 		}
-		this.pid = Integer.valueOf(pidString);
-		pidFile = Paths.get(pidFileName);
-		Files.write(pidFile, pidString.getBytes(), StandardOpenOption.CREATE);
 	}
 
 	public Integer getPid() {
@@ -46,6 +40,16 @@ public class PidFile implements Closeable {
 	public void close() throws IOException {
 		if (pidFile != null) {
 			Files.delete(pidFile);
+		}
+	}
+
+	public static Integer processId() {
+		try {
+			// Open the symlink /proc/self and follow symlink to determine pid -- This will only work on Unix based systems.
+			final Path pidPath = Paths.get("/proc", "self").toRealPath();
+			return Integer.valueOf(pidPath.getFileName().toString());
+		} catch (Exception e) {
+			return null;
 		}
 	}
 }
