@@ -13,12 +13,12 @@ import io.netty.util.CharsetUtil;
 /**
 * @author Mike Heath <heathma@ldschurch.org>
 */
-public abstract class TextResponseRequestHandler implements RequestHandler {
+public abstract class JsonTextResponseRequestHandler implements RequestHandler {
 
 	@Override
 	public HttpResponse handleRequest(HttpRequest request) throws RequestException {
 		final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-		response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+		response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json; charset=UTF-8");
 		final String body = handle(request);
 		final ByteBuf buffer = Unpooled.copiedBuffer(body, CharsetUtil.UTF_8);
 		response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, Integer.valueOf(buffer.readableBytes()));
