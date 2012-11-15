@@ -19,6 +19,15 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.vcap</groupId>
+			<artifactId>nats-vcap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.7</version>
+		</dependency>
 	</dependencies>
 
 </project>
