@@ -1,0 +1,2 @@
+- Add support for publishing JMX info via /varz similar to UAA
+-
