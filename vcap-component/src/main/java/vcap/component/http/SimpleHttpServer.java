@@ -83,7 +83,7 @@ public class SimpleHttpServer implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		if (parentGroup == null && childGroup == null) {
+		if (parentGroup == null || childGroup == null) {
 			bootstrap.shutdown();
 		} else {
 			parentGroup.shutdown();
@@ -114,11 +114,6 @@ public class SimpleHttpServer implements Closeable {
 		public void messageReceived(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
 			if (!request.getDecoderResult().isSuccess()) {
 				sendError(ctx, HttpResponseStatus.BAD_REQUEST);
-				return;
-			}
-
-			if (request.getMethod() != HttpMethod.GET) {
-				sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED);
 				return;
 			}
 

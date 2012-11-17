@@ -17,6 +17,7 @@
 package vcap.component;
 
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import nats.vcap.NatsVcap;
@@ -75,13 +76,19 @@ public class VcapComponent {
 		httpServer.addHandler("/healthz", new AuthenticatedJsonTextResponseRequestHandler() {
 			@Override
 			public String handleAuthenticatedRequest(HttpRequest request) throws RequestException {
+				if (!request.getMethod().equals(HttpMethod.GET)) {
+					throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
+				}
 				return "ok\n";
 			}
 		});
 
 		httpServer.addHandler("/varz", new AuthenticatedJsonTextResponseRequestHandler() {
 			@Override
-			protected String handleAuthenticatedRequest(HttpRequest request) {
+			protected String handleAuthenticatedRequest(HttpRequest request) throws RequestException {
+				if (!request.getMethod().equals(HttpMethod.GET)) {
+					throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
+				}
 				final Varz varz = buildVarz();
 				try {
 					return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(varz);
