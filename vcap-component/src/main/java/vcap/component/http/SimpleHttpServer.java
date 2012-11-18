@@ -29,7 +29,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpChunkAggregator;
 import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponse;
@@ -38,6 +37,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class SimpleHttpServer implements Closeable {
 
 	private final NioEventLoopGroup parentGroup;
 	private final NioEventLoopGroup childGroup;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpServer.class);
 
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
@@ -139,7 +142,7 @@ public class SimpleHttpServer implements Closeable {
 					sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
-			// TODO Log error message
+			LOGGER.error(cause.getMessage(), cause);
 		}
 
 		private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
