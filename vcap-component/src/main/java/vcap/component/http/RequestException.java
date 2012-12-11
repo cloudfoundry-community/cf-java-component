@@ -31,11 +31,6 @@ public class RequestException extends Exception {
 		this.status = status;
 	}
 
-	public RequestException(HttpResponseStatus status, Throwable cause) {
-		super(cause);
-		this.status = status;
-	}
-
 	public HttpResponseStatus getStatus() {
 		return status;
 	}

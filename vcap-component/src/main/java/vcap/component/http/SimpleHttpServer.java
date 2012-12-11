@@ -48,9 +48,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides a simple HTTP server built on Netty for handling things like publishing /varz and /healthz information.
+ * Provides a simple embeddable HTTP server for handling simple web service end-points and things like publishing
+ * /varz and /healthz information.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author "Mike Heath <elcapo@gmail.com>"
  */
 public class SimpleHttpServer implements Closeable {
 
@@ -80,7 +81,8 @@ public class SimpleHttpServer implements Closeable {
 				.channel(NioServerSocketChannel.class)
 				.localAddress(localAddress)
 				.childHandler(new SimpleHttpServerInitializer())
-				.bind();
+				.bind().awaitUninterruptibly(); // Make sure the server is bound before the constructor returns.
+
 		return bootstrap;
 	}
 
