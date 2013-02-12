@@ -20,7 +20,6 @@ import nats.NatsException;
 import nats.client.Message;
 import nats.client.MessageHandler;
 import nats.client.Nats;
-import nats.client.Publication;
 import nats.client.Subscription;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -45,7 +44,7 @@ public class NatsVcap {
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
-	public Publication publish(VcapMessage message) {
+	public void publish(VcapMessage message) {
 		if (message == null) {
 			throw new IllegalArgumentException("message cannot be null");
 		}
@@ -54,7 +53,7 @@ public class NatsVcap {
 			throw new NatsException("Unable to publish message of type " + message.getClass().getName() + ", missing annotation " + NatsSubject.class.getName());
 		}
 		final String encoding = encode(message);
-		return nats.publish(subject, encoding);
+		nats.publish(subject, encoding);
 	}
 
 	public <T extends VcapMessage<R>, R> Subscription subscribe(Class<T> type, VcapPublicationHandler<T, R> handler) {
@@ -90,13 +89,13 @@ public class NatsVcap {
 						}
 
 						@Override
-						public Publication reply(R replyMessage) {
-							return message.reply(encode(replyMessage));
+						public void reply(R replyMessage) {
+							message.reply(encode(replyMessage));
 						}
 
 						@Override
-						public Publication reply(R replyMessage, long delay, TimeUnit unit) {
-							return message.reply(encode(replyMessage), delay, unit);
+						public void reply(R replyMessage, long delay, TimeUnit unit) {
+							message.reply(encode(replyMessage), delay, unit);
 						}
 					});
 				} catch (Exception e) {

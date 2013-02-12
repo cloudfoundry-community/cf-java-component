@@ -139,8 +139,10 @@ public class VcapComponent {
 
 	protected String getLocalAddress() {
 		// Use the address Nats is using to increase the likelihood that the host that we advertise can be routed to from other hosts.
-		final InetSocketAddress localAddress = (InetSocketAddress) nats.getNats().getConnectionStatus().getLocalAddress();
-		return localAddress.getHostString();
+		// TODO Instead of getting the address from NATS, use the NATS host address to open a socket and use the local address
+		//final InetSocketAddress localAddress = (InetSocketAddress) nats.getNats().getConnectionStatus().getLocalAddress();
+		//return localAddress.getHostString();
+		return null;
 	}
 
 	private String formatStartTime() {

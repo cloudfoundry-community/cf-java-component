@@ -17,7 +17,6 @@
 package nats.vcap;
 
 import nats.client.Message;
-import nats.client.Publication;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,8 +29,8 @@ public interface VcapPublication<T extends VcapMessage<R>, R> {
 
 	T getMessage();
 
-	Publication reply(R message);
+	void reply(R message);
 
-	Publication reply(R message, long delay, TimeUnit unit);
+	void reply(R message, long delay, TimeUnit unit);
 
 }

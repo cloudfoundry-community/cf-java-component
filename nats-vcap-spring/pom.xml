@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
-		<groupId>com.github.vcap</groupId>
+		<groupId>com.github.mheath</groupId>
 		<artifactId>java-vcap-component-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
@@ -31,11 +31,11 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.vcap</groupId>
+			<groupId>com.github.mheath</groupId>
 			<artifactId>nats-vcap</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.jnats</groupId>
+			<groupId>com.github.mheath</groupId>
 			<artifactId>nats-client-spring</artifactId>
 		</dependency>
 		<dependency>

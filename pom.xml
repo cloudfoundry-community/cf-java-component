@@ -11,7 +11,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.vcap</groupId>
+	<groupId>com.github.mheath</groupId>
 	<artifactId>java-vcap-component-parent</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -23,7 +23,7 @@
 	<properties>
 		<jackson.version>1.9.8</jackson.version>
 		<logback.version>1.0.6</logback.version>
-		<nats.version>0.4-SNAPSHOT</nats.version>
+		<nats.version>0.5.Beta1</nats.version>
 		<netty.version>3.5.3.Final</netty.version>
 		<netty4.version>4.0.0.Alpha8</netty4.version>
 		<slf4j.version>1.6.5</slf4j.version>
@@ -83,17 +83,17 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>com.github.jnats</groupId>
+				<groupId>com.github.mheath</groupId>
 				<artifactId>nats-client</artifactId>
 				<version>${nats.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.jnats</groupId>
+				<groupId>com.github.mheath</groupId>
 				<artifactId>nats-client-spring</artifactId>
 				<version>${nats.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.vcap</groupId>
+				<groupId>com.github.mheath</groupId>
 				<artifactId>nats-vcap</artifactId>
 				<version>${project.version}</version>
 			</dependency>
