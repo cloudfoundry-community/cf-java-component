@@ -7,16 +7,10 @@
 Service Gateway
  - Garbage collector
  - Ask about bind_options and configuration parameters that don't appear to be used
- - Try to decouple the provisioner more from the REST API -- Can we just pass values instead of our JSON objects?
  - Functional test
-   - Create and run test provisioner
-   - Create a service using ccng REST API and point to test provisioner (with service plan, auth token, etc.)
-     - Tie into vmc for this
-   - Create a service
    - Deploy a test app bound to the service
    - Make sure the test app has the service we expect it to have
    - Delete app (make sure service is unbound)
    - Delete service
   - Spring integration
   - Full Spring sample service with component stuff and BOSH
- - Push to GitHub
