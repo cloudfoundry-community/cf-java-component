@@ -20,6 +20,7 @@ public class BindResponse extends JsonObject {
 		this.credentials = credentials;
 	}
 
+	@JsonProperty("service_id")
 	public String getHandleId() {
 		return handleId;
 	}
