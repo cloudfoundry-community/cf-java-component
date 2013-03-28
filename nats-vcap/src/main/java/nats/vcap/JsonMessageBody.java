@@ -21,6 +21,6 @@ package nats.vcap;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapJsonMessage<R> extends VcapMessage<R> {
+public interface JsonMessageBody<R> extends MessageBody<R> {
 
 }

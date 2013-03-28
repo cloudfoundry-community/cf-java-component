@@ -19,6 +19,7 @@ public class CreateResponse extends JsonObject {
 		this.credentials = credentials;
 	}
 
+	@JsonProperty("service_id")
 	public String getServiceInstanceId() {
 		return serviceInstanceId;
 	}

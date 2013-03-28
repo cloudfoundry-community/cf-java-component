@@ -16,6 +16,8 @@
  */
 package vcap.component;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
@@ -40,6 +42,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -73,9 +77,9 @@ public class VcapComponent {
 
 		nats.publish(buildComponentAnnounce());
 
-		httpServer.addHandler("/healthz", new AuthenticatedJsonTextResponseRequestHandler() {
+		httpServer.addHandler(Pattern.compile("/healthz"), new AuthenticatedJsonTextResponseRequestHandler() {
 			@Override
-			public String handleAuthenticatedRequest(HttpRequest request) throws RequestException {
+			public String handleAuthenticatedRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 				if (!request.getMethod().equals(HttpMethod.GET)) {
 					throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
 				}
@@ -83,9 +87,9 @@ public class VcapComponent {
 			}
 		});
 
-		httpServer.addHandler("/varz", new AuthenticatedJsonTextResponseRequestHandler() {
+		httpServer.addHandler(Pattern.compile("/varz"), new AuthenticatedJsonTextResponseRequestHandler() {
 			@Override
-			protected String handleAuthenticatedRequest(HttpRequest request) throws RequestException {
+			protected String handleAuthenticatedRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 				if (!request.getMethod().equals(HttpMethod.GET)) {
 					throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
 				}
@@ -164,8 +168,8 @@ public class VcapComponent {
 
 	private abstract class AuthenticatedJsonTextResponseRequestHandler extends JsonTextResponseRequestHandler {
 		@Override
-		public String handle(HttpRequest request) throws RequestException {
-			final String encodedAuthorization = request.getHeader(HttpHeaders.Names.AUTHORIZATION);
+		public String handle(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
+			final String encodedAuthorization = request.headers().get(HttpHeaders.Names.AUTHORIZATION);
 			if (encodedAuthorization == null) {
 				throw new RequestException(HttpResponseStatus.UNAUTHORIZED);
 			}
@@ -177,9 +181,9 @@ public class VcapComponent {
 			if (!username.equals(credentials[0]) && !password.equals(password)) {
 				throw new RequestException(HttpResponseStatus.UNAUTHORIZED);
 			}
-			return handleAuthenticatedRequest(request);
+			return handleAuthenticatedRequest(request, uriMatcher, body);
 		}
 
-		protected abstract String handleAuthenticatedRequest(HttpRequest request) throws RequestException;
+		protected abstract String handleAuthenticatedRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException;
 	}
 }

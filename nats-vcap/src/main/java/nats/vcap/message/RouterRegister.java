@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class RouterRegister extends AbstractJsonMessage<Void> {
+public class RouterRegister extends AbstractJsonMessageBody<Void> {
 	private final String host;
 	private final Integer port;
 	private final Integer app;

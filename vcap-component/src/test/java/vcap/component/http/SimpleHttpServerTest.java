@@ -2,7 +2,9 @@ package vcap.component.http;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -20,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -34,14 +38,13 @@ public class SimpleHttpServerTest {
 		final String contentType = "text/plain";
 		final HttpResponseStatus responseStatus = HttpResponseStatus.OK;
 		try (SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(PORT))) {
-			server.addHandler("/", new RequestHandler() {
+			server.addHandler(Pattern.compile("/"), new RequestHandler() {
 				@Override
-				public HttpResponse handleRequest(HttpRequest request) throws RequestException {
-					final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, responseStatus);
-					response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType);
+				public HttpResponse handleRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 					final ByteBuf buffer = Unpooled.copiedBuffer(responseBody, CharsetUtil.UTF_8);
-					response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, Integer.valueOf(buffer.readableBytes()));
-					response.setContent(buffer);
+					final DefaultHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus, buffer);
+					response.headers().add(HttpHeaders.Names.CONTENT_TYPE, contentType);
+					response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, buffer.readableBytes());
 					return response;
 				}
 			});
@@ -49,7 +52,7 @@ public class SimpleHttpServerTest {
 			final URL url = new URL("http://localhost:" + PORT);
 			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.connect();
-			Assert.assertEquals(connection.getResponseCode(), responseStatus.getCode());
+			Assert.assertEquals(connection.getResponseCode(), responseStatus.code());
 			Assert.assertEquals(connection.getContentType(), contentType);
 			final InputStream in = (InputStream) connection.getContent();
 			final String content = new BufferedReader(new InputStreamReader(in)).readLine();
@@ -68,9 +71,9 @@ public class SimpleHttpServerTest {
 	@Test(expectedExceptions = IOException.class)
 	public void handlerThrowsException() throws Exception {
 		try (SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(PORT))) {
-			server.addHandler("/", new RequestHandler() {
+			server.addHandler(Pattern.compile("/"), new RequestHandler() {
 				@Override
-				public HttpResponse handleRequest(HttpRequest request) throws RequestException {
+				public HttpResponse handleRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 					throw new RuntimeException("This should result in a 500 response.");
 				}
 			});
@@ -83,9 +86,9 @@ public class SimpleHttpServerTest {
 	@Test(expectedExceptions = IOException.class)
 	public void handlerThrowsRequestException() throws Exception {
 		try (SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(PORT))) {
-			server.addHandler("/", new RequestHandler() {
+			server.addHandler(Pattern.compile("/"), new RequestHandler() {
 				@Override
-				public HttpResponse handleRequest(HttpRequest request) throws RequestException {
+				public HttpResponse handleRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 					throw new RequestException(HttpResponseStatus.FORBIDDEN);
 				}
 			});
@@ -99,9 +102,9 @@ public class SimpleHttpServerTest {
 	public void jsonResponse() throws Exception {
 		final String json = "{}";
 		try (SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(PORT))) {
-			server.addHandler("/", new JsonTextResponseRequestHandler() {
+			server.addHandler(Pattern.compile("/"), new JsonTextResponseRequestHandler() {
 				@Override
-				public String handle(HttpRequest request) throws RequestException {
+				public String handle(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
 					return json;
 				}
 			});

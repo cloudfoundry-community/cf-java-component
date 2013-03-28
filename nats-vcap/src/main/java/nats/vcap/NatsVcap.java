@@ -44,7 +44,7 @@ public class NatsVcap {
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
-	public void publish(VcapMessage message) {
+	public void publish(MessageBody message) {
 		if (message == null) {
 			throw new IllegalArgumentException("message cannot be null");
 		}
@@ -56,21 +56,21 @@ public class NatsVcap {
 		nats.publish(subject, encoding);
 	}
 
-	public <T extends VcapMessage<R>, R> Subscription subscribe(Class<T> type, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, VcapPublicationHandler<T, R> handler) {
 		return subscribe(type, null, null, handler);
 	}
 
-	public <T extends VcapMessage<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, VcapPublicationHandler<T, R> handler) {
 		return subscribe(type, null, maxMessages, handler);
 	}
 
-	public <T extends VcapMessage<R>, R> Subscription subscribe(Class<T> type, String queueGroup, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, VcapPublicationHandler<T, R> handler) {
 		return subscribe(type, queueGroup, null, handler);
 	}
 
-	public <T extends VcapMessage<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final VcapPublicationHandler<T, R> handler) {
 		final Subscription subscribe = nats.subscribe(getSubject(type), queueGroup, maxMessages);
-		final ObjectReader reader = (VcapJsonMessage.class.isAssignableFrom(type)) ? mapper.reader(type) : null;
+		final ObjectReader reader = (JsonMessageBody.class.isAssignableFrom(type)) ? mapper.reader(type) : null;
 		subscribe.addMessageHandler(new MessageHandler() {
 			@Override
 			public void onMessage(final Message message) {
@@ -84,7 +84,7 @@ public class NatsVcap {
 						}
 
 						@Override
-						public T getMessage() {
+						public T getMessageBody() {
 							return vcapMessage;
 						}
 
@@ -112,7 +112,7 @@ public class NatsVcap {
 	}
 
 	private String encode(Object value) {
-		if (!(value instanceof VcapJsonMessage)) {
+		if (!(value instanceof JsonMessageBody)) {
 			return null;
 		}
 		try {

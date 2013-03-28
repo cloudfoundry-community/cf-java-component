@@ -16,8 +16,8 @@
  */
 package nats.vcap.message;
 
+import nats.vcap.MessageBody;
 import nats.vcap.NatsSubject;
-import nats.vcap.VcapMessage;
 
 /**
  * A request for components to announce themselves.
@@ -27,5 +27,5 @@ import nats.vcap.VcapMessage;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.discover")
-public class ComponentDiscover implements VcapMessage<ComponentAnnounce> {
+public class ComponentDiscover implements MessageBody<ComponentAnnounce> {
 }

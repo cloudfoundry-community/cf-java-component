@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapPublication<T extends VcapMessage<R>, R> {
+public interface VcapPublication<T extends MessageBody<R>, R> {
 
 	Message getNatsMessage();
 
-	T getMessage();
+	T getMessageBody();
 
 	void reply(R message);
 

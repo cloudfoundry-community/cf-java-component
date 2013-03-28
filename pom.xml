@@ -21,22 +21,33 @@
 	<url>https://github.com/mheath/vcap-java-component</url>
 
 	<properties>
+		<cloudFoundryClientLib.version>0.8.3</cloudFoundryClientLib.version>
 		<jackson.version>1.9.8</jackson.version>
+		<java.version>1.7</java.version>
 		<logback.version>1.0.6</logback.version>
-		<nats.version>0.5.Beta1</nats.version>
-		<netty.version>3.5.3.Final</netty.version>
-		<netty4.version>4.0.0.Alpha8</netty4.version>
+		<nats.version>0.5-SNAPSHOT</nats.version>
+		<netty.version>4.0.0.CR1</netty.version>
 		<slf4j.version>1.6.5</slf4j.version>
+		<snakeyaml.version>1.12</snakeyaml.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
-		<java.version>1.7</java.version>
+		<spring.framework.version>${spring.version}</spring.framework.version>
 	</properties>
 
 	<modules>
 		<module>nats-vcap</module>
 		<module>nats-vcap-spring</module>
 		<module>vcap-component</module>
+		<module>vcap-java-service-gateway</module>
 	</modules>
+
+	<repositories>
+		<!-- Needed for cloudfoundry-client-lib -->
+		<repository>
+			<id>spring-milestone</id>
+			<url>http://maven.springframework.org/milestone</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<pluginManagement>
@@ -55,10 +66,23 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Module dependencies -->
+			<dependency>
+				<groupId>com.github.mheath</groupId>
+				<artifactId>nats-vcap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.vcap</groupId>
+				<artifactId>vcap-component</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- Third-party dependencies -->
 			<dependency>
 				<groupId>io.netty</groupId>
-				<artifactId>netty</artifactId>
-				<version>${netty4.version}</version>
+				<artifactId>netty-all</artifactId>
+				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -93,11 +117,6 @@
 				<version>${nats.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>nats-vcap</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
@@ -111,6 +130,11 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -83,7 +83,10 @@ public class Gateway {
 				if (request.getMethod() == HttpMethod.DELETE) {
 					final DeleteRequest deleteRequest = decode(DeleteRequest.class, body);
 					LOGGER.info("Deleting service instance {}", deleteRequest.getServiceId());
-					provisioner.delete(deleteRequest);
+					if (uriMatcher.groupCount() != 2) {
+						throw new RequestException(HttpResponseStatus.NOT_FOUND);
+					}
+					provisioner.delete(uriMatcher.group(2));
 					return encodeResponse(EMPTY_JSON_OBJECT);
 				}
 				throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
@@ -99,9 +102,10 @@ public class Gateway {
 	}
 
 	private HttpResponse encodeResponse(JsonObject jsonBody) throws RequestException {
-		final byte[] bytes;
 		try {
-			bytes = mapper.writeValueAsBytes(jsonBody);
+			final String json = mapper.writeValueAsString(jsonBody);
+			LOGGER.debug("JSON response to server {}", json);
+			final byte[] bytes = json.getBytes();
 			final ByteBuf buffer = Unpooled.wrappedBuffer(bytes);
 			final FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buffer);
 			response.headers().add(HttpHeaders.Names.CONTENT_TYPE, "application/json");

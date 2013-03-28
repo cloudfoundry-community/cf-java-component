@@ -20,20 +20,25 @@ import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * See http://apidocs.cloudfoundry.com/router/publish-router-start.
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.start")
-public class RouterStart extends AbstractJsonMessage<Void> {
+public class RouterStart extends AbstractJsonMessageBody<Void> {
 	private final String id;
 	private final String version;
+	private final List<String> hosts;
 
 	@JsonCreator
-	public RouterStart(@JsonProperty("id") String id, @JsonProperty("version") String version) {
+	public RouterStart(@JsonProperty("id") String id, @JsonProperty("version") String version, @JsonProperty("hosts")List<String> hosts) {
 		this.id = id;
 		this.version = version;
+		this.hosts = hosts == null ? null : Collections.unmodifiableList(hosts);
 	}
 
 	public String getId() {
@@ -44,4 +49,7 @@ public class RouterStart extends AbstractJsonMessage<Void> {
 		return version;
 	}
 
+	public List<String> getHosts() {
+		return hosts;
+	}
 }

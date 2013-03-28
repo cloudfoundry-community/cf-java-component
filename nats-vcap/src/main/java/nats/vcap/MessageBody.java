@@ -14,29 +14,10 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
-
-import nats.vcap.VcapJsonMessage;
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-
-import java.util.HashMap;
-import java.util.Map;
+package nats.vcap;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public abstract class AbstractJsonMessage<R> implements VcapJsonMessage<R> {
-
-	protected final Map<String, Object> other = new HashMap<>();
-
-	@JsonAnyGetter
-	public Map<String, Object> any() {
-		return new HashMap<>(other);
-	}
-
-	@JsonAnySetter
-	public void set(String name, Object value) {
-		other.put(name, value);
-	}
+public interface MessageBody<R> {
 }

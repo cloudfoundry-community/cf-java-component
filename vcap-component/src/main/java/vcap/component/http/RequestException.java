@@ -31,6 +31,11 @@ public class RequestException extends Exception {
 		this.status = status;
 	}
 
+	public RequestException(Throwable cause) {
+		super(cause);
+		status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
+	}
+
 	public HttpResponseStatus getStatus() {
 		return status;
 	}

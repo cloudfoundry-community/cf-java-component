@@ -31,12 +31,13 @@ import java.util.List;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.announce")
-public class ComponentAnnounce extends AbstractJsonMessage<Void> {
+public class ComponentAnnounce extends AbstractJsonMessageBody<Void> {
 
 	public static final String TYPE_CLOUD_CONTROLLER = "CloudController";
 	public static final String TYPE_DEA = "DEA";
 	public static final String TYPE_HEALTH_MANAGER = "HealthManager";
 	public static final String TYPE_ROUTER = "Router";
+	public static final String TYPE_UAA = "uaa";
 
 	private final String type;
 	private final Integer index;

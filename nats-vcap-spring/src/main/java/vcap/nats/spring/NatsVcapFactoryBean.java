@@ -18,8 +18,8 @@ package vcap.nats.spring;
 
 import nats.NatsException;
 import nats.client.Nats;
+import nats.vcap.MessageBody;
 import nats.vcap.NatsVcap;
-import nats.vcap.VcapMessage;
 import nats.vcap.VcapPublication;
 import nats.vcap.VcapPublicationHandler;
 import org.springframework.beans.factory.FactoryBean;
@@ -67,9 +67,9 @@ public class NatsVcapFactoryBean implements FactoryBean<NatsVcap>, InitializingB
 			final String methodName = subscription.getMethodName();
 			final Method method = bean.getClass().getMethod(methodName, VcapPublication.class);
 			final ParameterizedType parameterTypes = (ParameterizedType) method.getGenericParameterTypes()[0];
-			Class<VcapMessage<Object>> parameterType = (Class<VcapMessage<Object>>) parameterTypes.getActualTypeArguments()[0];
+			Class<MessageBody<Object>> parameterType = (Class<MessageBody<Object>>) parameterTypes.getActualTypeArguments()[0];
 			final String queueGroup = subscription.getQueueGroup();
-			vcap.subscribe(parameterType, queueGroup, new VcapPublicationHandler<VcapMessage<Object>, Object>() {
+			vcap.subscribe(parameterType, queueGroup, new VcapPublicationHandler<MessageBody<Object>, Object>() {
 				@Override
 				public void onMessage(VcapPublication publication) {
 					try {

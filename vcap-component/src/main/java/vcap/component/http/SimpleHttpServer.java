@@ -17,6 +17,7 @@
 package vcap.component.http;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,12 +25,14 @@ import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpChunkAggregator;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseEncoder;
@@ -43,9 +46,13 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Provides a simple embeddable HTTP server for handling simple web service end-points and things like publishing
@@ -56,7 +63,9 @@ import java.util.Map;
 public class SimpleHttpServer implements Closeable {
 
 	private final ServerBootstrap bootstrap;
-	private final Map<String, RequestHandler> requestHandlers = Collections.synchronizedMap(new HashMap<String, RequestHandler>());
+
+	// Access must be synchronized on self
+	private final List<RequestHandle> requestHandles = new ArrayList<>();
 
 	private final NioEventLoopGroup parentGroup;
 	private final NioEventLoopGroup childGroup;
@@ -88,16 +97,15 @@ public class SimpleHttpServer implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		if (parentGroup == null || childGroup == null) {
+		if (parentGroup != null || childGroup != null) {
 			bootstrap.shutdown();
-		} else {
-			parentGroup.shutdown();
-			childGroup.shutdown();
 		}
 	}
 
-	public void addHandler(String uri, RequestHandler requestHandler) {
-		requestHandlers.put(uri, requestHandler);
+	public void addHandler(Pattern uriPattern, RequestHandler requestHandler) {
+		synchronized (requestHandles) {
+			requestHandles.add(new RequestHandle(uriPattern, requestHandler));
+		}
 	}
 
 	private class SimpleHttpServerInitializer extends ChannelInitializer<SocketChannel> {
@@ -106,7 +114,7 @@ public class SimpleHttpServer implements Closeable {
 			final ChannelPipeline pipeline = ch.pipeline();
 
 			pipeline.addLast("decoder", new HttpRequestDecoder());
-			pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
+			pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
 			pipeline.addLast("encoder", new HttpResponseEncoder());
 			pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 
@@ -114,28 +122,56 @@ public class SimpleHttpServer implements Closeable {
 		}
 	}
 
-	private class SimpleHttpServerHandler extends ChannelInboundMessageHandlerAdapter<HttpRequest> {
+	private class SimpleHttpServerHandler extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
 		@Override
-		public void messageReceived(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
+		public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+			System.out.println("Method: " + request.getMethod());
+			System.out.println("URI: " + request.getUri());
+			for (String name : request.headers().names()) {
+				System.out.println(name);
+				for (String value : request.headers().getAll(name)) {
+					System.out.println("\t" + value);
+				};
+			}
+			System.out.println();
+			System.out.println(request.data().toString(CharsetUtil.UTF_8));
+			System.out.println("==================");
+
 			if (!request.getDecoderResult().isSuccess()) {
 				sendError(ctx, HttpResponseStatus.BAD_REQUEST);
 				return;
 			}
 
 			final String uri = request.getUri();
-			final RequestHandler requestHandler = requestHandlers.get(uri);
+			final RequestHandler requestHandler;
+			final Matcher uriMatcher;
+			lock: synchronized (requestHandles) {
+				for (RequestHandle handle : requestHandles) {
+					final Matcher matcher = handle.uriPattern.matcher(uri);
+					if (matcher.matches()) {
+						requestHandler = handle.handler;
+						uriMatcher = matcher;
+						break lock;
+					}
+				}
+				requestHandler = null;
+				uriMatcher = null;
+			}
+
 			if (requestHandler != null) {
 				final HttpResponse httpResponse;
-				httpResponse = requestHandler.handleRequest(request);
+				httpResponse = requestHandler.handleRequest(request, uriMatcher, request.data());
 				// Close the connection as soon as the message is sent.
 				ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
 			} else {
+				System.out.println("Returning 404");
 				sendError(ctx, HttpResponseStatus.NOT_FOUND);
 			}
 		}
 
 		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+			LOGGER.error(cause.getMessage(), cause);
 			if (ctx.channel().isOpen()) {
 				if (cause instanceof RequestException) {
 					sendError(ctx, ((RequestException) cause).getStatus());
@@ -144,18 +180,27 @@ public class SimpleHttpServer implements Closeable {
 					sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
-			LOGGER.error(cause.getMessage(), cause);
 		}
 
 		private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
-			response.setContent(Unpooled.copiedBuffer(
+			final ByteBuf buf = Unpooled.copiedBuffer(
 					"Failure: " + status.toString() + "\r\n",
-					CharsetUtil.UTF_8));
+					CharsetUtil.UTF_8);
+			FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, buf);
+			response.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
 			// Close the connection as soon as the error message is sent.
 			ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+		}
+	}
+
+	private class RequestHandle {
+		private final Pattern uriPattern;
+		private final RequestHandler handler;
+
+		private RequestHandle(Pattern uriPattern, RequestHandler handler) {
+			this.uriPattern = uriPattern;
+			this.handler = handler;
 		}
 	}
 }

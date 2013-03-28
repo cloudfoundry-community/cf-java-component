@@ -16,9 +16,9 @@ public interface Provisioner {
 	/**
 	 * When the user types 'vmc delete-service ...' this method will probably get called.
 	 *
-	 * @param deleteRequest
+	 * @param serviceInstanceId
 	 */
-	void delete(DeleteRequest deleteRequest);
+	void delete(String serviceInstanceId);
 
 	/**
 	 * When the user types 'vmc bind-service ...' this method will get called.
