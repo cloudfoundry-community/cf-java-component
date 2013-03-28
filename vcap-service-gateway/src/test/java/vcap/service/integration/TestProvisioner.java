@@ -4,9 +4,7 @@ import vcap.service.BindRequest;
 import vcap.service.BindResponse;
 import vcap.service.CreateRequest;
 import vcap.service.CreateResponse;
-import vcap.service.DeleteRequest;
 import vcap.service.Provisioner;
-import vcap.service.UnbindRequest;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,8 +44,8 @@ public class TestProvisioner implements Provisioner {
 	}
 
 	@Override
-	public void unbind(UnbindRequest request) {
-		System.out.println("Unbinding service! " + request.getHandleId());
+	public void unbind(String serviceInstanceId, String handleId) {
+		System.out.println("Unbinding service! " + handleId);
 	}
 
 	@Override

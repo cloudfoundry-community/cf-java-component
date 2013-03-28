@@ -27,10 +27,10 @@ public interface Provisioner {
 
 	/**
 	 *
-	 *
-	 * @param request
+	 * @param serviceInstanceId
+	 * @param handleId
 	 */
-	void unbind(UnbindRequest request);
+	void unbind(String serviceInstanceId, String handleId);
 
 	/**
 	 * Returns iterable for each service id for the services the gateway is aware of.

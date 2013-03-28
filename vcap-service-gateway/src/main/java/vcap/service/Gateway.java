@@ -57,9 +57,13 @@ public class Gateway {
 				}
 				// Unbind service
 				if (request.getMethod() == HttpMethod.DELETE) {
-					final UnbindRequest unbindRequest = decode(UnbindRequest.class, body);
-					LOGGER.info("Unbinding instance {} for service {}", unbindRequest.getHandleId(), unbindRequest.getServiceInstanceId());
-					provisioner.unbind(unbindRequest);
+					if (uriMatcher.groupCount() != 3) {
+						throw new RequestException(HttpResponseStatus.NOT_FOUND);
+					}
+					final String serviceInstanceId = uriMatcher.group(1);
+					final String handleId = uriMatcher.group(3);
+					LOGGER.info("Unbinding instance {} for binding {}", serviceInstanceId, handleId);
+					provisioner.unbind(serviceInstanceId, handleId);
 					return encodeResponse(EMPTY_JSON_OBJECT);
 				}
 				throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
@@ -81,12 +85,12 @@ public class Gateway {
 				}
 				// Delete service
 				if (request.getMethod() == HttpMethod.DELETE) {
-					final DeleteRequest deleteRequest = decode(DeleteRequest.class, body);
-					LOGGER.info("Deleting service instance {}", deleteRequest.getServiceId());
 					if (uriMatcher.groupCount() != 2) {
 						throw new RequestException(HttpResponseStatus.NOT_FOUND);
 					}
-					provisioner.delete(uriMatcher.group(2));
+					final String serviceInstanceId = uriMatcher.group(2);
+					LOGGER.info("Deleting service instance {}", serviceInstanceId);
+					provisioner.delete(serviceInstanceId);
 					return encodeResponse(EMPTY_JSON_OBJECT);
 				}
 				throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
