@@ -6,31 +6,31 @@ package vcap.service;
 public interface Provisioner {
 
 	/**
-	 * When the user types 'vmc create-service ...' this method will get called.
+	 * When the user types 'cf create-service ...' this method will get called.
 	 *
 	 * @param request
 	 * @return
 	 */
-	CreateResponse create(CreateRequest request);
+	ServiceInstance create(CreateRequest request);
 
 	/**
-	 * When the user types 'vmc delete-service ...' this method will probably get called.
+	 * When the user types 'cf delete-service ...' this method will probably get called.
 	 *
-	 * @param serviceInstanceId
+	 * @param instanceId
 	 */
-	void delete(String serviceInstanceId);
+	void delete(String instanceId);
 
 	/**
-	 * When the user types 'vmc bind-service ...' this method will get called.
+	 * When the user types 'cf bind-service ...' this method will get called.
 	 */
-	BindResponse bind(BindRequest request);
+	Binding bind(BindRequest request);
 
 	/**
 	 *
-	 * @param serviceInstanceId
-	 * @param handleId
+	 * @param instanceId
+	 * @param bindingId
 	 */
-	void unbind(String serviceInstanceId, String handleId);
+	void unbind(String instanceId, String bindingId);
 
 	/**
 	 * Returns iterable for each service id for the services the gateway is aware of.
@@ -42,21 +42,21 @@ public interface Provisioner {
 	/**
 	 * Returns all the handle ids (binds) for a service.
 	 *
-	 * @param serviceInstanceId
+	 * @param instanceId
 	 * @return
 	 */
-	Iterable<String> handles(String serviceInstanceId);
+	Iterable<String> handles(String instanceId);
 
 	/**
-	 * This gets called when the cc deletes a service handle but the delete request didn't make it to the gateway.
+	 * This gets called when the cc deletes a service binding but the delete request didn't make it to the gateway.
 	 *
-	 * @param handleId
+	 * @param bindingId
 	 */
-	void removeOrphanedHandle(String handleId);
+	void removeOrphanedBinding(String bindingId);
 
 	/**
 	 * This gets called when the cc deletes a service instance but the delete request didn't make it to the gateway.
-	 * @param serviceId
+	 * @param instanceId
 	 */
-	void removeOrphanedService(String serviceId);
+	void removeOrphanedService(String instanceId);
 }

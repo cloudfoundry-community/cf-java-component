@@ -19,6 +19,8 @@ import vcap.component.http.RequestHandler;
 import vcap.component.http.SimpleHttpServer;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,10 +31,12 @@ public class Gateway {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
+	public static final String SERVICE_INSTANCE_ID = "service_id";
+	public static final String SERVICE_HANDLE_ID = "handle_id";
+
 	public static final String VCAP_SERVICE_TOKEN_HEADER = "X-VCAP-Service-Token";
 
 	private static final JsonObject EMPTY_JSON_OBJECT = new JsonObject();
-
 	final ObjectMapper mapper = new ObjectMapper();
 
 	private final String authToken;
@@ -52,7 +56,11 @@ public class Gateway {
 				if (request.getMethod() == HttpMethod.POST) {
 					final BindRequest bindRequest = decode(BindRequest.class, body);
 					LOGGER.info("Binding service {} for instance {}", bindRequest.getLabel(), bindRequest.getServiceInstanceId());
-					final BindResponse bindResponse = provisioner.bind(bindRequest);
+					final Binding binding = provisioner.bind(bindRequest);
+					final Map<String,Object> gatewayData = new HashMap<>(binding.getGatewayData());
+					gatewayData.put(SERVICE_INSTANCE_ID, binding.getInstanceId());
+					gatewayData.put(SERVICE_HANDLE_ID, binding.getBindingId());
+					final BindResponse bindResponse = new BindResponse(binding.getBindingId(), gatewayData, binding.getCredentials());
 					return encodeResponse(bindResponse);
 				}
 				// Unbind service
@@ -80,7 +88,10 @@ public class Gateway {
 							createRequest.getLabel(),
 							createRequest.getSpaceGuid(),
 							createRequest.getOrganizationGuid()});
-					final CreateResponse createResponse = provisioner.create(createRequest);
+					final ServiceInstance serviceInstance = provisioner.create(createRequest);
+					final Map<String, Object> gatewayData = new HashMap<>(serviceInstance.getGatewayData());
+					gatewayData.put(SERVICE_INSTANCE_ID, serviceInstance.getInstanceId());
+					final CreateResponse createResponse = new CreateResponse(serviceInstance.getInstanceId(), gatewayData, serviceInstance.getCredentials());
 					return encodeResponse(createResponse);
 				}
 				// Delete service
