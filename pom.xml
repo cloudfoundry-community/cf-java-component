@@ -38,7 +38,7 @@
 		<module>nats-vcap</module>
 		<module>nats-vcap-spring</module>
 		<module>vcap-component</module>
-		<module>vcap-java-service-gateway</module>
+		<module>vcap-service-gateway</module>
 	</modules>
 
 	<repositories>
