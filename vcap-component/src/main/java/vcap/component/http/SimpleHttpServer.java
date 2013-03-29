@@ -92,6 +92,8 @@ public class SimpleHttpServer implements Closeable {
 				.childHandler(new SimpleHttpServerInitializer())
 				.bind().awaitUninterruptibly(); // Make sure the server is bound before the constructor returns.
 
+		LOGGER.info("Server listening on " + localAddress);
+
 		return bootstrap;
 	}
 
@@ -167,6 +169,16 @@ public class SimpleHttpServer implements Closeable {
 				System.out.println("Returning 404");
 				sendError(ctx, HttpResponseStatus.NOT_FOUND);
 			}
+		}
+
+		@Override
+		public void channelActive(ChannelHandlerContext ctx) throws Exception {
+			LOGGER.debug("Received connection from {}", ctx.channel().remoteAddress());
+		}
+
+		@Override
+		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+			LOGGER.debug("Connection to {} closed", ctx.channel().remoteAddress());
 		}
 
 		@Override
