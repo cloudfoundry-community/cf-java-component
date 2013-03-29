@@ -10,9 +10,7 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-    <groupId>com.github.vcap</groupId>
     <artifactId>vcap-component</artifactId>
-    <version>0.1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

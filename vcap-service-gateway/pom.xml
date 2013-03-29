@@ -13,14 +13,19 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
+			<groupId>com.github.mheath</groupId>
+			<artifactId>vcap-common</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>com.github.vcap</groupId>
+			<groupId>com.github.mheath</groupId>
 			<artifactId>vcap-component</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
