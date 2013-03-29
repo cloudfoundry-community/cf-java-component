@@ -2,9 +2,11 @@ package vcap.service.integration;
 
 import vcap.service.BindRequest;
 import vcap.service.BindResponse;
+import vcap.service.Binding;
 import vcap.service.CreateRequest;
 import vcap.service.CreateResponse;
 import vcap.service.Provisioner;
+import vcap.service.ServiceInstance;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,29 +24,32 @@ public class TestProvisioner implements Provisioner {
 	private volatile int lastDeleteId;
 
 	@Override
-	public CreateResponse create(CreateRequest request) {
+	public ServiceInstance create(CreateRequest request) {
 		System.out.println("Let's create a service!");
 		final Integer id = createInvocationCount.getAndIncrement();
 		lastCreateId = id;
-		return new CreateResponse(id.toString(), new HashMap<>(), new HashMap<>());
+		final ServiceInstance serviceInstance = new ServiceInstance(id.toString());
+		serviceInstance.addGatewayDataField("config", "value");
+		serviceInstance.addCredential("user", "yourmom");
+		return serviceInstance;
 	}
 
 	@Override
-	public void delete(String serviceInstanceId) {
-		System.out.println("Deleting service! " + serviceInstanceId);
-		lastDeleteId = Integer.valueOf(serviceInstanceId);
+	public void delete(String instanceId) {
+		System.out.println("Deleting service! " + instanceId);
+		lastDeleteId = Integer.valueOf(instanceId);
 		deleteInvocationCount.getAndIncrement();
 	}
 
 	@Override
-	public BindResponse bind(BindRequest request) {
+	public Binding bind(BindRequest request) {
 		System.out.println("Binding a service!");
 		Integer id = bindInvocationCount.getAndIncrement();
-		return new BindResponse(id.toString(), new HashMap<>(), new HashMap<>());
+		return new Binding(request.getServiceInstanceId(), id.toString());
 	}
 
 	@Override
-	public void unbind(String serviceInstanceId, String handleId) {
+	public void unbind(String instanceId, String handleId) {
 		System.out.println("Unbinding service! " + handleId);
 	}
 
@@ -54,16 +59,16 @@ public class TestProvisioner implements Provisioner {
 	}
 
 	@Override
-	public Iterable<String> handles(String serviceInstanceId) {
+	public Iterable<String> handles(String instanceId) {
 		return null;
 	}
 
 	@Override
-	public void removeOrphanedHandle(String handleId) {
+	public void removeOrphanedBinding(String handleId) {
 	}
 
 	@Override
-	public void removeOrphanedService(String serviceId) {
+	public void removeOrphanedService(String instanceId) {
 	}
 
 	public int getCreateInvocationCount() {

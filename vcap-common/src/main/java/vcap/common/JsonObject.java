@@ -1,4 +1,4 @@
-package vcap.service;
+package vcap.common;
 
 import org.codehaus.jackson.annotate.JsonAnyGetter;
 import org.codehaus.jackson.annotate.JsonAnySetter;
@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-class JsonObject {
+public class JsonObject {
 
 	protected final Map<String, Object> other = new HashMap<>();
 

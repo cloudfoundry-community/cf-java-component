@@ -2,10 +2,12 @@ package vcap.service;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import vcap.common.JsonObject;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class BindRequest {
+public class BindRequest extends JsonObject {
 
 	private final String serviceInstanceId;
 	private final String label;

@@ -1,6 +1,7 @@
 package vcap.service;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import vcap.common.JsonObject;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>

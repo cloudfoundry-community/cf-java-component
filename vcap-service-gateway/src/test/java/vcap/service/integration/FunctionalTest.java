@@ -44,7 +44,7 @@ public class FunctionalTest {
 		LOGGER.info("Using Cloud Controller at: {}", target.getHost());
 
 		final String label = "testService" + ThreadLocalRandom.current().nextInt();
-		final String provider = "Some Service Provider";
+		final String provider = "core";
 		final String url = "http://" + localIp(target.getHost()) + ":" + serverPort;
 		final String description = "A service used for testing the service framework.";
 		final String version = "0.1";
@@ -95,22 +95,6 @@ public class FunctionalTest {
 		// TODO: Create service pointing to test gateway
 		// TODO: Create service instance and validate
 
-	}
-
-	private static Object collectionToString(final List<String> command) {
-		return new Object() {
-			@Override
-			public String toString() {
-				final StringBuilder builder = new StringBuilder();
-				for (final Iterator<String> iterator = command.iterator(); iterator.hasNext();) {
-					builder.append(iterator.next());
-					if (iterator.hasNext()) {
-						builder.append(' ');
-					}
-				}
-				return builder.toString();
-			}
-		};
 	}
 
 	private static String localIp(String cloudControllerUri) {

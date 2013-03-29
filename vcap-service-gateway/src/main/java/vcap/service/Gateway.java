@@ -14,6 +14,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vcap.common.JsonObject;
 import vcap.component.http.RequestException;
 import vcap.component.http.RequestHandler;
 import vcap.component.http.SimpleHttpServer;
