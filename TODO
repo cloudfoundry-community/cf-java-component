@@ -4,7 +4,7 @@
 
 - Create a light weight Cloud Controller client library
 
-Service Gateway
+- Service Gateway
  - Garbage collector
  - Ask about bind_options and configuration parameters that don't appear to be used
  - Functional test
@@ -14,3 +14,5 @@ Service Gateway
    - Delete service
   - Spring integration
   - Full Spring sample service with component stuff and BOSH
+
+- Add copyright headers.
