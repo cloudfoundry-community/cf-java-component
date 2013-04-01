@@ -21,7 +21,7 @@
 	<url>https://github.com/mheath/vcap-java-component</url>
 
 	<properties>
-		<cloudFoundryClientLib.version>0.8.3</cloudFoundryClientLib.version>
+		<httpclient.version>4.1.1</httpclient.version>
 		<jackson.version>1.9.8</jackson.version>
 		<java.version>1.7</java.version>
 		<logback.version>1.0.6</logback.version>
@@ -42,14 +42,6 @@
 		<module>vcap-common</module>
 		<module>vcap-client</module>
 	</modules>
-
-	<repositories>
-		<!-- Needed for cloudfoundry-client-lib -->
-		<repository>
-			<id>spring-milestone</id>
-			<url>http://maven.springframework.org/milestone</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<pluginManagement>
@@ -101,6 +93,11 @@
 				<artifactId>testng</artifactId>
 				<version>${testng.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
