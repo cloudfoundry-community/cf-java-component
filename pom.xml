@@ -21,7 +21,7 @@
 	<url>https://github.com/mheath/vcap-java-component</url>
 
 	<properties>
-		<httpclient.version>4.1.1</httpclient.version>
+		<httpclient.version>4.2.3</httpclient.version>
 		<jackson.version>1.9.8</jackson.version>
 		<java.version>1.7</java.version>
 		<logback.version>1.0.6</logback.version>
