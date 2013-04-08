@@ -66,7 +66,7 @@ public class ServiceGarbageCollector {
 					servicePlan.getGuid().toString());
 			for (Resource<ServiceInstance> serviceInstance : serviceInstances) {
 				final JsonNode gatewayData = serviceInstance.getEntity().getGatewayData();
-				final String serviceInstanceId = gatewayData.get(Gateway.SERVICE_INSTANCE_ID).asText();
+				final String serviceInstanceId = gatewayData.get(GatewayServer.SERVICE_INSTANCE_ID).asText();
 
 				final boolean removed = serviceInstanceIds.remove(serviceInstanceId);
 				if (removed) {
@@ -107,7 +107,7 @@ public class ServiceGarbageCollector {
 				serviceInstance.getGuid().toString()
 		);
 		for (Resource<ServiceBinding> serviceBinding : serviceBindings) {
-			final String bindingId = serviceBinding.getEntity().getGatewayData().get(Gateway.SERVICE_BINDING_ID).asText();
+			final String bindingId = serviceBinding.getEntity().getGatewayData().get(GatewayServer.SERVICE_BINDING_ID).asText();
 			final boolean removed = bindingIds.remove(bindingId);
 			if (!removed) {
 				LOGGER.warn("Service binding {} for service {} is in the Cloud Controller but is not known by the gateway", bindingId, serviceInstanceId);

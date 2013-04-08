@@ -9,7 +9,7 @@ import vcap.client.model.Service;
 import vcap.client.model.ServiceAuthToken;
 import vcap.client.model.ServicePlan;
 import vcap.component.http.SimpleHttpServer;
-import vcap.service.Gateway;
+import vcap.service.GatewayServer;
 
 import static org.testng.Assert.*;
 
@@ -68,7 +68,7 @@ public class FunctionalTest {
 			LOGGER.debug("Created service with guid: {}", serviceGuid);
 
 			final TestProvisioner provisioner = new TestProvisioner(serviceGuid);
-			new Gateway(server, provisioner, authToken);
+			new GatewayServer(server, provisioner, authToken);
 
 			try {
 				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid.toString(), true, null));

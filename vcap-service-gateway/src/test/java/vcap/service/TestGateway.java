@@ -63,7 +63,7 @@ public class TestGateway {
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {
-			new Gateway(server, new Provisioner() {
+			new GatewayServer(server, new Provisioner() {
 
 				private final AtomicInteger id = new AtomicInteger();
 
