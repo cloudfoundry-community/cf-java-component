@@ -1,16 +1,21 @@
-package vcap.service.integration;
+package vcap.client.model;
+
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class CreateAuthTokenRequest {
+public class ServiceAuthToken {
 
 
 	private final String label;
 	private final String provider;
 	private final String token;
 
-	public CreateAuthTokenRequest(String label, String provider, String token) {
+	public ServiceAuthToken(
+			@JsonProperty("label") String label,
+			@JsonProperty("provider") String provider,
+			@JsonProperty("token") String token) {
 		this.label = label;
 		this.provider = provider;
 		this.token = token;
