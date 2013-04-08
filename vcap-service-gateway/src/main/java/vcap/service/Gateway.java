@@ -35,7 +35,7 @@ public class Gateway {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
 	public static final String SERVICE_INSTANCE_ID = "service_id";
-	public static final String SERVICE_HANDLE_ID = "handle_id";
+	public static final String SERVICE_BINDING_ID = "binding_id";
 
 	public static final String VCAP_SERVICE_TOKEN_HEADER = "X-VCAP-Service-Token";
 
@@ -59,11 +59,11 @@ public class Gateway {
 				if (request.getMethod() == HttpMethod.POST) {
 					final BindRequest bindRequest = decode(BindRequest.class, body);
 					LOGGER.info("Binding service {} for instance {}", bindRequest.getLabel(), bindRequest.getServiceInstanceId());
-					final Binding binding = provisioner.bind(bindRequest);
-					final Map<String,Object> gatewayData = new HashMap<>(binding.getGatewayData());
-					gatewayData.put(SERVICE_INSTANCE_ID, binding.getInstanceId());
-					gatewayData.put(SERVICE_HANDLE_ID, binding.getBindingId());
-					final BindResponse bindResponse = new BindResponse(binding.getBindingId(), gatewayData, binding.getCredentials());
+					final ServiceBinding serviceBinding = provisioner.bind(bindRequest);
+					final Map<String,Object> gatewayData = new HashMap<>(serviceBinding.getGatewayData());
+					gatewayData.put(SERVICE_INSTANCE_ID, serviceBinding.getInstanceId());
+					gatewayData.put(SERVICE_BINDING_ID, serviceBinding.getBindingId());
+					final BindResponse bindResponse = new BindResponse(serviceBinding.getBindingId(), gatewayData, serviceBinding.getCredentials());
 					return encodeResponse(bindResponse);
 				}
 				// Unbind service

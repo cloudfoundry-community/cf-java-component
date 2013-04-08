@@ -3,11 +3,11 @@ package vcap.service;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class Binding extends ServiceInstance {
+public class ServiceBinding extends ServiceInstance {
 
 	private final String bindingId;
 
-	public Binding(String id, String bindingId) {
+	public ServiceBinding(String id, String bindingId) {
 		super(id);
 		this.bindingId = bindingId;
 	}

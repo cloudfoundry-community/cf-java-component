@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vcap.client.CfTokens;
 import vcap.client.CloudController;
-import vcap.client.Token;
 import vcap.client.model.Service;
 import vcap.client.model.ServiceAuthToken;
 import vcap.client.model.ServicePlan;
@@ -58,17 +57,18 @@ public class FunctionalTest {
 		final String servicePlanDescription = "Finest service... ever.";
 
 		final String authToken = "SsshhhThisIsASecret";
-		final TestProvisioner provisioner = new TestProvisioner();
 		final CloudController cloudControllerClient = new CloudController(new DefaultHttpClient(), target.getTarget());
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {
-			new Gateway(server, provisioner, authToken);
 
 			final UUID serviceGuid = cloudControllerClient.createService(target.getToken(), new Service(
 					label, provider, url, description, version, null, true, null
 			));
 			LOGGER.debug("Created service with guid: {}", serviceGuid);
+
+			final TestProvisioner provisioner = new TestProvisioner(serviceGuid);
+			new Gateway(server, provisioner, authToken);
 
 			try {
 				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid.toString(), true, null));

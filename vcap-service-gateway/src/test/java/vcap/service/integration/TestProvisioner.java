@@ -1,14 +1,12 @@
 package vcap.service.integration;
 
 import vcap.service.BindRequest;
-import vcap.service.BindResponse;
-import vcap.service.Binding;
+import vcap.service.ServiceBinding;
 import vcap.service.CreateRequest;
-import vcap.service.CreateResponse;
 import vcap.service.Provisioner;
 import vcap.service.ServiceInstance;
 
-import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,6 +20,17 @@ public class TestProvisioner implements Provisioner {
 
 	private volatile int lastCreateId;
 	private volatile int lastDeleteId;
+
+	private final UUID serviceGuid;
+
+	public TestProvisioner(UUID serviceGuid) {
+		this.serviceGuid = serviceGuid;
+	}
+
+	@Override
+	public UUID getServiceGuid() {
+		return null;
+	}
 
 	@Override
 	public ServiceInstance create(CreateRequest request) {
@@ -42,10 +51,10 @@ public class TestProvisioner implements Provisioner {
 	}
 
 	@Override
-	public Binding bind(BindRequest request) {
+	public ServiceBinding bind(BindRequest request) {
 		System.out.println("Binding a service!");
 		Integer id = bindInvocationCount.getAndIncrement();
-		return new Binding(request.getServiceInstanceId(), id.toString());
+		return new ServiceBinding(request.getServiceInstanceId(), id.toString());
 	}
 
 	@Override
@@ -54,21 +63,21 @@ public class TestProvisioner implements Provisioner {
 	}
 
 	@Override
-	public Iterable<String> services() {
+	public Iterable<String> serviceInstanceIds() {
 		return null;
 	}
 
 	@Override
-	public Iterable<String> handles(String instanceId) {
+	public Iterable<String> bindingIds(String instanceId) {
 		return null;
 	}
 
 	@Override
-	public void removeOrphanedBinding(String handleId) {
+	public void removeOrphanedBinding(String instanceId, String handleId) {
 	}
 
 	@Override
-	public void removeOrphanedService(String instanceId) {
+	public void removeOrphanedServiceInstance(String instanceId) {
 	}
 
 	public int getCreateInvocationCount() {

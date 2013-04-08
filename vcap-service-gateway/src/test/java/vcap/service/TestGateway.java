@@ -10,6 +10,7 @@ import vcap.component.http.SimpleHttpServer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -52,12 +53,24 @@ public class TestGateway {
 		final String authToken = "SsshhhThisIsASecret";
 		final CloudController cloudController = new CloudController(new DefaultHttpClient(), target.getTarget());
 
+			final UUID serviceGuid = UUID.randomUUID(); // We need to keep track of the services GUID.
+//			final String serviceGuid = cloudControllerClient.createService(new CreateServiceRequest(
+//					label, provider, url, description, version
+//			));
+//			LOGGER.debug("Created service with guid: {}", serviceGuid);
+//
+
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {
 			new Gateway(server, new Provisioner() {
 
 				private final AtomicInteger id = new AtomicInteger();
+
+				@Override
+				public UUID getServiceGuid() {
+					return serviceGuid;
+				}
 
 				@Override
 				public ServiceInstance create(CreateRequest request) {
@@ -75,14 +88,14 @@ public class TestGateway {
 				}
 
 				@Override
-				public Binding bind(BindRequest request) {
+				public ServiceBinding bind(BindRequest request) {
 					LOGGER.info("Binding service");
 
 					final Integer i = id.getAndIncrement();
-					final Binding binding = new Binding(request.getServiceInstanceId(), i.toString());
-					binding.addGatewayDataField("bindkey", "bind value");
-					binding.addCredential("binduser", "test");
-					return binding;
+					final ServiceBinding serviceBinding = new ServiceBinding(request.getServiceInstanceId(), i.toString());
+					serviceBinding.addGatewayDataField("bindkey", "bind value");
+					serviceBinding.addCredential("binduser", "test");
+					return serviceBinding;
 				}
 
 				@Override
@@ -90,21 +103,21 @@ public class TestGateway {
 				}
 
 				@Override
-				public Iterable<String> services() {
+				public Iterable<String> serviceInstanceIds() {
 					return null;
 				}
 
 				@Override
-				public Iterable<String> handles(String instanceId) {
+				public Iterable<String> bindingIds(String instanceId) {
 					return null;
 				}
 
 				@Override
-				public void removeOrphanedBinding(String bindingId) {
+				public void removeOrphanedBinding(String instanceId, String bindingId) {
 				}
 
 				@Override
-				public void removeOrphanedService(String instanceId) {
+				public void removeOrphanedServiceInstance(String instanceId) {
 				}
 			}, authToken);
 

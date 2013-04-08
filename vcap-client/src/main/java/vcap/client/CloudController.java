@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import vcap.client.model.Info;
 import vcap.client.model.Service;
 import vcap.client.model.ServiceAuthToken;
+import vcap.client.model.ServiceBinding;
+import vcap.client.model.ServiceInstance;
 import vcap.client.model.ServicePlan;
 
 import java.io.IOException;
@@ -32,15 +34,17 @@ import java.util.UUID;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-// TODO Add getter methods
 public class CloudController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CloudController.class);
 
+	private interface QueryAttribute {}
+
 	private static final String V2_SERVICES = "/v2/services";
+	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
+	private static final String V2_SERVICE_BINDINGS = "/v2/service_bindings";
 	private static final String V2_SERVICE_INSTANCES = "/v2/service_instances";
 	private static final String V2_SERVICE_PLANS = "/v2/service_plans";
-	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
 
 	private final HttpClient httpClient;
 	private final URI target;
@@ -102,13 +106,127 @@ public class CloudController {
 		}
 	}
 
-	// TODO Figure out how to add query parameters
 	public RestCollection<Service> getServices(Token token) {
-		final ResultIterator<Service> iterator = new ResultIterator<>(token, V2_SERVICES, Service.class);
+		return getServices(token ,null);
+	}
+
+	public enum ServiceQueryAttribute implements QueryAttribute {
+		SERVICE_PLAN_GUID {
+			@Override
+			public String toString() {
+				return "service_plan_guid";
+			}
+		}
+	}
+
+	public RestCollection<Service> getServices(Token token, UUID servicePlanGuid) {
+		final ResultIterator<Service> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICES,
+				Service.class,
+				servicePlanGuid == null ? null : ServiceQueryAttribute.SERVICE_PLAN_GUID,
+				servicePlanGuid == null ? null : servicePlanGuid.toString());
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 
+	public RestCollection<ServicePlan> getServicePlans(Token token) {
+		return getServicePlans(token, null, null);
+	}
 
+	public enum ServicePlanQueryAttribute implements QueryAttribute {
+		SERVICE_GUID {
+			@Override
+			public String toString() {
+				return "service_guid";
+			}
+		},
+		SERVICE_INSTANCE_GUID {
+			@Override
+			public String toString() {
+				return "service_instance_guid";
+			}
+		}
+	}
+
+	public RestCollection<ServicePlan> getServicePlans(Token token, ServicePlanQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<ServicePlan> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICE_PLANS,
+				ServicePlan.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	public RestCollection<ServiceInstance> getServiceInstances(Token token) {
+		return getServiceInstances(token, null, null);
+	}
+
+	public enum ServiceInstanceQueryAttribute implements QueryAttribute {
+		NAME {
+			@Override
+			public String toString() {
+				return "name";
+			}
+		},
+		SPACE_GUID {
+			@Override
+			public String toString() {
+				return "space_guid";
+			}
+		},
+		SERVICE_PLAN_GUID {
+			@Override
+			public String toString() {
+				return "service_plan_guid";
+			}
+		},
+		SERVICE_BINDING_GUID {
+			@Override
+			public String toString() {
+				return "service_binding_guid";
+			}
+		}
+	}
+
+	public RestCollection<ServiceInstance> getServiceInstances(Token token, ServiceInstanceQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<ServiceInstance> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICE_INSTANCES,
+				ServiceInstance.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	public RestCollection<ServiceBinding> getServiceBindings(Token token) {
+		return getServiceBindings(token, null, null);
+	}
+
+	public enum ServiceBindingQueryAttribute implements QueryAttribute {
+		APPLICATION_GUID {
+			@Override
+			public String toString() {
+				return "app_guid";
+			}
+		},
+		SERVICE_INSTANCE_GUID {
+			@Override
+			public String toString() {
+				return "service_instance_guid";
+			}
+		}
+	}
+
+	public RestCollection<ServiceBinding> getServiceBindings(Token token, ServiceBindingQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<ServiceBinding> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICE_BINDINGS,
+				ServiceBinding.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
 
 	private void validateResponse(HttpResponse response, int... expectedStatusCodes) {
 		final StatusLine statusLine = response.getStatusLine();
@@ -233,10 +351,13 @@ public class CloudController {
 		private String nextUri;
 		private Iterator<Resource<T>> iterator;
 
-		private ResultIterator(Token token, String uri, Class<T> type) {
+		private ResultIterator(Token token, String uri, Class<T> type, QueryAttribute queryAttribute, String queryValue) {
 			this.type = type;
 
 			this.token = token;
+			if (queryAttribute != null) {
+				uri += "?q=" + queryAttribute + ":" + queryValue;
+			}
 			final JsonNode jsonNode = fetchResource(uri);
 
 			size = jsonNode.get("total_results").asInt();
