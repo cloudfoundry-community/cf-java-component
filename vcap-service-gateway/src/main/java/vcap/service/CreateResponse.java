@@ -1,5 +1,6 @@
 package vcap.service;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonProperty;
 import vcap.common.JsonObject;
 
@@ -8,13 +9,13 @@ import vcap.common.JsonObject;
  */
 public class CreateResponse extends JsonObject {
 	private final String serviceInstanceId;
-	private final Object configuration; // TODO Figure out what this is used for, it shows up in CC REST services but nowhere else
-	private final Object credentials;
+	private final JsonNode configuration; // TODO Figure out what this is used for, it shows up in CC REST services but nowhere else
+	private final JsonNode credentials;
 
 	public CreateResponse(
 			@JsonProperty("service_id") String serviceInstanceId,
-			@JsonProperty("configuration") Object configuration,
-			@JsonProperty("credentials") Object credentials) {
+			@JsonProperty("configuration") JsonNode configuration,
+			@JsonProperty("credentials") JsonNode credentials) {
 		this.serviceInstanceId = serviceInstanceId;
 		this.configuration = configuration;
 		this.credentials = credentials;
@@ -25,11 +26,11 @@ public class CreateResponse extends JsonObject {
 		return serviceInstanceId;
 	}
 
-	public Object getConfiguration() {
+	public JsonNode getConfiguration() {
 		return configuration;
 	}
 
-	public Object getCredentials() {
+	public JsonNode getCredentials() {
 		return credentials;
 	}
 }
