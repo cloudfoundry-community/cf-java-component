@@ -9,7 +9,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -63,7 +62,7 @@ public class CloudController {
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
-	public CloudController(DefaultHttpClient httpClient, String uri) {
+	public CloudController(HttpClient httpClient, String uri) {
 		this(httpClient, URI.create(uri));
 	}
 
@@ -275,12 +274,13 @@ public class CloudController {
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-				resources.add(new Resource<T>(entity, guid, uri, created, updated));
+				resources.add(new Resource<>(entity, guid, uri, created, updated));
 			}
 			iterator = resources.iterator();
 		}
 
 		private JsonNode fetchResource(String uri) {
+			LOGGER.debug("Fetching next page using uri {}", uri);
 			try {
 				final HttpGet httpGet = new HttpGet(target.resolve(uri));
 				httpGet.setHeader(token.toAuthorizationHeader());
@@ -307,13 +307,8 @@ public class CloudController {
 
 		@Override
 		public boolean hasNext() {
-			if (iterator.hasNext()) {
-				return true;
-			}
-			if (!fetchNextPage()) {
-				return false;
-			}
-			return iterator.hasNext();
+			// Check if current iterator has an element, if not load the next page and check again.
+			return iterator.hasNext() || (fetchNextPage() && iterator.hasNext());
 		}
 
 		@Override
