@@ -43,7 +43,6 @@ public class CloudController {
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
 
 	private final HttpClient httpClient;
-
 	private final URI target;
 
 	private final ObjectMapper mapper;
@@ -84,7 +83,7 @@ public class CloudController {
 		}
 	}
 
-	public String createService(Token token, Service service) {
+	public UUID createService(Token token, Service service) {
 		try {
 			final String requestString = mapper.writeValueAsString(service);
 			final HttpPost post = new HttpPost(target.resolve(V2_SERVICES));
@@ -94,7 +93,7 @@ public class CloudController {
 			try {
 				validateResponse(response, 201);
 				final JsonNode json = mapper.readTree(response.getEntity().getContent());
-				return json.get("metadata").get("guid").asText();
+				return UUID.fromString(json.get("metadata").get("guid").asText());
 			} finally {
 				HttpClientUtils.closeQuietly(response);
 			}
@@ -122,28 +121,28 @@ public class CloudController {
 		throw new UnexpectedResponseException(response);
 	}
 
-	public void deleteService(Token token, String serviceGuid) {
+	public void deleteService(Token token, UUID serviceGuid) {
 		deleteUri(token, V2_SERVICES + "/" + serviceGuid);
 	}
 
-	public String createServicePlan(Token token, ServicePlan request) {
+	public UUID createServicePlan(Token token, ServicePlan request) {
 		return postJsonToUri(token, request, V2_SERVICE_PLANS);
 	}
 
-	public String createAuthToken(Token token, ServiceAuthToken request) {
+	public UUID createAuthToken(Token token, ServiceAuthToken request) {
 		return postJsonToUri(token, request, V2_SERVICE_AUTH_TOKENS);
 	}
 
-	public void deleteAuthToken(Token token, String authTokenGuid) {
+	public void deleteServiceAuthToken(Token token, UUID authTokenGuid) {
 		deleteUri(token, V2_SERVICE_AUTH_TOKENS + "/" + authTokenGuid);
 	}
 
-	public String createServiceInstance(Token token, String name, String planGuid, String spaceGuid) {
+	public UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid) {
 		try {
 			final ObjectNode json = mapper.createObjectNode();
 			json.put("name", name);
-			json.put("space_guid", spaceGuid);
-			json.put("service_plan_guid", planGuid);
+			json.put("service_plan_guid", planGuid.toString());
+			json.put("space_guid", spaceGuid.toString());
 			final HttpPost post = new HttpPost(target.resolve(V2_SERVICE_INSTANCES));
 			post.addHeader(token.toAuthorizationHeader());
 			post.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
@@ -151,7 +150,7 @@ public class CloudController {
 			try {
 				validateResponse(response, 201);
 				final JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
-				return jsonResponse.get("metadata").get("guid").asText();
+				return UUID.fromString(jsonResponse.get("metadata").get("guid").asText());
 			} finally {
 				HttpClientUtils.closeQuietly(response);
 			}
@@ -160,11 +159,11 @@ public class CloudController {
 		}
 	}
 
-	public void deleteServiceInstance(Token token, String instanceGuid) {
+	public void deleteServiceInstance(Token token, UUID instanceGuid) {
 		deleteUri(token, V2_SERVICE_INSTANCES + "/" + instanceGuid);
 	}
 
-	private String postJsonToUri(Token token, Object json, String uri) {
+	private UUID postJsonToUri(Token token, Object json, String uri) {
 		try {
 			final String requestString = mapper.writeValueAsString(json);
 			final HttpPost post = new HttpPost(target.resolve(uri));
@@ -174,7 +173,7 @@ public class CloudController {
 			try {
 				validateResponse(response, 201);
 				final JsonNode responseJson = mapper.readTree(response.getEntity().getContent());
-				return responseJson.get("metadata").get("guid").asText();
+				return UUID.fromString(responseJson.get("metadata").get("guid").asText());
 			} finally {
 				HttpClientUtils.closeQuietly(response);
 			}
