@@ -1,18 +1,15 @@
 package vcap.service;
 
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vcap.client.CfTokens;
+import vcap.client.CloudController;
 import vcap.component.http.SimpleHttpServer;
-import vcap.service.integration.CfUtil;
-import vcap.service.integration.CloudControllerClient;
-import vcap.service.integration.CreateAuthTokenRequest;
-import vcap.service.integration.CreateServicePlanRequest;
-import vcap.service.integration.CreateServiceRequest;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -23,7 +20,8 @@ public class TestGateway {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestGateway.class);
 
 	public static void main(String[] args) throws Exception {
-		final CfUtil.HostToken target = CfUtil.getTargetToken();
+		final CfTokens cfTokens = new CfTokens();
+		final CfTokens.CfToken target = cfTokens.getTargetToken();
 
 		if (target == null) {
 			System.err.println("It appears you haven't logged into a Cloud Foundry instance with cf.");
@@ -38,13 +36,13 @@ public class TestGateway {
 			return;
 		}
 
-		LOGGER.info("Using Cloud Controller at: {}", target.getHost());
+		LOGGER.info("Using Cloud Controller at: {}", target.getTarget());
 
 		final int serverPort = 8000;
 
 		final String label = "testgateway";
 		final String provider = "Mike Heath";
-		final String url = "http://" + localIp(target.getHost()) + ":" + serverPort;
+		final String url = "http://" + localIp(target.getTarget()) + ":" + serverPort;
 		final String description = "A service used for testing the service framework.";
 		final String version = "0.1";
 
@@ -52,7 +50,7 @@ public class TestGateway {
 		final String servicePlanDescription = "Finest service... ever.";
 
 		final String authToken = "SsshhhThisIsASecret";
-		final CloudControllerClient cloudControllerClient = new CloudControllerClient(target.getHost(), target.getToken());
+		final CloudController cloudController = new CloudController(new DefaultHttpClient(), target.getTarget());
 
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
