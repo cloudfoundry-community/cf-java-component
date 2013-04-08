@@ -10,8 +10,10 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vcap.common.JsonObject;
@@ -90,9 +92,14 @@ public class Gateway {
 							createRequest.getSpaceGuid(),
 							createRequest.getOrganizationGuid()});
 					final ServiceInstance serviceInstance = provisioner.create(createRequest);
-					final Map<String, Object> gatewayData = new HashMap<>(serviceInstance.getGatewayData());
+					final ObjectNode gatewayData = mapper.createObjectNode();
+					putAll(gatewayData, serviceInstance.getGatewayData());
 					gatewayData.put(SERVICE_INSTANCE_ID, serviceInstance.getInstanceId());
-					final CreateResponse createResponse = new CreateResponse(serviceInstance.getInstanceId(), gatewayData, serviceInstance.getCredentials());
+
+					final ObjectNode credentials = mapper.createObjectNode();
+					putAll(credentials, serviceInstance.getCredentials());
+
+					final CreateResponse createResponse = new CreateResponse(serviceInstance.getInstanceId(), gatewayData, credentials);
 					return encodeResponse(createResponse);
 				}
 				// Delete service
@@ -108,6 +115,18 @@ public class Gateway {
 				throw new RequestException(HttpResponseStatus.METHOD_NOT_ALLOWED);
 			}
 		});
+	}
+
+	private void putAll(ObjectNode object, Map<String,Object> map) {
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			final JsonNode value;
+			if (entry.getValue() instanceof JsonNode) {
+				value = (JsonNode) entry.getValue();
+			} else {
+				value = mapper.valueToTree(entry.getValue());
+			}
+			object.put(entry.getKey(), value);
+		}
 	}
 
 	private void validateAuthToken(HttpRequest request) throws RequestException {
