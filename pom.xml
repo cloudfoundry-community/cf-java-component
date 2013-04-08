@@ -68,6 +68,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.mheath</groupId>
+				<artifactId>vcap-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.mheath</groupId>
 				<artifactId>nats-vcap</artifactId>
 				<version>${project.version}</version>
 			</dependency>
