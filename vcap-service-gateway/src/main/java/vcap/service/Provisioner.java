@@ -12,6 +12,7 @@ public interface Provisioner {
 	 *
 	 * @return the guid for the service being provisioned by this class.
 	 */
+	// TODO Move this. Provisioner shouldn't be responsible for tracking service UUID.
 	UUID getServiceGuid();
 
 	/**
