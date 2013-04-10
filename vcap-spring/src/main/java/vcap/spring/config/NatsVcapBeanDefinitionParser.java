@@ -1,4 +1,4 @@
-package vcap.nats.spring.config;
+package vcap.spring.config;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
-import vcap.nats.spring.NatsVcapFactoryBean;
-import vcap.nats.spring.VcapSubscriptionConfig;
+import vcap.spring.NatsVcapFactoryBean;
+import vcap.spring.VcapSubscriptionConfig;
 
 import java.util.List;
 

@@ -16,9 +16,11 @@
  */
 package nats.vcap.message;
 
+import nats.vcap.JsonMessageBody;
 import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import vcap.common.JsonObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +31,7 @@ import java.util.List;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.start")
-public class RouterStart extends AbstractJsonMessageBody<Void> {
+public class RouterStart extends JsonObject implements JsonMessageBody<Void> {
 	private final String id;
 	private final String version;
 	private final List<String> hosts;

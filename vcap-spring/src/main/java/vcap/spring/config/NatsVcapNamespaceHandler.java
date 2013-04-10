@@ -1,4 +1,4 @@
-package vcap.nats.spring.config;
+package vcap.spring.config;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

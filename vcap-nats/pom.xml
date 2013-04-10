@@ -11,7 +11,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>nats-vcap</artifactId>
+	<artifactId>vcap-nats</artifactId>
 
 	<name>Java NATS VCAP support</name>
 	<description>An abstraction for working with NATS on VCAP (Cloud Foundry).</description>
@@ -33,6 +33,10 @@
 		<dependency>
 			<groupId>com.github.mheath</groupId>
 			<artifactId>nats-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.mheath</groupId>
+			<artifactId>vcap-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>

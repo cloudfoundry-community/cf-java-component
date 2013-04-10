@@ -35,12 +35,12 @@
 	</properties>
 
 	<modules>
-		<module>nats-vcap</module>
-		<module>nats-vcap-spring</module>
-		<module>vcap-component</module>
-		<module>vcap-service-gateway</module>
 		<module>vcap-common</module>
 		<module>vcap-client</module>
+		<module>vcap-nats</module>
+		<module>vcap-component</module>
+		<module>vcap-service-gateway</module>
+		<module>vcap-spring</module>
 	</modules>
 
 	<build>
@@ -73,7 +73,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.mheath</groupId>
-				<artifactId>nats-vcap</artifactId>
+				<artifactId>vcap-nats</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

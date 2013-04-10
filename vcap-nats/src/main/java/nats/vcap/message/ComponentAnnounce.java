@@ -16,8 +16,10 @@
  */
 package nats.vcap.message;
 
+import nats.vcap.JsonMessageBody;
 import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
+import vcap.common.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.List;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.announce")
-public class ComponentAnnounce extends AbstractJsonMessageBody<Void> {
+public class ComponentAnnounce extends JsonObject implements JsonMessageBody<Void> {
 
 	public static final String TYPE_CLOUD_CONTROLLER = "CloudController";
 	public static final String TYPE_DEA = "DEA";

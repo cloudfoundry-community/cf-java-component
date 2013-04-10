@@ -14,33 +14,19 @@
  *   limitations under the License.
  *
  */
-package vcap.nats.spring;
+package nats.vcap.message;
+
+import nats.vcap.MessageBody;
+import nats.vcap.NatsSubject;
+import vcap.common.JsonObject;
 
 /**
+ * A request for components to announce themselves.
+ *
+ * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class VcapSubscriptionConfig {
-
-	private final Object bean;
-	private final String methodName;
-	private final String queueGroup;
-
-	public VcapSubscriptionConfig(Object bean, String methodName, String queueGroup) {
-		this.bean = bean;
-		this.methodName = methodName;
-		this.queueGroup = queueGroup;
-	}
-
-	public Object getBean() {
-		return bean;
-	}
-
-	public String getMethodName() {
-		return methodName;
-	}
-
-	public String getQueueGroup() {
-		return queueGroup;
-	}
-
+@NatsSubject("vcap.component.discover")
+public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
 }

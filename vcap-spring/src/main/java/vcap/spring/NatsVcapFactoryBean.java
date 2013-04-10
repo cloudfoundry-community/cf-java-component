@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package vcap.nats.spring;
+package vcap.spring;
 
 import nats.NatsException;
 import nats.client.Nats;
@@ -24,6 +24,7 @@ import nats.vcap.VcapPublication;
 import nats.vcap.VcapPublicationHandler;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import vcap.spring.VcapSubscriptionConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

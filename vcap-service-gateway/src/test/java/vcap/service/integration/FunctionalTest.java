@@ -67,7 +67,7 @@ public class FunctionalTest {
 			));
 			LOGGER.debug("Created service with guid: {}", serviceGuid);
 
-			final TestProvisioner provisioner = new TestProvisioner(serviceGuid);
+			final TestProvisioner provisioner = new TestProvisioner();
 			new GatewayServer(server, provisioner, authToken);
 
 			try {

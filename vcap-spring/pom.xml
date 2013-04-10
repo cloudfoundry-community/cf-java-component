@@ -11,28 +11,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>nats-vcap-spring</artifactId>
+	<artifactId>vcap-spring</artifactId>
 
-	<name>Java NATS VCAP Spring Integration</name>
-	<description>Spring integration for working with VCAP (Cloud Foundry).</description>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<name>VCAP Spring</name>
+	<description>Spring support for building VCAP (Cloud Foundry) components.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.github.mheath</groupId>
-			<artifactId>nats-vcap</artifactId>
+			<artifactId>vcap-nats</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mheath</groupId>
