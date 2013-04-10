@@ -21,17 +21,6 @@ public class TestProvisioner implements Provisioner {
 	private volatile int lastCreateId;
 	private volatile int lastDeleteId;
 
-	private final UUID serviceGuid;
-
-	public TestProvisioner(UUID serviceGuid) {
-		this.serviceGuid = serviceGuid;
-	}
-
-	@Override
-	public UUID getServiceGuid() {
-		return null;
-	}
-
 	@Override
 	public ServiceInstance create(CreateRequest request) {
 		System.out.println("Let's create a service!");

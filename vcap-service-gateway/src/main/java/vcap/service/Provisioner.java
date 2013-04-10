@@ -8,14 +8,6 @@ import java.util.UUID;
 public interface Provisioner {
 
 	/**
-	 * Returns the guid for the service being provisioned by this class.
-	 *
-	 * @return the guid for the service being provisioned by this class.
-	 */
-	// TODO Move this. Provisioner shouldn't be responsible for tracking service UUID.
-	UUID getServiceGuid();
-
-	/**
 	 * When the user types 'cf create-service ...' this method will get called.
 	 *
 	 * @param request the create request sent by the Cloud Controller

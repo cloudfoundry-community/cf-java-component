@@ -68,11 +68,6 @@ public class TestGateway {
 				private final AtomicInteger id = new AtomicInteger();
 
 				@Override
-				public UUID getServiceGuid() {
-					return serviceGuid;
-				}
-
-				@Override
 				public ServiceInstance create(CreateRequest request) {
 					LOGGER.info("Creating service");
 

@@ -13,6 +13,7 @@ import vcap.client.model.ServiceInstance;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -25,11 +26,14 @@ public class ServiceGarbageCollector {
 
 	public static final long COLLECTION_RATE = TimeUnit.HOURS.toMillis(1);
 
+	private final UUID serviceGuid;
 	private final CloudController cloudController;
 	private final Token token;
 	private final Provisioner provisioner;
 
-	public ServiceGarbageCollector(ScheduledExecutorService executorService, CloudController cloudController, Token token, Provisioner provisioner) {
+
+	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, Token token, Provisioner provisioner) {
+		this.serviceGuid = serviceGuid;
 		this.cloudController = cloudController;
 		this.token = token;
 		this.provisioner = provisioner;
@@ -57,7 +61,7 @@ public class ServiceGarbageCollector {
 		final RestCollection<ServicePlan> servicePlans = cloudController.getServicePlans(
 				token,
 				CloudController.ServicePlanQueryAttribute.SERVICE_GUID,
-				provisioner.getServiceGuid().toString());
+				serviceGuid.toString());
 		for (Resource<ServicePlan> servicePlan : servicePlans) {
 			LOGGER.debug("Loading service instances under service plan '{}'", servicePlan.getEntity().getName());
 			final RestCollection<ServiceInstance> serviceInstances = cloudController.getServiceInstances(
