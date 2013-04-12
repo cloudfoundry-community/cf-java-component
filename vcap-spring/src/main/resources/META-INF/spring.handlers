@@ -1,2 +1,2 @@
-http\://mheath.github.com/nats-vcap-spring/schema/spring/nats-vcap=vcap.spring.config.NatsVcapNamespaceHandler
+http\://mheath.github.com/nats-vcap-spring/schema/spring/nats-vcap=vcap.spring.config.xml.VcapNamespaceHandler
 

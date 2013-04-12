@@ -34,7 +34,7 @@ import java.util.Map;
 public class RouterRegister extends JsonObject implements JsonMessageBody<Void> {
 	private final String host;
 	private final Integer port;
-	private final Integer app;
+	private final String app;
 	private final String dea;
 	private final List<String> uris;
 	private final Map<String, String> tags;
@@ -42,7 +42,7 @@ public class RouterRegister extends JsonObject implements JsonMessageBody<Void> 
 	public RouterRegister(
 			@JsonProperty("host") String host,
 			@JsonProperty("port") Integer port,
-			@JsonProperty("app") Integer app,
+			@JsonProperty("app") String app,
 			@JsonProperty("dea") String dea,
 			@JsonProperty("uris") List<String> uris,
 			@JsonProperty("tags") Map<String, String> tags) {
@@ -54,7 +54,7 @@ public class RouterRegister extends JsonObject implements JsonMessageBody<Void> 
 		this.tags = Collections.unmodifiableMap(new HashMap<>(tags));
 	}
 
-	public Integer getApp() {
+	public String getApp() {
 		return app;
 	}
 

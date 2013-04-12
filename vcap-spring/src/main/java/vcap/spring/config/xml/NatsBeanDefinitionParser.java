@@ -1,4 +1,4 @@
-package vcap.spring.config;
+package vcap.spring.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author Mike Heath <heathma@ldschurch.org>
  */
-public class NatsVcapBeanDefinitionParser implements BeanDefinitionParser {
+public class NatsBeanDefinitionParser implements BeanDefinitionParser {
 	static final String ATTRIBUTE_ID = "id";
 	static final String ATTRIBUTE_NATS_REF = "nats-ref";
 
