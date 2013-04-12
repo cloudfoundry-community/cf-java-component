@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.mheath</groupId>
-			<artifactId>nats-vcap</artifactId>
+			<artifactId>vcap-nats</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
