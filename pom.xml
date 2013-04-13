@@ -29,7 +29,7 @@
 		<netty.version>4.0.0.CR1</netty.version>
 		<slf4j.version>1.6.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
-		<spring.version>3.1.1.RELEASE</spring.version>
+		<spring.version>3.2.2.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
 		<spring.framework.version>${spring.version}</spring.framework.version>
 	</properties>
