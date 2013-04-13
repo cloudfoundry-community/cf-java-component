@@ -17,14 +17,22 @@
 	<description>Spring support for building VCAP (Cloud Foundry) components.</description>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.github.mheath</groupId>
 			<artifactId>vcap-nats</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.mheath</groupId>
 			<artifactId>nats-client-spring</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
