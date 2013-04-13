@@ -9,5 +9,6 @@ public class VcapNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		registerBeanDefinitionParser("nats", new NatsBeanDefinitionParser());
+		registerBeanDefinitionParser("yaml-properties", new YamlPropertiesBeanDefinitionParser());
 	}
 }
