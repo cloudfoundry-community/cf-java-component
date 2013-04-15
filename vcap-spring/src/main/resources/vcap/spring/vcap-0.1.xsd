@@ -15,6 +15,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="subscription" minOccurs="0" maxOccurs="unbounded" type="subscription" />
+				<xsd:element name="router-register" minOccurs="0" maxOccurs="unbounded" type="routerRegister" />
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" default="natsVcap" />
 			<xsd:attribute name="nats-ref" default="nats" />
@@ -33,4 +34,11 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="routerRegister">
+		<xsd:sequence>
+			<xsd:element name="uri" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="host" type="xsd:string" use="required" />
+		<xsd:attribute name="port" type="xsd:string" use="required" />
+	</xsd:complexType>
 </xsd:schema>

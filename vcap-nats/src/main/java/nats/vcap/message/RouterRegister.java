@@ -17,6 +17,7 @@
 package nats.vcap.message;
 
 import nats.vcap.JsonMessageBody;
+import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
 import vcap.common.JsonObject;
 
@@ -31,6 +32,7 @@ import java.util.Map;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
+@NatsSubject("router.register")
 public class RouterRegister extends JsonObject implements JsonMessageBody<Void> {
 	private final String host;
 	private final Integer port;
@@ -51,7 +53,7 @@ public class RouterRegister extends JsonObject implements JsonMessageBody<Void> 
 		this.app = app;
 		this.dea = dea;
 		this.uris = Collections.unmodifiableList(new ArrayList<>(uris));
-		this.tags = Collections.unmodifiableMap(new HashMap<>(tags));
+		this.tags = tags == null ? null : Collections.unmodifiableMap(new HashMap<>(tags));
 	}
 
 	public String getApp() {

@@ -24,6 +24,7 @@ import nats.client.Subscription;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +43,7 @@ public class NatsVcap {
 		// Configure the Jackson JSON mapper
 		mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 	}
 
 	public void publish(MessageBody message) {
