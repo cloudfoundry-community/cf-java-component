@@ -7,7 +7,7 @@
 
 	<xsd:element name="yaml-properties">
 		<xsd:complexType>
-			<xsd:attribute name="resource" type="xsd:string" />
+			<xsd:attribute name="resource" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
 
@@ -26,5 +26,11 @@
 		<xsd:attribute name="method" type="xsd:string" use="required" />
 		<xsd:attribute name="queue-group" type="xsd:string" use="optional" />
 	</xsd:complexType>
+
+	<xsd:element name="pid-file">
+		<xsd:complexType>
+			<xsd:attribute name="file" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
 
 </xsd:schema>

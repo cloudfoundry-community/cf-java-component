@@ -29,6 +29,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.github.mheath</groupId>
+			<artifactId>vcap-component</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 		</dependency>
