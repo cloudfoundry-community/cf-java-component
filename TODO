@@ -1,12 +1,9 @@
 - Add support for annotated vcap NATS subscriptions with Spring - make existing NATS Spring annotation extensible so we only need one annotation config.
 - Modify NATS Spring client to send Spring event when connect, disconnect, connect fail
-- Move all Spring integration into single module
 
-- Create a light weight Cloud Controller client library
+- Write tests for YAML property integration
 
 - Service Gateway
- - Garbage collector
- - Ask about bind_options and configuration parameters that don't appear to be used
  - Functional test
    - Deploy a test app bound to the service
    - Make sure the test app has the service we expect it to have
