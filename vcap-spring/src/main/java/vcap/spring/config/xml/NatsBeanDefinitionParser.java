@@ -86,6 +86,7 @@ public class NatsBeanDefinitionParser implements BeanDefinitionParser {
 			routerRegistrationBuilder.addConstructorArgValue(uris);
 
 			final AbstractBeanDefinition routerRegistrationBuilderBeanDefinition = routerRegistrationBuilder.getBeanDefinition();
+			routerRegistrationBuilderBeanDefinition.setLazyInit(false);
 			final String routerRegistrationName = parserContext.getReaderContext().generateBeanName(routerRegistrationBuilderBeanDefinition);
 			parserContext.getRegistry().registerBeanDefinition(routerRegistrationName, routerRegistrationBuilderBeanDefinition);
 		}
