@@ -24,8 +24,10 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 public class VcapNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
+		registerBeanDefinitionParser("client-token", new ClientTokenBeanDefinitionParser());
 		registerBeanDefinitionParser("pid-file", new PidFileBeanDefinitionParser());
 		registerBeanDefinitionParser("nats", new NatsBeanDefinitionParser());
+		registerBeanDefinitionParser("service-gateway", new ServiceGatewayBeanDefinitionParser());
 		registerBeanDefinitionParser("yaml-properties", new YamlPropertiesBeanDefinitionParser());
 	}
 }
