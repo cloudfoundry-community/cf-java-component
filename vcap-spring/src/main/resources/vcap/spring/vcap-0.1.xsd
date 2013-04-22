@@ -11,6 +11,13 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="netty-event-loop-group">
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="required" />
+			<xsd:attribute name="thread-count" type="xsd:string" use="optional" />
+		</xsd:complexType>
+	</xsd:element>
+
 	<xsd:element name="nats">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -25,6 +32,16 @@
 	<xsd:element name="pid-file">
 		<xsd:complexType>
 			<xsd:attribute name="file" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="http-server">
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="required" />
+			<xsd:attribute name="host" type="xsd:string" default="0.0.0.0" />
+			<xsd:attribute name="port" type="xsd:string" use="required" />
+			<xsd:attribute name="parent-netty-event-loop-ref" type="xsd:string" use="optional" />
+			<xsd:attribute name="child-netty-event-loop-ref" type="xsd:string" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 
@@ -47,7 +64,7 @@
 
 	<xsd:element name="service-gateway">
 		<xsd:complexType>
-			<xsd:choice minOccurs="1">
+			<xsd:choice minOccurs="1" maxOccurs="1">
 				<xsd:element name="configuration">
 					<xsd:complexType>
 						<xsd:attribute name="service-guid" type="xsd:string" use="required" />
@@ -70,13 +87,12 @@
 						<xsd:attribute name="description" type="xsd:string" use="required" />
 						<xsd:attribute name="version" type="xsd:string" use="required" />
 						<xsd:attribute name="info-url" type="xsd:string" use="required" />
-						<xsd:attribute name="persisted-config-path" type="xsd:string" use="required" />
-						<xsd:attribute name="simple-http-server-ref" type="xsd:string" use="required" />
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:choice>
 			<xsd:attribute name="provisioner-ref" type="xsd:string" use="required" />
 			<xsd:attribute name="cloud-controller-client-ref" type="xsd:string" default="cloudControllerClient" />
+			<xsd:attribute name="simple-http-server-ref" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
 

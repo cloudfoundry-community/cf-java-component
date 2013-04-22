@@ -25,8 +25,11 @@ public class VcapNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		registerBeanDefinitionParser("client-token", new ClientTokenBeanDefinitionParser());
+		registerBeanDefinitionParser("cloud-controller-client", new CloudControllerClientBeanDefinitionParser());
+		registerBeanDefinitionParser("http-server", new HttpServerBeanDefinitionParser());
 		registerBeanDefinitionParser("pid-file", new PidFileBeanDefinitionParser());
 		registerBeanDefinitionParser("nats", new NatsBeanDefinitionParser());
+		registerBeanDefinitionParser("netty-event-loop-group", new NettyEventLoopGroupBeanDefinitionParser());
 		registerBeanDefinitionParser("service-gateway", new ServiceGatewayBeanDefinitionParser());
 		registerBeanDefinitionParser("yaml-properties", new YamlPropertiesBeanDefinitionParser());
 	}
