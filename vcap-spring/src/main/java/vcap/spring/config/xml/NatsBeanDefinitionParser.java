@@ -25,7 +25,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import vcap.spring.NatsVcapFactoryBean;
-import vcap.spring.RouterRegisterHandlerFactory;
+import vcap.spring.RouterRegisterHandlerFactoryBean;
 import vcap.spring.VcapSubscriptionConfig;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public class NatsBeanDefinitionParser implements BeanDefinitionParser {
 			}
 
 			// Register RouterRegistrationHandler
-			final BeanDefinitionBuilder routerRegistrationBuilder = BeanDefinitionBuilder.genericBeanDefinition(RouterRegisterHandlerFactory.class);
+			final BeanDefinitionBuilder routerRegistrationBuilder = BeanDefinitionBuilder.genericBeanDefinition(RouterRegisterHandlerFactoryBean.class);
 			routerRegistrationBuilder.addConstructorArgReference(id);
 			routerRegistrationBuilder.addConstructorArgValue(host);
 			routerRegistrationBuilder.addConstructorArgValue(port);
