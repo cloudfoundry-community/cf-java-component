@@ -107,4 +107,9 @@ public class Token {
 		return new BasicHeader("Authorization", toAuthorizationString());
 	}
 
+	public boolean hasExpired() {
+		return expiration != null && expiration.before(new Date(System.currentTimeMillis()));
+	}
+
+
 }
