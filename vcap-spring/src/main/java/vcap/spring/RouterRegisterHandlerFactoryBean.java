@@ -26,11 +26,11 @@ import java.util.List;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class RouterRegisterHandlerFactory implements DisposableBean, FactoryBean<RouterRegisterHandler> {
+public class RouterRegisterHandlerFactoryBean implements DisposableBean, FactoryBean<RouterRegisterHandler> {
 
 	private final RouterRegisterHandler routerRegisterHandler;
 
-	public RouterRegisterHandlerFactory(NatsVcap natsVcap, String host, Integer port, List<String> uris) {
+	public RouterRegisterHandlerFactoryBean(NatsVcap natsVcap, String host, Integer port, List<String> uris) {
 		routerRegisterHandler = new RouterRegisterHandler(natsVcap, host, port, uris);
 	}
 
