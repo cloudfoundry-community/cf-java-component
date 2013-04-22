@@ -247,6 +247,16 @@ public class CloudController {
 		return postJsonToUri(token, request, V2_SERVICE_PLANS);
 	}
 
+	public RestCollection<ServiceAuthToken> getAuthTokens(Token token) {
+		final ResultIterator<ServiceAuthToken> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICE_AUTH_TOKENS,
+				ServiceAuthToken.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
 	public UUID createAuthToken(Token token, ServiceAuthToken request) {
 		return postJsonToUri(token, request, V2_SERVICE_AUTH_TOKENS);
 	}
