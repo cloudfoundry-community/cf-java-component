@@ -31,7 +31,6 @@ public class ServiceGarbageCollector {
 	private final Token token;
 	private final Provisioner provisioner;
 
-
 	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, Token token, Provisioner provisioner) {
 		this.serviceGuid = serviceGuid;
 		this.cloudController = cloudController;
