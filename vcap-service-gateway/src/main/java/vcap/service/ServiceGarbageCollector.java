@@ -11,6 +11,7 @@ import vcap.client.model.*;
 import vcap.client.model.ServiceBinding;
 import vcap.client.model.ServiceInstance;
 
+import javax.inject.Provider;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -28,10 +29,10 @@ public class ServiceGarbageCollector {
 
 	private final UUID serviceGuid;
 	private final CloudController cloudController;
-	private final Token token;
+	private final Provider<Token> token;
 	private final Provisioner provisioner;
 
-	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, Token token, Provisioner provisioner) {
+	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, Provider<Token> token, Provisioner provisioner) {
 		this.serviceGuid = serviceGuid;
 		this.cloudController = cloudController;
 		this.token = token;
@@ -58,13 +59,13 @@ public class ServiceGarbageCollector {
 
 		// Iterate over all service instances and remove ids known by Cloud Controller
 		final RestCollection<ServicePlan> servicePlans = cloudController.getServicePlans(
-				token,
+				token.get(),
 				CloudController.ServicePlanQueryAttribute.SERVICE_GUID,
 				serviceGuid.toString());
 		for (Resource<ServicePlan> servicePlan : servicePlans) {
 			LOGGER.debug("Loading service instances under service plan '{}'", servicePlan.getEntity().getName());
 			final RestCollection<ServiceInstance> serviceInstances = cloudController.getServiceInstances(
-					token,
+					token.get(),
 					CloudController.ServiceInstanceQueryAttribute.SERVICE_PLAN_GUID,
 					servicePlan.getGuid().toString());
 			for (Resource<ServiceInstance> serviceInstance : serviceInstances) {
@@ -105,7 +106,7 @@ public class ServiceGarbageCollector {
 			bindingIds.add(bindingId);
 		}
 		final RestCollection<ServiceBinding> serviceBindings = cloudController.getServiceBindings(
-				token,
+				token.get(),
 				CloudController.ServiceBindingQueryAttribute.SERVICE_INSTANCE_GUID,
 				serviceInstance.getGuid().toString()
 		);

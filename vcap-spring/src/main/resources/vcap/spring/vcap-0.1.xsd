@@ -68,7 +68,6 @@
 				<xsd:element name="configuration">
 					<xsd:complexType>
 						<xsd:attribute name="service-guid" type="xsd:string" use="required" />
-						<xsd:attribute name="auth-token" type="xsd:string" use="required" />
 					</xsd:complexType>
 				</xsd:element>
 				<xsd:element name="bootstrap">
@@ -92,7 +91,9 @@
 			</xsd:choice>
 			<xsd:attribute name="provisioner-ref" type="xsd:string" use="required" />
 			<xsd:attribute name="cloud-controller-client-ref" type="xsd:string" default="cloudControllerClient" />
-			<xsd:attribute name="simple-http-server-ref" type="xsd:string" use="required" />
+			<xsd:attribute name="client-token-ref" type="xsd:string" default="clientToken" />
+			<xsd:attribute name="http-server-ref" type="xsd:string" use="required" />
+			<xsd:attribute name="auth-token" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
 
