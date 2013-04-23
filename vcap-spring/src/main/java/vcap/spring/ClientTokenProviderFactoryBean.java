@@ -3,6 +3,7 @@ package vcap.spring;
 import org.springframework.beans.factory.FactoryBean;
 import vcap.client.CloudController;
 import vcap.client.Token;
+import vcap.client.TokenProvider;
 import vcap.client.Uaa;
 
 /**
@@ -11,22 +12,22 @@ import vcap.client.Uaa;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class ClientTokenFactoryBean implements FactoryBean<Token> {
+public class ClientTokenProviderFactoryBean implements FactoryBean<TokenProvider> {
 
 	private final CloudController cloudController;
 	private final String client;
 	private final String clientSecret;
 
+	private final TokenProvider tokenProvider = new TokenProvider() {
+		@Override
+		public Token get() {
+			return fetchToken();
+		}
+	};
+
 	private Token token;
 
-	public ClientTokenFactoryBean(CloudController cloudController, String client, String clientSecret) {
-		this.cloudController = cloudController;
-		this.client = client;
-		this.clientSecret = clientSecret;
-	}
-
-	@Override
-	public Token getObject() throws Exception {
+	private Token fetchToken() {
 		synchronized (this) {
 			if (token == null || token.hasExpired()) {
 				final Uaa uaa = cloudController.getUaa();
@@ -36,15 +37,25 @@ public class ClientTokenFactoryBean implements FactoryBean<Token> {
 		}
 	}
 
+	public ClientTokenProviderFactoryBean(CloudController cloudController, String client, String clientSecret) {
+		this.cloudController = cloudController;
+		this.client = client;
+		this.clientSecret = clientSecret;
+	}
+
+	@Override
+	public TokenProvider getObject() throws Exception {
+		return tokenProvider;
+	}
+
 	@Override
 	public Class<?> getObjectType() {
-		synchronized (this) {
-			return token == null ? Token.class : token.getClass();
-		}
+		return TokenProvider.class;
 	}
 
 	@Override
 	public boolean isSingleton() {
-		return false;
+		return true;
 	}
+
 }

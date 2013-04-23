@@ -6,6 +6,7 @@ import vcap.client.CloudController;
 import vcap.client.Resource;
 import vcap.client.RestCollection;
 import vcap.client.Token;
+import vcap.client.TokenProvider;
 import vcap.client.model.Service;
 import vcap.client.model.ServiceAuthToken;
 import vcap.client.model.ServicePlan;
@@ -22,9 +23,9 @@ public class Bootstrap {
 	private final CloudController cloudController;
 	private final Token clientToken;
 
-	public Bootstrap(CloudController cloudController, Token clientToken) {
+	public Bootstrap(CloudController cloudController, TokenProvider clientToken) {
 		this.cloudController = cloudController;
-		this.clientToken = clientToken;
+		this.clientToken = clientToken.get();
 	}
 
 	/**

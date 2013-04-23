@@ -6,12 +6,11 @@ import org.slf4j.LoggerFactory;
 import vcap.client.CloudController;
 import vcap.client.Resource;
 import vcap.client.RestCollection;
-import vcap.client.Token;
-import vcap.client.model.*;
+import vcap.client.TokenProvider;
 import vcap.client.model.ServiceBinding;
 import vcap.client.model.ServiceInstance;
+import vcap.client.model.ServicePlan;
 
-import javax.inject.Provider;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -29,10 +28,10 @@ public class ServiceGarbageCollector {
 
 	private final UUID serviceGuid;
 	private final CloudController cloudController;
-	private final Provider<Token> token;
+	private final TokenProvider token;
 	private final Provisioner provisioner;
 
-	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, Provider<Token> token, Provisioner provisioner) {
+	public ServiceGarbageCollector(ScheduledExecutorService executorService, UUID serviceGuid, CloudController cloudController, TokenProvider token, Provisioner provisioner) {
 		this.serviceGuid = serviceGuid;
 		this.cloudController = cloudController;
 		this.token = token;

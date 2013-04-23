@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * Holds an Oauth2 token from UAA.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
 public class Token {

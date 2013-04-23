@@ -2,7 +2,7 @@ package vcap.spring;
 
 import org.springframework.beans.factory.FactoryBean;
 import vcap.client.CloudController;
-import vcap.client.Token;
+import vcap.client.TokenProvider;
 import vcap.service.Bootstrap;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	}
 
 	private final CloudController cloudController;
-	private final Token clientToken;
+	private final TokenProvider clientToken;
 	private final String label;
 	private final String provider;
 	private final String version;
@@ -34,7 +34,7 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	private final String authToken;
 	private final List<ServicePlan> servicePlans;
 
-	public BootstrappingServiceGuidProvider(CloudController cloudController, Token clientToken, String label, String provider, String version, String url, String description, String infoUrl, String authToken, List<ServicePlan> servicePlans) {
+	public BootstrappingServiceGuidProvider(CloudController cloudController, TokenProvider clientToken, String label, String provider, String version, String url, String description, String infoUrl, String authToken, List<ServicePlan> servicePlans) {
 		this.cloudController = cloudController;
 		this.clientToken = clientToken;
 		this.label = label;

@@ -62,6 +62,8 @@ import java.util.regex.Pattern;
  */
 public class SimpleHttpServer implements Closeable {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpServer.class);
+
 	private final ServerBootstrap bootstrap;
 
 	// Access must be synchronized on self
@@ -69,8 +71,6 @@ public class SimpleHttpServer implements Closeable {
 
 	private final NioEventLoopGroup parentGroup;
 	private final NioEventLoopGroup childGroup;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpServer.class);
 
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
@@ -92,7 +92,7 @@ public class SimpleHttpServer implements Closeable {
 				.childHandler(new SimpleHttpServerInitializer())
 				.bind().awaitUninterruptibly(); // Make sure the server is bound before the constructor returns.
 
-		LOGGER.info("Server listening on " + localAddress);
+		LOGGER.info("Server listening on {}", localAddress);
 
 		return bootstrap;
 	}
@@ -127,17 +127,17 @@ public class SimpleHttpServer implements Closeable {
 	private class SimpleHttpServerHandler extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-			System.out.println("Method: " + request.getMethod());
-			System.out.println("URI: " + request.getUri());
-			for (String name : request.headers().names()) {
-				System.out.println(name);
-				for (String value : request.headers().getAll(name)) {
-					System.out.println("\t" + value);
-				};
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Method: {}", request.getMethod());
+				LOGGER.debug("URI: " + request.getUri());
+				for (String name : request.headers().names()) {
+					for (String value : request.headers().getAll(name)) {
+						LOGGER.debug("{}: {}", name, value);
+					}
+				}
+				LOGGER.debug("Request body: {}", request.data().toString(CharsetUtil.UTF_8));
+				LOGGER.debug("=== End of Request ===============");
 			}
-			System.out.println();
-			System.out.println(request.data().toString(CharsetUtil.UTF_8));
-			System.out.println("==================");
 
 			if (!request.getDecoderResult().isSuccess()) {
 				sendError(ctx, HttpResponseStatus.BAD_REQUEST);
@@ -166,7 +166,7 @@ public class SimpleHttpServer implements Closeable {
 				// Close the connection as soon as the message is sent.
 				ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
 			} else {
-				System.out.println("Returning 404");
+				LOGGER.debug("Returning 404");
 				sendError(ctx, HttpResponseStatus.NOT_FOUND);
 			}
 		}
