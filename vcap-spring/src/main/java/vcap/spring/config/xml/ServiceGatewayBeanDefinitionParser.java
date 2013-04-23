@@ -85,7 +85,7 @@ public class ServiceGatewayBeanDefinitionParser implements BeanDefinitionParser 
 			bootstrapBuilder.addConstructorArgValue(bootstrap.getAttribute("url"));
 			bootstrapBuilder.addConstructorArgValue(bootstrap.getAttribute("description"));
 			bootstrapBuilder.addConstructorArgValue(bootstrap.getAttribute("info-url"));
-			bootstrapBuilder.addConstructorArgValue(bootstrap.getAttribute(authToken));
+			bootstrapBuilder.addConstructorArgValue(authToken);
 
 			final ManagedList<BeanDefinition> plans = new ManagedList<>();
 			final List<Element> planElements = DomUtils.getChildElementsByTagName(bootstrap, "plan");
