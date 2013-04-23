@@ -1,15 +1,9 @@
 - Add support for annotated vcap NATS subscriptions with Spring - make existing NATS Spring annotation extensible so we only need one annotation config.
-- Modify NATS Spring client to send Spring event when connect, disconnect, connect fail
-
-- Write tests for YAML property integration
-
-- Service Gateway
- - Functional test
-   - Deploy a test app bound to the service
-   - Make sure the test app has the service we expect it to have
-   - Delete app (make sure service is unbound)
-   - Delete service
-  - Spring integration
-  - Full Spring sample service with component stuff and BOSH
 
 - Add copyright headers.
+- Attribute all copyrights to Intellectual Reserve, Inc.
+
+- Add Third party license information
+
+- Rename to jvcap
+
