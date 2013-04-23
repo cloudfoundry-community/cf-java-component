@@ -75,16 +75,16 @@ public class SimpleHttpServer implements Closeable {
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
 		childGroup = new NioEventLoopGroup();
-		bootstrap = initBootstrap(localAddress);
+		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
 	}
 
 	public SimpleHttpServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
 		this.parentGroup = null;
 		this.childGroup = null;
-		bootstrap = initBootstrap(localAddress);
+		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
 	}
 
-	private ServerBootstrap initBootstrap(SocketAddress localAddress) {
+	private ServerBootstrap initBootstrap(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.group(parentGroup, childGroup)
 				.channel(NioServerSocketChannel.class)
