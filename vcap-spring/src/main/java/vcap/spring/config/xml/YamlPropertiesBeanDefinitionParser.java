@@ -22,10 +22,10 @@ class YamlPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 		builder.addPropertyValue("propertiesPersister", BeanDefinitionBuilder.genericBeanDefinition(YamlPropertiesPersister.class).getBeanDefinition());
 
 		final AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
+		beanDefinition.setLazyInit(false);
 		final String beanId = parserContext.getReaderContext().generateBeanName(beanDefinition);
 
 		final BeanComponentDefinition definition = new BeanComponentDefinition(beanDefinition, beanId);
-
 		parserContext.registerBeanComponent(definition);
 
 		return null;

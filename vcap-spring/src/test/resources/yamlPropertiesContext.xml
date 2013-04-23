@@ -23,4 +23,8 @@
 		<constructor-arg value="${root.value}" />
 	</bean>
 
+	<bean id="value4" class="java.lang.String">
+		<constructor-arg value="${number}" />
+	</bean>
+
 </beans>

@@ -39,7 +39,7 @@ public class YamlPropertiesPersister implements PropertiesPersister {
 			if (val instanceof Map) {
 				mapProperties(props, (Map<String, Object>) val, key + ".");
 			} else {
-				props.put(key, val);
+				props.put(key, val.toString());
 			}
 		}
 	}

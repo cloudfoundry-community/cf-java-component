@@ -4,3 +4,5 @@ root:
   level1:
     level2: Nested value
   value: Some value
+
+number: 1
