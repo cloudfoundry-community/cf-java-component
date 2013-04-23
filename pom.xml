@@ -81,6 +81,11 @@
 				<artifactId>vcap-component</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.mheath</groupId>
+				<artifactId>vcap-service-gateway</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
 			<!-- Third-party dependencies -->
 			<dependency>
