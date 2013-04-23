@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
 
 /**
  * Provides a simple embeddable HTTP server for handling simple web service end-points and things like publishing
- * /varz and /healthz information.
+ * /varz and /healthz information and Cloud Controller REST calls to service gateways.
  *
  * @author "Mike Heath <elcapo@gmail.com>"
  */
@@ -75,16 +75,16 @@ public class SimpleHttpServer implements Closeable {
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
 		childGroup = new NioEventLoopGroup();
-		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		bootstrap = initBootstrap(localAddress);
 	}
 
 	public SimpleHttpServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
 		this.parentGroup = null;
 		this.childGroup = null;
-		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		bootstrap = initBootstrap(localAddress);
 	}
 
-	private ServerBootstrap initBootstrap(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
+	private ServerBootstrap initBootstrap(SocketAddress localAddress) {
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.group(parentGroup, childGroup)
 				.channel(NioServerSocketChannel.class)
