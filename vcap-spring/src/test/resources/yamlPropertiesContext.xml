@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+		xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:vcap="http://mheath.github.com/vcap-spring/schema/spring/vcap"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://mheath.github.com/vcap-spring/schema/spring/vcap http://mheath.github.com/vcap-spring/schema/spring/vcap-0.1.xsd
+		"
+		default-lazy-init="true">
+
+	<vcap:yaml-properties resource="classpath:testProperties.yml" />
+
+	<bean id="value1" class="java.lang.String">
+		<constructor-arg value="${foo}" />
+	</bean>
+
+	<bean id="value2" class="java.lang.String">
+		<constructor-arg value="${root.level1.level2}" />
+	</bean>
+
+	<bean id="value3" class="java.lang.String">
+		<constructor-arg value="${root.value}" />
+	</bean>
+
+</beans>
