@@ -19,6 +19,7 @@ package nats.vcap;
 import nats.client.Subscription;
 import nats.vcap.message.RouterRegister;
 import nats.vcap.message.RouterStart;
+import nats.vcap.message.RouterUnregister;
 
 import java.util.List;
 
@@ -27,29 +28,30 @@ import java.util.List;
  */
 public class RouterRegisterHandler implements AutoCloseable {
 
+	private final NatsVcap natsVcap;
+	private final RouterRegister routerRegister;
 	private final Subscription subscription;
 
 	public RouterRegisterHandler(NatsVcap natsVcap, String host, Integer port, List<String> uris) {
-		final RouterRegister routerRegister = new RouterRegister(host, port, null, null, uris, null);
-		subscription = initializeSubscription(natsVcap, routerRegister);
+		this(natsVcap, new RouterRegister(host, port, null, null, uris, null));
 	}
 
-	public RouterRegisterHandler(NatsVcap natsVcap, RouterRegister routerRegister) {
-		subscription = initializeSubscription(natsVcap, routerRegister);
-	}
+	public RouterRegisterHandler(final NatsVcap natsVcap, final RouterRegister routerRegister) {
+		this.natsVcap = natsVcap;
+		this.routerRegister = routerRegister;
 
-	private Subscription initializeSubscription(final NatsVcap natsVcap, final RouterRegister routerRegister) {
 		natsVcap.publish(routerRegister);
-		return natsVcap.subscribe(RouterStart.class, new VcapPublicationHandler<RouterStart, Void>() {
-			@Override
-			public void onMessage(VcapPublication<RouterStart, Void> publication) {
-				natsVcap.publish(routerRegister);
-			}
-		});
+		subscription = natsVcap.subscribe(RouterStart.class, new VcapPublicationHandler<RouterStart, Void>() {
+					@Override
+					public void onMessage(VcapPublication<RouterStart, Void> publication) {
+						natsVcap.publish(routerRegister);
+					}
+				});
 	}
 
 	@Override
 	public void close() {
+		natsVcap.publish(new RouterUnregister(routerRegister));
 		subscription.close();
 	}
 }
