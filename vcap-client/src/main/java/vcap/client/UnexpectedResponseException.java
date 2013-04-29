@@ -4,6 +4,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -38,17 +39,21 @@ public class UnexpectedResponseException extends RuntimeException {
 		if (entity == null) {
 			return null;
 		}
-		byte[] body = new byte[(int) entity.getContentLength()];
-		int i = 0;
-		while (i < body.length) {
-			try (InputStream in = entity.getContent()) {
-				i += in.read(body, i, body.length - i);
-			} catch (IOException e) {
-				// If we get an error trying to read the body, just swallow it and return null.
-				return null;
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		try (InputStream in = entity.getContent()) {
+			while (true) {
+				int size = in.read(buffer, 0, buffer.length);
+				if (size < 0) {
+					break;
+				}
+				out.write(buffer, 0, size);
 			}
+		} catch (IOException e) {
+			// If we get an error trying to read the body, just swallow it and return null.
+			return null;
 		}
-		return new String(body);
+		return new String(out.toByteArray());
 	}
 
 }
