@@ -1,9 +1,9 @@
 import org.apache.http.impl.client.DefaultHttpClient;
-import vcap.client.CfTokens;
-import vcap.client.CloudController;
-import vcap.client.TokenContents;
-import vcap.client.Uaa;
-import vcap.client.model.Info;
+import cf.client.CfTokens;
+import cf.client.CloudController;
+import cf.client.TokenContents;
+import cf.client.Uaa;
+import cf.client.model.Info;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -20,5 +20,6 @@ public class ClientTest {
 		final CfTokens tokens = new CfTokens();
 		final TokenContents tokenContents = uaa.checkToken("servicegateway", "gatewaysecret", tokens.getTargetToken().getToken());
 		System.out.println(tokenContents.getEmail());
+		System.out.println(tokenContents.getExpires());
 	}
 }

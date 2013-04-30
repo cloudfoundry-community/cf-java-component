@@ -20,7 +20,7 @@ import nats.vcap.JsonMessageBody;
 import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import vcap.common.JsonObject;
+import cf.common.JsonObject;
 
 import java.util.Collections;
 import java.util.List;

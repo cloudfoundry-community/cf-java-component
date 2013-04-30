@@ -14,19 +14,30 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.component.util;
 
-import nats.vcap.MessageBody;
-import nats.vcap.NatsSubject;
-import cf.common.JsonObject;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
- * A request for components to announce themselves.
- *
- * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
- *
  * @author Mike Heath <elcapo@gmail.com>
  */
-@NatsSubject("vcap.component.discover")
-public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
+public class Common {
+
+	public static String generateUniqueId() {
+		return randomHexString(16);
+	}
+
+	public static String generateCredential() {
+		return randomHexString(8);
+	}
+
+	private static String randomHexString(int size) {
+		final SecureRandom random = new SecureRandom();
+		byte[] bytes = new byte[size];
+		random.nextBytes(bytes);
+		return new BigInteger(bytes).abs().toString(16);
+	}
+
+
 }

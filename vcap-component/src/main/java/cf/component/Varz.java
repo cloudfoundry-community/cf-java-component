@@ -14,32 +14,18 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.component;
 
-import nats.vcap.JsonMessageBody;
-import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
-import cf.common.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * See http://apidocs.cloudfoundry.com/cloud-controller/publish-vcap-component-announce,
- * http://apidocs.cloudfoundry.com/dea/publish-vcap-component-announce,
- * http://apidocs.cloudfoundry.com/health-manager/publish-vcap-component-announce, etc.
- *
  * @author Mike Heath <elcapo@gmail.com>
  */
-@NatsSubject("vcap.component.announce")
-public class ComponentAnnounce extends JsonObject implements JsonMessageBody<Void> {
-
-	public static final String TYPE_CLOUD_CONTROLLER = "CloudController";
-	public static final String TYPE_DEA = "DEA";
-	public static final String TYPE_HEALTH_MANAGER = "HealthManager";
-	public static final String TYPE_ROUTER = "Router";
-	public static final String TYPE_UAA = "uaa";
+public class Varz {
 
 	private final String type;
 	private final Integer index;
@@ -49,14 +35,21 @@ public class ComponentAnnounce extends JsonObject implements JsonMessageBody<Voi
 	private final String start;
 	private final String uptime;
 
-	public ComponentAnnounce(
+	private final int numCores;
+	private final long memory;
+	private final float cpuUtilzation;
+
+	public Varz(
 			@JsonProperty("type") String type,
 			@JsonProperty("index") Integer index,
 			@JsonProperty("uuid") String uuid,
 			@JsonProperty("host") String host,
 			@JsonProperty("credentials") List<String> credentials,
 			@JsonProperty("start") String start,
-			@JsonProperty("uptime") String uptime) {
+			@JsonProperty("uptime") String uptime,
+			@JsonProperty("num_cores") int numCores,
+			@JsonProperty("mem") long memory,
+			@JsonProperty("cpu") float cpuUtilzation) {
 		this.type = type;
 		this.index = index;
 		this.uuid = uuid;
@@ -64,6 +57,9 @@ public class ComponentAnnounce extends JsonObject implements JsonMessageBody<Voi
 		this.credentials = Collections.unmodifiableList(new ArrayList<String>(credentials));
 		this.start = start;
 		this.uptime = uptime;
+		this.numCores = numCores;
+		this.memory = memory;
+		this.cpuUtilzation = cpuUtilzation;
 	}
 
 	public List<String> getCredentials() {

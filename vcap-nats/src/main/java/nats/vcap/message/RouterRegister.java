@@ -19,7 +19,7 @@ package nats.vcap.message;
 import nats.vcap.JsonMessageBody;
 import nats.vcap.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
-import vcap.common.JsonObject;
+import cf.common.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;

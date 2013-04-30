@@ -14,19 +14,26 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.component.util;
 
-import nats.vcap.MessageBody;
-import nats.vcap.NatsSubject;
-import cf.common.JsonObject;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * A request for components to announce themselves.
- *
- * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
- *
  * @author Mike Heath <elcapo@gmail.com>
  */
-@NatsSubject("vcap.component.discover")
-public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
+public class ProcessUtilsTest {
+
+	@Test
+	public void run() throws Exception {
+		// This test will probably fail on Windows... maybe Mac too. Who knows?
+		final String expectedOutput = "Have a nice day.";
+		final String output = ProcessUtils.run("/bin/echo", expectedOutput);
+		Assert.assertEquals(output, expectedOutput);
+	}
+
+	@Test
+	public void processStats() throws Exception {
+		System.out.println(ProcessUtils.getProcessStats());
+	}
 }
