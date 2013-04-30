@@ -4,6 +4,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 
+import java.util.UUID;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
@@ -12,15 +14,15 @@ public class ServiceBinding extends JsonObject {
 	private static final String SERVICE_INSTANCE_GUID = "service_instance_guid";
 	private static final String GATEWAY_DATA = "gateway_data";
 	private static final String GATEWAY_NAME = "gateway_name";
-	private final String appGuid;
-	private final String serviceInstanceGuid;
+	private final UUID appGuid;
+	private final UUID serviceInstanceGuid;
 	private final JsonNode credentials;
 	private final JsonNode gatewayData;
 	private final String gatewayName;
 
 	public ServiceBinding(
-			@JsonProperty(APP_GUID) String appGuid,
-			@JsonProperty(SERVICE_INSTANCE_GUID) String serviceInstanceGuid,
+			@JsonProperty(APP_GUID) UUID appGuid,
+			@JsonProperty(SERVICE_INSTANCE_GUID) UUID serviceInstanceGuid,
 			@JsonProperty("credentials") JsonNode credentials,
 			@JsonProperty(GATEWAY_DATA) JsonNode gatewayData,
 			@JsonProperty(GATEWAY_NAME) String gatewayName) {
@@ -32,12 +34,12 @@ public class ServiceBinding extends JsonObject {
 	}
 
 	@JsonProperty(APP_GUID)
-	public String getAppGuid() {
+	public UUID getAppGuid() {
 		return appGuid;
 	}
 
 	@JsonProperty(SERVICE_INSTANCE_GUID)
-	public String getServiceInstanceGuid() {
+	public UUID getServiceInstanceGuid() {
 		return serviceInstanceGuid;
 	}
 
