@@ -3,6 +3,8 @@ package cf.client.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 
+import java.net.URI;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
@@ -12,10 +14,10 @@ public class Service extends JsonObject {
 	private static final String UNIQUE_ID = "unique_id";
 	private final String label;
 	private final String provider;
-	private final String url;
+	private final URI url;
 	private final String description;
 	private final String version;
-	private final String infoUrl;
+	private final URI infoUrl;
 	private final boolean active;
 	private final String uniqueId;
 
@@ -23,10 +25,10 @@ public class Service extends JsonObject {
 	public Service(
 			@JsonProperty("label") String label,
 			@JsonProperty("provider") String provider,
-			@JsonProperty("url") String url,
+			@JsonProperty("url") URI url,
 			@JsonProperty("description") String description,
 			@JsonProperty("version") String version,
-			@JsonProperty(INFO_URL) String infoUrl,
+			@JsonProperty(INFO_URL) URI infoUrl,
 			@JsonProperty("active") boolean active,
 			@JsonProperty(UNIQUE_ID) String uniqueId) {
 		this.label = label;
@@ -47,7 +49,7 @@ public class Service extends JsonObject {
 		return provider;
 	}
 
-	public String getUrl() {
+	public URI getUrl() {
 		return url;
 	}
 
@@ -60,7 +62,7 @@ public class Service extends JsonObject {
 	}
 
 	@JsonProperty(INFO_URL)
-	public String getInfoUrl() {
+	public URI getInfoUrl() {
 		return infoUrl;
 	}
 

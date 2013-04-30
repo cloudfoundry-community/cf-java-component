@@ -49,7 +49,7 @@ public class FunctionalTest {
 
 		final String label = "testService" + ThreadLocalRandom.current().nextInt();
 		final String provider = "core";
-		final String url = "http://" + localIp(target.getTarget()) + ":" + serverPort;
+		final URI url = URI.create("http://" + localIp(target.getTarget()) + ":" + serverPort);
 		final String description = "A service used for testing the service framework.";
 		final String version = "0.1";
 

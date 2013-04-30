@@ -5,6 +5,7 @@ import cf.client.CloudController;
 import cf.client.TokenProvider;
 import cf.service.Bootstrap;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	private final String authToken;
 	private final List<ServicePlan> servicePlans;
 
+	// TODO Determine if Spring will automatically convert String to URI instances.
 	public BootstrappingServiceGuidProvider(CloudController cloudController, TokenProvider clientToken, String label, String provider, String version, String url, String description, String infoUrl, String authToken, List<ServicePlan> servicePlans) {
 		this.cloudController = cloudController;
 		this.clientToken = clientToken;
@@ -50,7 +52,7 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	@Override
 	public UUID getObject() {
 		final Bootstrap bootstrap = new Bootstrap(cloudController, clientToken);
-		final UUID serviceGuid = bootstrap.registerService(label, provider, version, url, description, infoUrl);
+		final UUID serviceGuid = bootstrap.registerService(label, provider, version, URI.create(url), description, URI.create(infoUrl));
 
 		for (ServicePlan servicePlan : servicePlans) {
 			bootstrap.registerPlan(serviceGuid, servicePlan.name, servicePlan.description);

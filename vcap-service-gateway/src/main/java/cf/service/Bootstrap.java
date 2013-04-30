@@ -11,6 +11,7 @@ import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServicePlan;
 
+import java.net.URI;
 import java.util.UUID;
 
 /**
@@ -34,7 +35,7 @@ public class Bootstrap {
 	 * @return the guid of the service
 	 */
 	// TODO It would be nice to update the service in case the URL, description, etc change.
-	public UUID registerService(String label, String provider, String version, String url, String description, String infoUrl) {
+	public UUID registerService(String label, String provider, String version, URI url, String description, URI infoUrl) {
 		final RestCollection<Service> services = cloudController.getServices(clientToken);
 		for (Resource<Service> service : services) {
 			final Service serviceEntity = service.getEntity();
