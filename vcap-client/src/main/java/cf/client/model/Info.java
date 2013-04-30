@@ -18,12 +18,12 @@ public class Info extends JsonObject {
 	public Info(
 			@JsonProperty("name") String name,
 			@JsonProperty("version") Integer version,
-			@JsonProperty("authorization_endpoint") String authorizationEndpoint,
-			@JsonProperty("token_endpoint") String tokenEndpoint) {
+			@JsonProperty("authorization_endpoint") URI authorizationEndpoint,
+			@JsonProperty("token_endpoint") URI tokenEndpoint) {
 		this.name = name;
 		this.version = version;
-		this.authorizationEndpoint = URI.create(authorizationEndpoint);
-		this.tokenEndpoint = URI.create(tokenEndpoint);
+		this.authorizationEndpoint = authorizationEndpoint;
+		this.tokenEndpoint = tokenEndpoint;
 	}
 
 	public String getName() {
