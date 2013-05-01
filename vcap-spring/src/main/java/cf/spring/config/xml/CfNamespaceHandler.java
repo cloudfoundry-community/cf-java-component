@@ -21,7 +21,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class VcapNamespaceHandler extends NamespaceHandlerSupport {
+public class CfNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		registerBeanDefinitionParser("client-token", new ClientTokenBeanDefinitionParser());

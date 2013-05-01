@@ -1,2 +1,1 @@
-http\://mheath.github.com/vcap-spring/schema/spring/vcap=vcap.spring.config.xml.VcapNamespaceHandler
-
+http\://irinc.github.com/cf-component/schema/spring=cf.spring.config.xml.CfNamespaceHandler
