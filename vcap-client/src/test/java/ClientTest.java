@@ -18,7 +18,7 @@ public class ClientTest {
 //		final Uaa uaa = new Uaa(new DefaultHttpClient(), "https://uaa.app2-dev.lds.org");
 
 		final CfTokens tokens = new CfTokens();
-		final TokenContents tokenContents = uaa.checkToken("servicegateway", "gatewaysecret", tokens.getTargetToken().getToken());
+		final TokenContents tokenContents = uaa.checkToken("servicegateway", "gatewaysecret", tokens.getCurrentTargetToken().getToken());
 		System.out.println(tokenContents.getEmail());
 		System.out.println(tokenContents.getExpires());
 	}

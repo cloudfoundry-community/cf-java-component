@@ -22,7 +22,7 @@ public class TestGateway {
 
 	public static void main(String[] args) throws Exception {
 		final CfTokens cfTokens = new CfTokens();
-		final CfTokens.CfToken target = cfTokens.getTargetToken();
+		final CfTokens.CfToken target = cfTokens.getCurrentTargetToken();
 
 		if (target == null) {
 			System.err.println("It appears you haven't logged into a Cloud Foundry instance with cf.");

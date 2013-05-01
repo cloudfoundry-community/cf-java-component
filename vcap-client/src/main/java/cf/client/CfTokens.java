@@ -32,12 +32,12 @@ public class CfTokens {
 		tokens = parseTokens(cfDirectory);
 	}
 
-	public String getTarget() {
+	public String getCurrentTarget() {
 		return target;
 	}
 
-	public CfToken getTargetToken() {
-		return tokens.get(target);
+	public CfToken getCurrentTargetToken() {
+		return getToken(getCurrentTarget());
 	}
 
 	public Set<String> getTargets() {
