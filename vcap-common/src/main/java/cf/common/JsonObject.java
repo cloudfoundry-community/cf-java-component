@@ -15,7 +15,7 @@ public class JsonObject {
 
 	@JsonAnyGetter
 	public Map<String, Object> any() {
-		return new HashMap<>(other);
+		return other;
 	}
 
 	@JsonAnySetter
