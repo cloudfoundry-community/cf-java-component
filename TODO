@@ -5,7 +5,13 @@
 
 - Add Third party license information
 
-- Rename to jvcap
+- Rename to cf-java-component
 
-- Change all mheath references to irinc.
+- Change all mheath references to irinc in GitHub URLs.
 
+- Remove binding_id from gateway_data in service framework. Gateway name already holds that field.
+- Add support for getting Gateway config from service gateway config (service GUID, plans, etc.)
+
+- Documentations
+  - READMEs
+  - JavaDocs
