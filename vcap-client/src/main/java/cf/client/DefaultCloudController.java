@@ -81,7 +81,7 @@ public class DefaultCloudController implements CloudController {
 	public Uaa getUaa() {
 		synchronized (lock) {
 			if (uaa == null) {
-				uaa = new Uaa(httpClient, getInfo().getAuthorizationEndpoint());
+				uaa = new DefaultUaa(httpClient, getInfo().getAuthorizationEndpoint());
 			}
 			return uaa;
 		}
