@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cf.client.CfTokens;
 import cf.client.CloudController;
+import cf.client.DefaultCloudController;
 import cf.component.http.SimpleHttpServer;
 
 import java.net.InetSocketAddress;
@@ -51,7 +52,7 @@ public class TestGateway {
 		final String servicePlanDescription = "Finest service... ever.";
 
 		final String authToken = "SsshhhThisIsASecret";
-		final CloudController cloudController = new CloudController(new DefaultHttpClient(), target.getTarget());
+		final CloudController cloudController = new DefaultCloudController(new DefaultHttpClient(), target.getTarget());
 
 			final UUID serviceGuid = UUID.randomUUID(); // We need to keep track of the services GUID.
 //			final String serviceGuid = cloudControllerClient.createService(new CreateServiceRequest(

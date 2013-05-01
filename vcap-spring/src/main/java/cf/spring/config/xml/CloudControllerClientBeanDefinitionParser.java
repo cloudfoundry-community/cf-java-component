@@ -1,13 +1,13 @@
 package cf.spring.config.xml;
 
+import cf.client.DefaultCloudController;
+import cf.spring.HttpClientFactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
-import cf.client.CloudController;
-import cf.spring.HttpClientFactoryBean;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -15,8 +15,7 @@ import cf.spring.HttpClientFactoryBean;
 public class CloudControllerClientBeanDefinitionParser implements BeanDefinitionParser {
 	@Override
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-
-		final BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(CloudController.class);
+		final BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DefaultCloudController.class);
 
 		final String httpClientRef = element.getAttribute("http-client-ref");
 		if (StringUtils.hasText(httpClientRef)) {

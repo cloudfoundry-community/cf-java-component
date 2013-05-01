@@ -3,8 +3,9 @@ package cf.service.integration;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import cf.client.CfTokens;
 import cf.client.CloudController;
+import cf.client.DefaultCloudController;
+import cf.client.CfTokens;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServicePlan;
@@ -57,7 +58,7 @@ public class FunctionalTest {
 		final String servicePlanDescription = "Finest service... ever.";
 
 		final String authToken = "SsshhhThisIsASecret";
-		final CloudController cloudControllerClient = new CloudController(new DefaultHttpClient(), target.getTarget());
+		final CloudController cloudControllerClient = new DefaultCloudController(new DefaultHttpClient(), target.getTarget());
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {

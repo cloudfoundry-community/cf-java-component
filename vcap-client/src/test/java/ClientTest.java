@@ -1,6 +1,7 @@
 import org.apache.http.impl.client.DefaultHttpClient;
 import cf.client.CfTokens;
 import cf.client.CloudController;
+import cf.client.DefaultCloudController;
 import cf.client.TokenContents;
 import cf.client.Uaa;
 import cf.client.model.Info;
@@ -10,7 +11,7 @@ import cf.client.model.Info;
  */
 public class ClientTest {
 	public static void main(String[] args) {
-		final CloudController cloudController = new CloudController(new DefaultHttpClient(), "http://api.app2-dev.lds.org");
+		final CloudController cloudController = new DefaultCloudController(new DefaultHttpClient(), "http://api.app2-dev.lds.org");
 		final Info info = cloudController.getInfo();
 		System.out.println(info.getName());
 
