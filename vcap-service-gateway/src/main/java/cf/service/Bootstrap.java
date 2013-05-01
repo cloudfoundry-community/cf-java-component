@@ -64,7 +64,7 @@ public class Bootstrap {
 			}
 		}
 		LOGGER.info("Registering service plan {} with Cloud Controller", planName);
-		final ServicePlan servicePlan = new ServicePlan(planName, planDescription, serviceGuid.toString(), true, null);
+		final ServicePlan servicePlan = new ServicePlan(planName, planDescription, serviceGuid, true, null);
 		return cloudController.createServicePlan(clientToken, servicePlan);
 	}
 

@@ -71,7 +71,7 @@ public class FunctionalTest {
 			new GatewayServer(server, provisioner, authToken);
 
 			try {
-				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid.toString(), true, null));
+				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid, true, null));
 				LOGGER.debug("Created service plan with guid: {}", serviceGuid);
 
 				final UUID authTokenGuid = cloudControllerClient.createAuthToken(target.getToken(), new ServiceAuthToken(label, provider, authToken));

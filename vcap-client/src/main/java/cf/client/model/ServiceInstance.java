@@ -4,6 +4,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 
+import java.util.UUID;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
@@ -14,15 +16,15 @@ public class ServiceInstance extends JsonObject {
 	private static final String GATEWAY_DATA = "gateway_data";
 	private final String name;
 	private final JsonNode credentials;
-	private final String servicePlanGuid;
-	private final String spaceGuid;
+	private final UUID servicePlanGuid;
+	private final UUID spaceGuid;
 	private final JsonNode gatewayData;
 
 	public ServiceInstance(
 			@JsonProperty("name") String name,
 			@JsonProperty("credentials") JsonNode credentials,
-			@JsonProperty(SERVICE_PLAN_GUID) String servicePlanGuid,
-			@JsonProperty(SPACE_GUID) String spaceGuid,
+			@JsonProperty(SERVICE_PLAN_GUID) UUID servicePlanGuid,
+			@JsonProperty(SPACE_GUID) UUID spaceGuid,
 			@JsonProperty(GATEWAY_DATA) JsonNode gatewayData) {
 		this.name = name;
 		this.credentials = credentials;
@@ -40,12 +42,12 @@ public class ServiceInstance extends JsonObject {
 	}
 
 	@JsonProperty(SERVICE_PLAN_GUID)
-	public String getServicePlanGuid() {
+	public UUID getServicePlanGuid() {
 		return servicePlanGuid;
 	}
 
 	@JsonProperty(SPACE_GUID)
-	public String getSpaceGuid() {
+	public UUID getSpaceGuid() {
 		return spaceGuid;
 	}
 

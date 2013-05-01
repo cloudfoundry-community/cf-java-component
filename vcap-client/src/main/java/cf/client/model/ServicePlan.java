@@ -3,6 +3,8 @@ package cf.client.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 
+import java.util.UUID;
+
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
@@ -13,7 +15,7 @@ public class ServicePlan extends JsonObject {
 	private static final String UNIQUE_ID = "unique_id";
 	private final String name;
 	private final String description;
-	private final String serviceGuid;
+	private final UUID serviceGuid;
 	private final boolean free;
 	private final String uniqueId;
 
@@ -21,7 +23,7 @@ public class ServicePlan extends JsonObject {
 	public ServicePlan(
 			@JsonProperty("name") String name,
 			@JsonProperty("description") String description,
-			@JsonProperty(SERVICE_GUID) String serviceGuid,
+			@JsonProperty(SERVICE_GUID) UUID serviceGuid,
 			@JsonProperty("free") boolean free,
 			@JsonProperty(UNIQUE_ID) String uniqueId) {
 		this.name = name;
@@ -44,7 +46,7 @@ public class ServicePlan extends JsonObject {
 	}
 
 	@JsonProperty(SERVICE_GUID)
-	public String getServiceGuid() {
+	public UUID getServiceGuid() {
 		return serviceGuid;
 	}
 
@@ -53,4 +55,3 @@ public class ServicePlan extends JsonObject {
 		return uniqueId;
 	}
 }
-
