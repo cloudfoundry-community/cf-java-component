@@ -15,3 +15,5 @@
 - Documentations
   - READMEs
   - JavaDocs
+
+- Configure Maven for running integration tests
