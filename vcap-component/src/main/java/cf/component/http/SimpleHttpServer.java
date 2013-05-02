@@ -100,6 +100,7 @@ public class SimpleHttpServer implements Closeable {
 	}
 
 	public void addHandler(Pattern uriPattern, RequestHandler requestHandler) {
+		LOGGER.debug("Registering pattern {}", uriPattern.pattern());
 		synchronized (requestHandles) {
 			requestHandles.add(new RequestHandle(uriPattern, requestHandler));
 		}
