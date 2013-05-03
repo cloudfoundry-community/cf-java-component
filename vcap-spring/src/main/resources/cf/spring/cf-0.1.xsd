@@ -109,5 +109,6 @@
 		</xsd:sequence>
 		<xsd:attribute name="host" type="xsd:string" use="required" />
 		<xsd:attribute name="port" type="xsd:string" use="required" />
+		<xsd:attribute name="component" type="xsd:string" use="optional" />
 	</xsd:complexType>
 </xsd:schema>

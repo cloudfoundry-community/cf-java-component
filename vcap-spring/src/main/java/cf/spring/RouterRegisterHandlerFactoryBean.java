@@ -22,6 +22,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -30,8 +31,8 @@ public class RouterRegisterHandlerFactoryBean implements DisposableBean, Factory
 
 	private final RouterRegisterHandler routerRegisterHandler;
 
-	public RouterRegisterHandlerFactoryBean(NatsVcap natsVcap, String host, Integer port, List<String> uris) {
-		routerRegisterHandler = new RouterRegisterHandler(natsVcap, host, port, uris);
+	public RouterRegisterHandlerFactoryBean(NatsVcap natsVcap, String host, Integer port, List<String> uris, Map<String, String> tags) {
+		routerRegisterHandler = new RouterRegisterHandler(natsVcap, host, port, uris, tags);
 	}
 
 	@Override

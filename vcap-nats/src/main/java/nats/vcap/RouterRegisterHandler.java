@@ -22,6 +22,7 @@ import nats.vcap.message.RouterStart;
 import nats.vcap.message.RouterUnregister;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -32,8 +33,8 @@ public class RouterRegisterHandler implements AutoCloseable {
 	private final RouterRegister routerRegister;
 	private final Subscription subscription;
 
-	public RouterRegisterHandler(NatsVcap natsVcap, String host, Integer port, List<String> uris) {
-		this(natsVcap, new RouterRegister(host, port, null, null, uris, null));
+	public RouterRegisterHandler(NatsVcap natsVcap, String host, Integer port, List<String> uris, Map<String,String> tags) {
+		this(natsVcap, new RouterRegister(host, port, null, null, uris, tags));
 	}
 
 	public RouterRegisterHandler(final NatsVcap natsVcap, final RouterRegister routerRegister) {

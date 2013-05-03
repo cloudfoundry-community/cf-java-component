@@ -28,7 +28,9 @@ import cf.spring.NatsVcapFactoryBean;
 import cf.spring.RouterRegisterHandlerFactoryBean;
 import cf.spring.VcapSubscriptionConfig;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mike Heath <heathma@ldschurch.org>
@@ -84,6 +86,16 @@ public class NatsBeanDefinitionParser implements BeanDefinitionParser {
 			routerRegistrationBuilder.addConstructorArgValue(host);
 			routerRegistrationBuilder.addConstructorArgValue(port);
 			routerRegistrationBuilder.addConstructorArgValue(uris);
+
+			final Map<String, String> tags;
+			final String component = routerRegistrationElement.getAttribute("component");
+			if (component != null && component.trim().length() > 0) {
+				tags = new HashMap<>();
+				tags.put("component", component);
+			} else {
+				tags = null;
+			}
+			routerRegistrationBuilder.addConstructorArgValue(tags);
 
 			final AbstractBeanDefinition routerRegistrationBuilderBeanDefinition = routerRegistrationBuilder.getBeanDefinition();
 			routerRegistrationBuilderBeanDefinition.setLazyInit(false);
