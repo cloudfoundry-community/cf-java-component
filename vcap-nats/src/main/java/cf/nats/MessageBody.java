@@ -14,23 +14,10 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
-
-import nats.client.Message;
-
-import java.util.concurrent.TimeUnit;
+package cf.nats;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapPublication<T extends MessageBody<R>, R> {
-
-	Message getNatsMessage();
-
-	T getMessageBody();
-
-	void reply(R message);
-
-	void reply(R message, long delay, TimeUnit unit);
-
+public interface MessageBody<R> {
 }

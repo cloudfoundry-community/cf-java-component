@@ -14,10 +14,10 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.nats.message;
 
-import nats.vcap.JsonMessageBody;
-import nats.vcap.NatsSubject;
+import cf.nats.JsonMessageBody;
+import cf.nats.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 

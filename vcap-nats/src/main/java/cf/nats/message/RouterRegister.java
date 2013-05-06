@@ -14,14 +14,16 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.nats.message;
 
-import nats.vcap.JsonMessageBody;
-import nats.vcap.NatsSubject;
+import cf.nats.JsonMessageBody;
+import cf.nats.NatsSubject;
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,11 @@ public class RouterRegister extends JsonObject implements JsonMessageBody<Void> 
 	private final List<String> uris;
 	private final Map<String, String> tags;
 
+	public RouterRegister(String host, int port, String... uris) {
+		this(host, port, null, null, Arrays.asList(uris), null);
+	}
+
+	@JsonCreator
 	public RouterRegister(
 			@JsonProperty("host") String host,
 			@JsonProperty("port") Integer port,

@@ -16,12 +16,12 @@
  */
 package cf.spring;
 
+import cf.nats.Publication;
 import nats.NatsException;
 import nats.client.Nats;
-import nats.vcap.MessageBody;
-import nats.vcap.NatsVcap;
-import nats.vcap.VcapPublication;
-import nats.vcap.VcapPublicationHandler;
+import cf.nats.CfNats;
+import cf.nats.MessageBody;
+import cf.nats.PublicationHandler;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -33,25 +33,25 @@ import java.util.Collection;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class NatsVcapFactoryBean implements FactoryBean<NatsVcap>, InitializingBean {
+public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBean {
 
-	private final NatsVcap vcap;
+	private final CfNats vcap;
 
 	private final Collection<VcapSubscriptionConfig> subscriptions;
 
 	public NatsVcapFactoryBean(Nats nats, Collection<VcapSubscriptionConfig> subscriptions) {
-		vcap = new NatsVcap(nats);
+		vcap = new CfNats(nats);
 		this.subscriptions = subscriptions;
 	}
 
 	@Override
-	public NatsVcap getObject() throws Exception {
+	public CfNats getObject() throws Exception {
 		return vcap;
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return vcap == null ? NatsVcap.class : vcap.getClass();
+		return vcap == null ? CfNats.class : vcap.getClass();
 	}
 
 	@Override
@@ -65,13 +65,13 @@ public class NatsVcapFactoryBean implements FactoryBean<NatsVcap>, InitializingB
 		for (VcapSubscriptionConfig subscription : subscriptions) {
 			final Object bean = subscription.getBean();
 			final String methodName = subscription.getMethodName();
-			final Method method = bean.getClass().getMethod(methodName, VcapPublication.class);
+			final Method method = bean.getClass().getMethod(methodName, Publication.class);
 			final ParameterizedType parameterTypes = (ParameterizedType) method.getGenericParameterTypes()[0];
 			Class<MessageBody<Object>> parameterType = (Class<MessageBody<Object>>) parameterTypes.getActualTypeArguments()[0];
 			final String queueGroup = subscription.getQueueGroup();
-			vcap.subscribe(parameterType, queueGroup, new VcapPublicationHandler<MessageBody<Object>, Object>() {
+			vcap.subscribe(parameterType, queueGroup, new PublicationHandler<MessageBody<Object>, Object>() {
 				@Override
-				public void onMessage(VcapPublication publication) {
+				public void onMessage(Publication publication) {
 					try {
 						method.invoke(bean, publication);
 					} catch (IllegalAccessException e) {

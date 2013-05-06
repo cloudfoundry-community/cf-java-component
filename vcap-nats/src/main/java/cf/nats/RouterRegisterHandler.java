@@ -14,13 +14,14 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package cf.nats;
 
 import nats.client.Subscription;
-import nats.vcap.message.RouterRegister;
-import nats.vcap.message.RouterStart;
-import nats.vcap.message.RouterUnregister;
+import cf.nats.message.RouterRegister;
+import cf.nats.message.RouterStart;
+import cf.nats.message.RouterUnregister;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,30 +30,34 @@ import java.util.Map;
  */
 public class RouterRegisterHandler implements AutoCloseable {
 
-	private final NatsVcap natsVcap;
+	private final CfNats cfNats;
 	private final RouterRegister routerRegister;
 	private final Subscription subscription;
 
-	public RouterRegisterHandler(NatsVcap natsVcap, String host, Integer port, List<String> uris, Map<String,String> tags) {
-		this(natsVcap, new RouterRegister(host, port, null, null, uris, tags));
+	public RouterRegisterHandler(CfNats nats, String host, int port, String... uris) {
+		this(nats, host, port, Arrays.asList(uris), null);
 	}
 
-	public RouterRegisterHandler(final NatsVcap natsVcap, final RouterRegister routerRegister) {
-		this.natsVcap = natsVcap;
+	public RouterRegisterHandler(CfNats cfNats, String host, Integer port, List<String> uris, Map<String,String> tags) {
+		this(cfNats, new RouterRegister(host, port, null, null, uris, tags));
+	}
+
+	public RouterRegisterHandler(final CfNats cfNats, final RouterRegister routerRegister) {
+		this.cfNats = cfNats;
 		this.routerRegister = routerRegister;
 
-		natsVcap.publish(routerRegister);
-		subscription = natsVcap.subscribe(RouterStart.class, new VcapPublicationHandler<RouterStart, Void>() {
+		cfNats.publish(routerRegister);
+		subscription = cfNats.subscribe(RouterStart.class, new PublicationHandler<RouterStart, Void>() {
 					@Override
-					public void onMessage(VcapPublication<RouterStart, Void> publication) {
-						natsVcap.publish(routerRegister);
+					public void onMessage(Publication<RouterStart, Void> publication) {
+						cfNats.publish(routerRegister);
 					}
 				});
 	}
 
 	@Override
 	public void close() {
-		natsVcap.publish(new RouterUnregister(routerRegister));
+		cfNats.publish(new RouterUnregister(routerRegister));
 		subscription.close();
 	}
 }

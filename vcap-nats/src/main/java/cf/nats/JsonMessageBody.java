@@ -14,13 +14,13 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package cf.nats;
 
 /**
+ * Indicates that the NATS message has a JSON payload.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface VcapPublicationHandler<T extends MessageBody<R>, R> {
-
-	void onMessage(VcapPublication<T, R> publication);
+public interface JsonMessageBody<R> extends MessageBody<R> {
 
 }

@@ -14,13 +14,19 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package cf.nats.message;
+
+import cf.nats.MessageBody;
+import cf.nats.NatsSubject;
+import cf.common.JsonObject;
 
 /**
- * Indicates that the NATS message has a JSON payload.
+ * A request for components to announce themselves.
+ *
+ * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface JsonMessageBody<R> extends MessageBody<R> {
-
+@NatsSubject("vcap.component.discover")
+public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
 }

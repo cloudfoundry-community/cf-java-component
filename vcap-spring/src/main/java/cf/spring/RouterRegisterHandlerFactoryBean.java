@@ -16,8 +16,8 @@
  */
 package cf.spring;
 
-import nats.vcap.NatsVcap;
-import nats.vcap.RouterRegisterHandler;
+import cf.nats.CfNats;
+import cf.nats.RouterRegisterHandler;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -31,8 +31,8 @@ public class RouterRegisterHandlerFactoryBean implements DisposableBean, Factory
 
 	private final RouterRegisterHandler routerRegisterHandler;
 
-	public RouterRegisterHandlerFactoryBean(NatsVcap natsVcap, String host, Integer port, List<String> uris, Map<String, String> tags) {
-		routerRegisterHandler = new RouterRegisterHandler(natsVcap, host, port, uris, tags);
+	public RouterRegisterHandlerFactoryBean(CfNats cfNats, String host, Integer port, List<String> uris, Map<String, String> tags) {
+		routerRegisterHandler = new RouterRegisterHandler(cfNats, host, port, uris, tags);
 	}
 
 	@Override

@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package cf.nats;
 
 import nats.NatsException;
 import nats.client.Message;
@@ -30,14 +30,29 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * A {@link Nats} wrapper to simplify working with Cloud Foundry. For example, to register with a Cloud Foundry router
+ * using the plain NATS client, you would have to do something like:
+ *
+ * <code>
+ *     nats.publish("router.register", "{\"host\":\"10.1.2.3\",\"port\":9022,\"uris\":[\"foo.mikeheath.cloudfoundry.me\"]}");
+ * </code>
+ *
+ * Using this wrapper, you could instead simple do something like:
+ *
+ * <code>
+ *     cfNats.publish(new RouterRegister("10.1.2.3", 9022, "foo.mikeheath.cloudfoundry.me");
+ * </code>
+ *
+ * which accomplishes the same thing but in a much less error prone manner.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class NatsVcap {
+public class CfNats {
 
 	private final Nats nats;
 	private final ObjectMapper mapper;
 
-	public NatsVcap(Nats nats) {
+	public CfNats(Nats nats) {
 		this.nats = nats;
 
 		// Configure the Jackson JSON mapper
@@ -58,19 +73,19 @@ public class NatsVcap {
 		nats.publish(subject, encoding);
 	}
 
-	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, PublicationHandler<T, R> handler) {
 		return subscribe(type, null, null, handler);
 	}
 
-	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, PublicationHandler<T, R> handler) {
 		return subscribe(type, null, maxMessages, handler);
 	}
 
-	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, PublicationHandler<T, R> handler) {
 		return subscribe(type, queueGroup, null, handler);
 	}
 
-	public <T extends MessageBody<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final VcapPublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final PublicationHandler<T, R> handler) {
 		final Subscription subscribe = nats.subscribe(getSubject(type), queueGroup, maxMessages);
 		final ObjectReader reader = (JsonMessageBody.class.isAssignableFrom(type)) ? mapper.reader(type) : null;
 		subscribe.addMessageHandler(new MessageHandler() {
@@ -79,7 +94,7 @@ public class NatsVcap {
 				final String body = message.getBody();
 				try {
 					final T vcapMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
-					handler.onMessage(new VcapPublication<T, R>() {
+					handler.onMessage(new Publication<T, R>() {
 						@Override
 						public Message getNatsMessage() {
 							return message;

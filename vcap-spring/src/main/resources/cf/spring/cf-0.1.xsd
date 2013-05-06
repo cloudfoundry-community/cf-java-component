@@ -24,7 +24,7 @@
 				<xsd:element name="subscription" minOccurs="0" maxOccurs="unbounded" type="subscription" />
 				<xsd:element name="router-register" minOccurs="0" maxOccurs="unbounded" type="routerRegister" />
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:string" default="natsVcap" />
+			<xsd:attribute name="id" type="xsd:string" default="cfNats" />
 			<xsd:attribute name="nats-ref" default="nats" />
 		</xsd:complexType>
 	</xsd:element>

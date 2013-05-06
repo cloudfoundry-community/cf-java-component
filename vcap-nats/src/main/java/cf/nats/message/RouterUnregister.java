@@ -1,6 +1,6 @@
-package nats.vcap.message;
+package cf.nats.message;
 
-import nats.vcap.NatsSubject;
+import cf.nats.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.List;

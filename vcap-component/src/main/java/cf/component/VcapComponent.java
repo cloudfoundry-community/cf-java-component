@@ -21,11 +21,11 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import nats.vcap.NatsVcap;
-import nats.vcap.VcapPublication;
-import nats.vcap.VcapPublicationHandler;
-import nats.vcap.message.ComponentAnnounce;
-import nats.vcap.message.ComponentDiscover;
+import cf.nats.CfNats;
+import cf.nats.Publication;
+import cf.nats.PublicationHandler;
+import cf.nats.message.ComponentAnnounce;
+import cf.nats.message.ComponentDiscover;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 import cf.component.http.JsonTextResponseRequestHandler;
@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class VcapComponent {
 
-	private final NatsVcap nats;
+	private final CfNats nats;
 	private final String type;
 
 	private final long startTime = System.currentTimeMillis();
@@ -61,14 +61,14 @@ public class VcapComponent {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public VcapComponent(NatsVcap nats, SimpleHttpServer httpServer, String type, List<VarzUpdater> varzUpdaters) {
+	public VcapComponent(CfNats nats, SimpleHttpServer httpServer, String type, List<VarzUpdater> varzUpdaters) {
 		this.nats = nats;
 		this.type = type;
 		this.varzUpdaters = varzUpdaters;
 
-		nats.subscribe(ComponentDiscover.class, new VcapPublicationHandler<ComponentDiscover, ComponentAnnounce>() {
+		nats.subscribe(ComponentDiscover.class, new PublicationHandler<ComponentDiscover, ComponentAnnounce>() {
 			@Override
-			public void onMessage(VcapPublication<ComponentDiscover, ComponentAnnounce> publication) {
+			public void onMessage(Publication<ComponentDiscover, ComponentAnnounce> publication) {
 				publication.reply(buildComponentAnnounce());
 			}
 		});

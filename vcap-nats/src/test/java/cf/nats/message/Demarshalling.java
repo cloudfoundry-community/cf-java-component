@@ -1,4 +1,4 @@
-package nats.vcap.message;
+package cf.nats.message;
 
 import static junit.framework.Assert.*;
 import org.codehaus.jackson.map.ObjectMapper;

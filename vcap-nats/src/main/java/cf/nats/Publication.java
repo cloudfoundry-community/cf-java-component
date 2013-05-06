@@ -14,19 +14,23 @@
  *   limitations under the License.
  *
  */
-package nats.vcap.message;
+package cf.nats;
 
-import nats.vcap.MessageBody;
-import nats.vcap.NatsSubject;
-import cf.common.JsonObject;
+import nats.client.Message;
+
+import java.util.concurrent.TimeUnit;
 
 /**
- * A request for components to announce themselves.
- *
- * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
- *
  * @author Mike Heath <elcapo@gmail.com>
  */
-@NatsSubject("vcap.component.discover")
-public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
+public interface Publication<T extends MessageBody<R>, R> {
+
+	Message getNatsMessage();
+
+	T getMessageBody();
+
+	void reply(R message);
+
+	void reply(R message, long delay, TimeUnit unit);
+
 }

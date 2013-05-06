@@ -14,10 +14,13 @@
  *   limitations under the License.
  *
  */
-package nats.vcap;
+package cf.nats;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface MessageBody<R> {
+public interface PublicationHandler<T extends MessageBody<R>, R> {
+
+	void onMessage(Publication<T, R> publication);
+
 }
