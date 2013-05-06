@@ -16,19 +16,6 @@
 	<name>Java NATS VCAP support</name>
 	<description>An abstraction for working with NATS on VCAP (Cloud Foundry).</description>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.mheath</groupId>
