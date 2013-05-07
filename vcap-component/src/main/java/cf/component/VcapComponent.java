@@ -16,12 +16,12 @@
  */
 package cf.component;
 
+import cf.nats.CfNats;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import cf.nats.CfNats;
 import cf.nats.Publication;
 import cf.nats.PublicationHandler;
 import cf.nats.message.ComponentAnnounce;

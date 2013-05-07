@@ -16,11 +16,11 @@
  */
 package cf.nats.message;
 
-import cf.nats.JsonMessageBody;
+import cf.common.JsonObject;
+import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import cf.common.JsonObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.start")
-public class RouterStart extends JsonObject implements JsonMessageBody<Void> {
+public class RouterStart extends JsonObject implements MessageBody<Void> {
 	private final String id;
 	private final String version;
 	private final List<String> hosts;

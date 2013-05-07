@@ -16,10 +16,11 @@
  */
 package cf.spring;
 
+import cf.nats.CfNats;
+import cf.nats.DefaultCfNats;
 import cf.nats.Publication;
 import nats.NatsException;
 import nats.client.Nats;
-import cf.nats.CfNats;
 import cf.nats.MessageBody;
 import cf.nats.PublicationHandler;
 import org.springframework.beans.factory.FactoryBean;
@@ -40,7 +41,7 @@ public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBea
 	private final Collection<VcapSubscriptionConfig> subscriptions;
 
 	public NatsVcapFactoryBean(Nats nats, Collection<VcapSubscriptionConfig> subscriptions) {
-		vcap = new CfNats(nats);
+		vcap = new DefaultCfNats(nats);
 		this.subscriptions = subscriptions;
 	}
 
@@ -51,7 +52,7 @@ public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBea
 
 	@Override
 	public Class<?> getObjectType() {
-		return vcap == null ? CfNats.class : vcap.getClass();
+		return vcap == null ? DefaultCfNats.class : vcap.getClass();
 	}
 
 	@Override

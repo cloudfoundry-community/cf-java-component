@@ -16,7 +16,7 @@
  */
 package cf.nats.message;
 
-import cf.nats.JsonMessageBody;
+import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.register")
-public class RouterRegister extends JsonObject implements JsonMessageBody<Void> {
+public class RouterRegister extends JsonObject implements MessageBody<Void> {
 	private final String host;
 	private final Integer port;
 	private final String app;

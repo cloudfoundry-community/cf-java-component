@@ -16,7 +16,7 @@
  */
 package cf.nats.message;
 
-import cf.nats.JsonMessageBody;
+import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
@@ -33,7 +33,7 @@ import java.util.List;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.announce")
-public class ComponentAnnounce extends JsonObject implements JsonMessageBody<Void> {
+public class ComponentAnnounce extends JsonObject implements MessageBody<Void> {
 
 	public static final String TYPE_CLOUD_CONTROLLER = "CloudController";
 	public static final String TYPE_DEA = "DEA";
