@@ -46,18 +46,50 @@ public interface CfNats {
 	void publish(MessageBody message);
 
 	/**
+	 * Subscribes to a Cloud Foundry NATS subject.
 	 *
-	 * @param type
-	 * @param handler
-	 * @param <T>
-	 * @param <R>
-	 * @return
+	 * @param type the type of message to be received.
+	 * @param handler the handler object that is invoked when a message arrives.
+	 * @param <T> the message type
+	 * @param <R> the reply type
+	 * @return a NATS subscription object.
 	 */
 	<T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, PublicationHandler<T, R> handler);
 
+	/**
+	 * Subscribes to a Cloud Foundry NATS subject.
+	 *
+	 * @param type the type of message to be received.
+	 * @param handler the handler object that is invoked when a message arrives.
+	 * @param maxMessages the maximum number of messages to receive before the subscription is automatically closed
+	 * @param <T> the message type
+	 * @param <R> the reply type
+	 * @return a NATS subscription object.
+	 */
 	<T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, Integer maxMessages, PublicationHandler<T, R> handler);
 
+	/**
+	 * Subscribes to a Cloud Foundry NATS subject.
+	 *
+	 * @param type the type of message to be received.
+	 * @param handler the handler object that is invoked when a message arrives.
+	 * @param queueGroup the NATS queue group to join
+	 * @param <T> the message type
+	 * @param <R> the reply type
+	 * @return a NATS subscription object.
+	 */
 	<T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, PublicationHandler<T, R> handler);
 
+	/**
+	 * Subscribes to a Cloud Foundry NATS subject.
+	 *
+	 * @param type the type of message to be received.
+	 * @param handler the handler object that is invoked when a message arrives.
+	 * @param queueGroup the NATS queue group to join
+	 * @param maxMessages the maximum number of messages to receive before the subscription is automatically closed
+	 * @param <T> the message type
+	 * @param <R> the reply type
+	 * @return a NATS subscription object.
+	 */
 	<T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, Integer maxMessages, PublicationHandler<T, R> handler);
 }
