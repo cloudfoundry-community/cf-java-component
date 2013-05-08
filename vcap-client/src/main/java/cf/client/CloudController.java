@@ -26,44 +26,164 @@ import cf.client.model.ServicePlan;
 import java.util.UUID;
 
 /**
+ * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
+ * purpose Cloud Foundry client. Rather, it fills some holes not addresses by the Cloud Foundry Java client namely
+ * support for the service APIs.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
 public interface CloudController {
+
+	/**
+	 * Returns information about the cloud controller this interface is associated with.
+	 *
+	 * @return information about the cloud controller this interface is associated with.
+	 */
 	Info getInfo();
 
+	/**
+	 * Returns a UAA object for the UAA used by this cloud controller.
+	 *
+	 * @return a UAA object for the UAA used by this cloud controller.
+	 */
 	Uaa getUaa();
 
+	/**
+	 * Creates a new service type.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param service the service to be created.
+	 * @return the guid of the newly created service.
+	 */
 	UUID createService(Token token, Service service);
 
+	/**
+	 * Returns all the services.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return a collection containing all the services
+	 */
 	RestCollection<Service> getServices(Token token);
 
+	/**
+	 * Returns all the services using the specified service plan.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param servicePlanGuid the guid of the service plan used to filter the request.
+	 * @return a collection of all the services using the specified service plan.
+	 */
 	RestCollection<Service> getServices(Token token, UUID servicePlanGuid);
-
-	RestCollection<ServicePlan> getServicePlans(Token token);
-
-	RestCollection<ServicePlan> getServicePlans(Token token, ServicePlanQueryAttribute queryAttribute, String queryValue);
-
-	RestCollection<ServiceInstance> getServiceInstances(Token token);
-
-	RestCollection<ServiceInstance> getServiceInstances(Token token, ServiceInstanceQueryAttribute queryAttribute, String queryValue);
-
-	RestCollection<ServiceBinding> getServiceBindings(Token token);
-
-	RestCollection<ServiceBinding> getServiceBindings(Token token, ServiceBindingQueryAttribute queryAttribute, String queryValue);
 
 	void deleteService(Token token, UUID serviceGuid);
 
-	UUID createServicePlan(Token token, ServicePlan request);
+	/**
+	 * Returns all the service plans.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return a collection of all the service plans.
+	 */
+	RestCollection<ServicePlan> getServicePlans(Token token);
 
+	/**
+	 * Creates a service plan.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param servicePlan the service plan to create
+	 * @return the UUID of the newly created service plan
+	 */
+	UUID createServicePlan(Token token, ServicePlan servicePlan);
+
+	/**
+	 * Returns a list of service plans filtered by the query arguments.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param queryAttribute the attribute to query on
+	 * @param queryValue the expected value of the attribute
+	 * @return a filtered list of service plans.
+	 */
+	RestCollection<ServicePlan> getServicePlans(Token token, ServicePlanQueryAttribute queryAttribute, String queryValue);
+
+	/**
+	 * Returns all the service instances.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return all the service instances.
+	 */
+	RestCollection<ServiceInstance> getServiceInstances(Token token);
+
+	/**
+	 * Returns a list of service instances filtered by the query arguments.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param queryAttribute the attribute to query on
+	 * @param queryValue the expected value of the attribute
+	 * @return a filtered list of service instances
+	 */
+	RestCollection<ServiceInstance> getServiceInstances(Token token, ServiceInstanceQueryAttribute queryAttribute, String queryValue);
+
+	/**
+	 * Returns all the service bindings.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return all the service bindings.
+	 */
+	RestCollection<ServiceBinding> getServiceBindings(Token token);
+
+	/**
+	 * Returns a list of service bindings filtered by the query arguments.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param queryAttribute the attribute to query on
+	 * @param queryValue the expected value of the attribute
+	 * @return a filtered list of service bindings.
+	 */
+	RestCollection<ServiceBinding> getServiceBindings(Token token, ServiceBindingQueryAttribute queryAttribute, String queryValue);
+
+	/**
+	 * Returns all the service auth tokens.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return all the service auth tokens.
+	 */
 	RestCollection<ServiceAuthToken> getAuthTokens(Token token);
 
-	UUID createAuthToken(Token token, ServiceAuthToken request);
+	/**
+	 * Creates a service auth token.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param serviceAuthToken the service auth token to be created.
+	 * @return the guid of the newly create service auth token.
+	 */
+	UUID createAuthToken(Token token, ServiceAuthToken serviceAuthToken);
 
+	/**
+	 * Deletes a service auth token.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param authTokenGuid the guid of the service auth token to delete
+	 */
 	void deleteServiceAuthToken(Token token, UUID authTokenGuid);
 
+	/**
+	 *Creates a new service instance.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param name the name of the service instance
+	 * @param planGuid the guid of the service plan being used.
+	 * @param spaceGuid the guid of the space in which the service will be created
+	 * @return
+	 */
 	UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid);
 
+	/**
+	 * Deletes a service instances.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param instanceGuid the guid of service instance to delete.
+	 */
 	void deleteServiceInstance(Token token, UUID instanceGuid);
+
+	public interface QueryAttribute {}
 
 	public enum ServiceQueryAttribute implements QueryAttribute {
 		SERVICE_PLAN_GUID {
@@ -131,5 +251,4 @@ public interface CloudController {
 		}
 	}
 
-	public interface QueryAttribute {}
 }
