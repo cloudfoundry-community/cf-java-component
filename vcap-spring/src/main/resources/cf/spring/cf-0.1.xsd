@@ -42,6 +42,7 @@
 			<xsd:attribute name="port" type="xsd:string" use="required" />
 			<xsd:attribute name="parent-netty-event-loop-ref" type="xsd:string" use="optional" />
 			<xsd:attribute name="child-netty-event-loop-ref" type="xsd:string" use="optional" />
+			<xsd:attribute name="use-thread-pool" type="xsd:string" default="true" />
 		</xsd:complexType>
 	</xsd:element>
 

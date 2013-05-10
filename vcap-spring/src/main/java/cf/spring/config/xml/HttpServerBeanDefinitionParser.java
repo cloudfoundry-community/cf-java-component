@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 import cf.component.http.SimpleHttpServer;
@@ -41,6 +42,13 @@ public class HttpServerBeanDefinitionParser implements BeanDefinitionParser {
 		} else {
 			final BeanDefinitionBuilder childGroupBuilder = BeanDefinitionBuilder.genericBeanDefinition(NettyEventLoopGroupFactoryBean.class);
 			builder.addConstructorArgValue(childGroupBuilder.getBeanDefinition());
+		}
+
+		if (Boolean.valueOf(element.getAttribute("use-thread-pool"))) {
+			final BeanDefinitionBuilder threadPoolBuilder = BeanDefinitionBuilder.genericBeanDefinition(ThreadPoolExecutorFactoryBean.class);
+			builder.addConstructorArgValue(threadPoolBuilder.getBeanDefinition());
+		} else {
+			builder.addConstructorArgValue(null);
 		}
 
 		final String beanId = element.getAttribute("id");

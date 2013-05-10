@@ -46,6 +46,7 @@ import java.io.Closeable;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,16 +68,33 @@ public class SimpleHttpServer implements Closeable {
 	private final NioEventLoopGroup parentGroup;
 	private final NioEventLoopGroup childGroup;
 
+	private final Executor executor;
+
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
 		childGroup = new NioEventLoopGroup();
 		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		executor = createLocalThreadExecutor();
 	}
 
-	public SimpleHttpServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
+	public SimpleHttpServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup, Executor executor) {
 		this.parentGroup = null;
 		this.childGroup = null;
 		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		if (executor == null) {
+			this.executor = createLocalThreadExecutor();
+		} else {
+			this.executor = executor;
+		}
+	}
+
+	private Executor createLocalThreadExecutor() {
+		return new Executor() {
+			@Override
+			public void execute(Runnable command) {
+				command.run();
+			}
+		};
 	}
 
 	private ServerBootstrap initBootstrap(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
@@ -122,7 +140,7 @@ public class SimpleHttpServer implements Closeable {
 
 	private class SimpleHttpServerHandler extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
 		@Override
-		public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+		public void messageReceived(final ChannelHandlerContext ctx, final FullHttpRequest request) throws Exception {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Method: {}", request.getMethod());
 				LOGGER.debug("URI: " + request.getUri());
@@ -157,10 +175,18 @@ public class SimpleHttpServer implements Closeable {
 			}
 
 			if (requestHandler != null) {
-				final HttpResponse httpResponse;
-				httpResponse = requestHandler.handleRequest(request, uriMatcher, request.data());
-				// Close the connection as soon as the message is sent.
-				ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+				executor.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, request.data());
+							// Close the connection as soon as the message is sent.
+							ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+						} catch (Exception e) {
+							exceptionCaught(ctx, e);
+						}
+					}
+				});
 			} else {
 				LOGGER.debug("Returning 404");
 				sendError(ctx, HttpResponseStatus.NOT_FOUND, "Not found");
@@ -178,7 +204,7 @@ public class SimpleHttpServer implements Closeable {
 		}
 
 		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 			LOGGER.error(cause.getMessage(), cause);
 			if (ctx.channel().isOpen()) {
 				if (cause instanceof RequestException) {
