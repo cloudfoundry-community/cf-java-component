@@ -175,18 +175,20 @@ public class SimpleHttpServer implements Closeable {
 			}
 
 			if (requestHandler != null) {
+				// Copy buffer to make sure it's accessible if request is handled by another thread.
+				final ByteBuf content = Unpooled.copiedBuffer(request.data());
 				executor.execute(new Runnable() {
-					@Override
-					public void run() {
+						@Override
+						public void run() {
 						try {
-							final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, request.data());
+							final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, content);
 							// Close the connection as soon as the message is sent.
 							ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
 						} catch (Exception e) {
 							exceptionCaught(ctx, e);
 						}
 					}
-				});
+					});
 			} else {
 				LOGGER.debug("Returning 404");
 				sendError(ctx, HttpResponseStatus.NOT_FOUND, "Not found");
