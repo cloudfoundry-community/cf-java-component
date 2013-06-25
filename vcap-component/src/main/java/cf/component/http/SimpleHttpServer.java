@@ -21,9 +21,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.MessageList;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -60,8 +61,6 @@ public class SimpleHttpServer implements Closeable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpServer.class);
 
-	private final ServerBootstrap bootstrap;
-
 	// Access must be synchronized on self
 	private final List<RequestHandle> requestHandles = new ArrayList<>();
 
@@ -73,14 +72,14 @@ public class SimpleHttpServer implements Closeable {
 	public SimpleHttpServer(SocketAddress localAddress) {
 		parentGroup = new NioEventLoopGroup();
 		childGroup = new NioEventLoopGroup();
-		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		bootstrapServer(localAddress, parentGroup, childGroup);
 		executor = createLocalThreadExecutor();
 	}
 
 	public SimpleHttpServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup, Executor executor) {
 		this.parentGroup = null;
 		this.childGroup = null;
-		bootstrap = initBootstrap(localAddress, parentGroup, childGroup);
+		bootstrapServer(localAddress, parentGroup, childGroup);
 		if (executor == null) {
 			this.executor = createLocalThreadExecutor();
 		} else {
@@ -97,23 +96,23 @@ public class SimpleHttpServer implements Closeable {
 		};
 	}
 
-	private ServerBootstrap initBootstrap(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
-		ServerBootstrap bootstrap = new ServerBootstrap();
-		bootstrap.group(parentGroup, childGroup)
+	private void bootstrapServer(SocketAddress localAddress, NioEventLoopGroup parentGroup, NioEventLoopGroup childGroup) {
+		new ServerBootstrap().group(parentGroup, childGroup)
 				.channel(NioServerSocketChannel.class)
 				.localAddress(localAddress)
 				.childHandler(new SimpleHttpServerInitializer())
 				.bind().awaitUninterruptibly(); // Make sure the server is bound before the constructor returns.
 
 		LOGGER.info("Server listening on {}", localAddress);
-
-		return bootstrap;
 	}
 
 	@Override
 	public void close() {
-		if (parentGroup != null || childGroup != null) {
-			bootstrap.shutdown();
+		if (parentGroup != null) {
+			parentGroup.shutdownGracefully();
+		}
+		if (childGroup != null) {
+			childGroup.shutdownGracefully();
 		}
 	}
 
@@ -138,60 +137,63 @@ public class SimpleHttpServer implements Closeable {
 		}
 	}
 
-	private class SimpleHttpServerHandler extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
+	private class SimpleHttpServerHandler extends ChannelInboundHandlerAdapter {
 		@Override
-		public void messageReceived(final ChannelHandlerContext ctx, final FullHttpRequest request) throws Exception {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Method: {}", request.getMethod());
-				LOGGER.debug("URI: " + request.getUri());
-				for (String name : request.headers().names()) {
-					for (String value : request.headers().getAll(name)) {
-						LOGGER.debug("{}: {}", name, value);
-					}
-				}
-				LOGGER.debug("Request body: {}", request.data().toString(CharsetUtil.UTF_8));
-				LOGGER.debug("=== End of Request ===============");
-			}
-
-			if (!request.getDecoderResult().isSuccess()) {
-				sendError(ctx, HttpResponseStatus.BAD_REQUEST, "Bad request");
-				return;
-			}
-
-			final String uri = request.getUri();
-			final RequestHandler requestHandler;
-			final Matcher uriMatcher;
-			lock: synchronized (requestHandles) {
-				for (RequestHandle handle : requestHandles) {
-					final Matcher matcher = handle.uriPattern.matcher(uri);
-					if (matcher.matches()) {
-						requestHandler = handle.handler;
-						uriMatcher = matcher;
-						break lock;
-					}
-				}
-				requestHandler = null;
-				uriMatcher = null;
-			}
-
-			if (requestHandler != null) {
-				// Copy buffer to make sure it's accessible if request is handled by another thread.
-				final ByteBuf content = Unpooled.copiedBuffer(request.data());
-				executor.execute(new Runnable() {
-						@Override
-						public void run() {
-						try {
-							final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, content);
-							// Close the connection as soon as the message is sent.
-							ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
-						} catch (Exception e) {
-							exceptionCaught(ctx, e);
+		public void messageReceived(final ChannelHandlerContext ctx, final MessageList<Object> messages) throws Exception {
+			for (Object message : messages) {
+				final FullHttpRequest request = (FullHttpRequest) message;
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Method: {}", request.getMethod());
+					LOGGER.debug("URI: " + request.getUri());
+					for (String name : request.headers().names()) {
+						for (String value : request.headers().getAll(name)) {
+							LOGGER.debug("{}: {}", name, value);
 						}
 					}
-					});
-			} else {
-				LOGGER.debug("Returning 404");
-				sendError(ctx, HttpResponseStatus.NOT_FOUND, "Not found");
+					LOGGER.debug("Request body: {}", request.content().toString(CharsetUtil.UTF_8));
+					LOGGER.debug("=== End of Request ===============");
+				}
+
+				if (!request.getDecoderResult().isSuccess()) {
+					sendError(ctx, HttpResponseStatus.BAD_REQUEST, "Bad request");
+					return;
+				}
+
+				final String uri = request.getUri();
+				final RequestHandler requestHandler;
+				final Matcher uriMatcher;
+				lock: synchronized (requestHandles) {
+					for (RequestHandle handle : requestHandles) {
+						final Matcher matcher = handle.uriPattern.matcher(uri);
+						if (matcher.matches()) {
+							requestHandler = handle.handler;
+							uriMatcher = matcher;
+							break lock;
+						}
+					}
+					requestHandler = null;
+					uriMatcher = null;
+				}
+
+				if (requestHandler != null) {
+					// Copy buffer to make sure it's accessible if request is handled by another thread.
+					final ByteBuf content = Unpooled.copiedBuffer(request.content());
+					executor.execute(new Runnable() {
+							@Override
+							public void run() {
+							try {
+								final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, content);
+								// Close the connection as soon as the message is sent.
+								ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+							} catch (Exception e) {
+								exceptionCaught(ctx, e);
+							}
+						}
+						});
+				} else {
+					LOGGER.debug("Returning 404");
+					sendError(ctx, HttpResponseStatus.NOT_FOUND, "Not found");
+				}
 			}
 		}
 

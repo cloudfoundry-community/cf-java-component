@@ -17,3 +17,6 @@
   - JavaDocs
 
 - Configure Maven for running integration tests
+
+- Upgrade Netty
+  - Updated event loop group config to use shutdownGracefully instead of shutdown.

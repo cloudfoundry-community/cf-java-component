@@ -22,7 +22,7 @@ public class NettyEventLoopGroupFactoryBean implements FactoryBean<EventLoopGrou
 
 	@Override
 	public void destroy() throws Exception {
-		eventLoopGroup.shutdown();
+		eventLoopGroup.shutdownGracefully();
 	}
 
 	@Override
