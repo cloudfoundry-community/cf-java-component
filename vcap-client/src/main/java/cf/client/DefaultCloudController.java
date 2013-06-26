@@ -16,6 +16,7 @@
  */
 package cf.client;
 
+import cf.client.model.ApplicationInstance;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -44,7 +45,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -54,6 +57,8 @@ public class DefaultCloudController implements CloudController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCloudController.class);
 
+	private static final String APP_INSTANCES = "/instances";
+	private static final String V2_APPS = "/v2/apps";
 	private static final String V2_SERVICES = "/v2/services";
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
 	private static final String V2_SERVICE_BINDINGS = "/v2/service_bindings";
@@ -101,6 +106,22 @@ public class DefaultCloudController implements CloudController {
 			}
 			return uaa;
 		}
+	}
+
+	@Override
+	public Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid) {
+		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + "/" + APP_INSTANCES);
+		final Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.getFields();
+		final Map<String, ApplicationInstance> instances = new HashMap<>();
+		while (fields.hasNext()) {
+			final Map.Entry<String, JsonNode> field = fields.next();
+			try {
+				instances.put(field.getKey(), mapper.readValue(field.getValue(), ApplicationInstance.class));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return instances;
 	}
 
 	@Override
@@ -309,6 +330,23 @@ public class DefaultCloudController implements CloudController {
 		}
 	}
 
+	private JsonNode fetchResource(Token token, String uri) {
+		LOGGER.debug("GET {}", uri);
+		try {
+			final HttpGet httpGet = new HttpGet(target.resolve(uri));
+			httpGet.setHeader(token.toAuthorizationHeader());
+			final HttpResponse response = httpClient.execute(httpGet);
+			try {
+				validateResponse(response, 200);
+				return mapper.readTree(response.getEntity().getContent());
+			} finally {
+				HttpClientUtils.closeQuietly(response);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private class ResultIterator<T> implements Iterator<Resource<T>> {
 
 		private ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
@@ -334,7 +372,7 @@ public class DefaultCloudController implements CloudController {
 			if (queryAttribute != null) {
 				uri += "?q=" + queryAttribute + ":" + queryValue;
 			}
-			final JsonNode jsonNode = fetchResource(uri);
+			final JsonNode jsonNode = fetchResource(token, uri);
 
 			size = jsonNode.get("total_results").asInt();
 
@@ -375,28 +413,11 @@ public class DefaultCloudController implements CloudController {
 			iterator = resources.iterator();
 		}
 
-		private JsonNode fetchResource(String uri) {
-			LOGGER.debug("Fetching next page using uri {}", uri);
-			try {
-				final HttpGet httpGet = new HttpGet(target.resolve(uri));
-				httpGet.setHeader(token.toAuthorizationHeader());
-				final HttpResponse response = httpClient.execute(httpGet);
-				try {
-					validateResponse(response, 200);
-					return mapper.readTree(response.getEntity().getContent());
-				} finally {
-					HttpClientUtils.closeQuietly(response);
-				}
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		public boolean fetchNextPage() {
 			if (nextUri == null) {
 				return false;
 			}
-			final JsonNode jsonNode = fetchResource(nextUri);
+			final JsonNode jsonNode = fetchResource(token, nextUri);
 			parseResources(jsonNode);
 			return true;
 		}

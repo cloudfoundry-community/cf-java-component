@@ -16,6 +16,7 @@
  */
 package cf.client;
 
+import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
@@ -23,6 +24,7 @@ import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -47,6 +49,8 @@ public interface CloudController {
 	 * @return a UAA object for the UAA used by this cloud controller.
 	 */
 	Uaa getUaa();
+
+	Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid);
 
 	/**
 	 * Creates a new service type.
