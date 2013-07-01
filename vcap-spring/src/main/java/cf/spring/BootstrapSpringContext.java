@@ -20,6 +20,7 @@ public class BootstrapSpringContext {
 		final JCommander commander = new JCommander();
 
 		final Options options = new Options();
+		options.configFile = "config/" + programName + ".yml";
 		commander.addObject(options);
 
 		commander.setProgramName(programName);
@@ -47,7 +48,7 @@ public class BootstrapSpringContext {
 
 	static class Options {
 		@Parameter(names = "-c", description = "Config file")
-		String configFile = "config/gateway.yml";
+		String configFile;
 	}
 
 
