@@ -57,8 +57,10 @@ public class ApplicationInstance {
 			@JsonProperty("console_ip") String consoleIp,
 			@JsonProperty("console_port") Integer consolePort
 	) {
-		State stateValue = State.valueOf(state.toUpperCase());
-		if (stateValue == null) {
+		State stateValue = null;
+		try {
+			stateValue = State.valueOf(state.toUpperCase());
+		} catch (IllegalArgumentException e) {
 			stateValue = State.UNKNOWN;
 		}
 		this.state = stateValue;
