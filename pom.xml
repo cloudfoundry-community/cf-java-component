@@ -26,7 +26,7 @@
 		<java.version>1.7</java.version>
 		<jcommander.version>1.30</jcommander.version>
 		<logback.version>1.0.6</logback.version>
-		<nats.version>0.5.Beta3</nats.version>
+		<nats.version>0.5.Beta4</nats.version>
 		<netty.version>4.0.0.CR6</netty.version>
 		<slf4j.version>1.6.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
