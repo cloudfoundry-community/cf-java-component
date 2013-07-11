@@ -16,7 +16,11 @@
  */
 package cf.nats;
 
+import nats.client.Registration;
+import nats.client.Request;
 import nats.client.Subscription;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link nats.client.Nats} wrapper to simplify working with Cloud Foundry. For example, to register with a Cloud Foundry router
@@ -44,6 +48,10 @@ public interface CfNats {
 	 * @param message the message to be published.
 	 */
 	void publish(MessageBody message);
+
+	Registration publish(MessageBody message, long period, TimeUnit timeUnit);
+
+	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, RequestResponseHandler<R> handler);
 
 	/**
 	 * Subscribes to a Cloud Foundry NATS subject.

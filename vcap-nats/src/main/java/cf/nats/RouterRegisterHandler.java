@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013 Mike Heath.  All rights reserved.
+ *   Copyright (c) 2013 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
  */
 package cf.nats;
 
+import cf.nats.message.RouterGreet;
+import nats.client.Registration;
 import nats.client.Subscription;
 import cf.nats.message.RouterRegister;
 import cf.nats.message.RouterStart;
@@ -24,6 +26,7 @@ import cf.nats.message.RouterUnregister;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -33,6 +36,9 @@ public class RouterRegisterHandler implements AutoCloseable {
 	private final CfNats cfNats;
 	private final RouterRegister routerRegister;
 	private final Subscription subscription;
+
+	private long updateInterval = TimeUnit.SECONDS.toMillis(30);
+	private Registration routerRegisterPublication;
 
 	public RouterRegisterHandler(CfNats nats, String host, int port, String... uris) {
 		this(nats, host, port, Arrays.asList(uris), null);
@@ -46,13 +52,38 @@ public class RouterRegisterHandler implements AutoCloseable {
 		this.cfNats = cfNats;
 		this.routerRegister = routerRegister;
 
-		cfNats.publish(routerRegister);
+		cfNats.request(new RouterGreet(), new RequestResponseHandler<RouterStart>() {
+			@Override
+			public void onResponse(Publication<RouterStart, Void> response) {
+				updateRouterRegisterInterval(response.getMessageBody());
+			}
+		});
 		subscription = cfNats.subscribe(RouterStart.class, new PublicationHandler<RouterStart, Void>() {
 					@Override
 					public void onMessage(Publication<RouterStart, Void> publication) {
+						updateRouterRegisterInterval(publication.getMessageBody());
 						cfNats.publish(routerRegister);
 					}
 				});
+		publish();
+	}
+
+	private void publish() {
+		routerRegisterPublication = cfNats.publish(routerRegister, updateInterval, TimeUnit.MILLISECONDS);
+	}
+
+	private void updateRouterRegisterInterval(RouterStart routerStart) {
+		if (routerStart.getMinimumRegisterIntervalInSeconds() == null) {
+			return;
+		}
+		final long newInterval = TimeUnit.SECONDS.toMillis(routerStart.getMinimumRegisterIntervalInSeconds());
+		if (newInterval < updateInterval) {
+			if (routerRegisterPublication != null) {
+				routerRegisterPublication.remove();
+			}
+			updateInterval = newInterval;
+			publish();
+		}
 	}
 
 	@Override

@@ -35,12 +35,18 @@ public class RouterStart extends JsonObject implements MessageBody<Void> {
 	private final String id;
 	private final String version;
 	private final List<String> hosts;
+	private final Long minimumRegisterIntervalInSeconds;
 
 	@JsonCreator
-	public RouterStart(@JsonProperty("id") String id, @JsonProperty("version") String version, @JsonProperty("hosts")List<String> hosts) {
+	public RouterStart(
+			@JsonProperty("id") String id,
+			@JsonProperty("version") String version,
+			@JsonProperty("hosts")List<String> hosts,
+			@JsonProperty("minimumRegisterIntervalInSeconds") Long minimumRegisterIntervalInSeconds) {
 		this.id = id;
 		this.version = version;
 		this.hosts = hosts == null ? null : Collections.unmodifiableList(hosts);
+		this.minimumRegisterIntervalInSeconds = minimumRegisterIntervalInSeconds;
 	}
 
 	public String getId() {
@@ -53,5 +59,9 @@ public class RouterStart extends JsonObject implements MessageBody<Void> {
 
 	public List<String> getHosts() {
 		return hosts;
+	}
+
+	public Long getMinimumRegisterIntervalInSeconds() {
+		return minimumRegisterIntervalInSeconds;
 	}
 }

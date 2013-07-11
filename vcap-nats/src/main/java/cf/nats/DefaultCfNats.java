@@ -21,6 +21,8 @@ import nats.NatsException;
 import nats.client.Message;
 import nats.client.MessageHandler;
 import nats.client.Nats;
+import nats.client.Registration;
+import nats.client.Request;
 import nats.client.Subscription;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -28,6 +30,8 @@ import org.codehaus.jackson.map.ObjectReader;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,6 +55,35 @@ public class DefaultCfNats implements CfNats {
 
 	@Override
 	public void publish(MessageBody message) {
+		final String subject = getPublishSubject(message);
+		final String encoding = encode(message);
+		nats.publish(subject, encoding);
+	}
+
+	@Override
+	public Registration publish(MessageBody message, long period, TimeUnit timeUnit) {
+		final String subject = getPublishSubject(message);
+		final String encoding = encode(message);
+		return nats.publish(subject, encoding, period, timeUnit);
+	}
+
+	@Override
+	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, final RequestResponseHandler<R> handler) {
+		final String subject = getPublishSubject(message);
+		final String encoding = encode(message);
+		final Type[] genericInterfaces = message.getClass().getGenericInterfaces();
+		final ParameterizedType replyType = (ParameterizedType) genericInterfaces[0];
+		final Class<R> messageReplyClass = (Class<R>) replyType.getActualTypeArguments()[0];
+
+		return nats.request(subject, encoding, createMessageHandler(messageReplyClass, new PublicationHandler<R, Void>() {
+			@Override
+			public void onMessage(Publication<R, Void> publication) {
+				handler.onResponse(publication);
+			}
+		}));
+	}
+
+	private String getPublishSubject(MessageBody message) {
 		if (message == null) {
 			throw new IllegalArgumentException("message cannot be null");
 		}
@@ -58,8 +91,7 @@ public class DefaultCfNats implements CfNats {
 		if (subject == null) {
 			throw new NatsException("Unable to publish message of type " + message.getClass().getName() + ", missing annotation " + NatsSubject.class.getName());
 		}
-		final String encoding = encode(message);
-		nats.publish(subject, encoding);
+		return subject;
 	}
 
 	@Override
@@ -78,43 +110,46 @@ public class DefaultCfNats implements CfNats {
 	}
 
 	@Override
-	public <T extends MessageBody<R>, R> Subscription subscribe(final Class<T> type, String queueGroup, Integer maxMessages, final PublicationHandler<T, R> handler) {
+	public <T extends MessageBody<R>, R> Subscription subscribe(Class<T> type, String queueGroup, Integer maxMessages, PublicationHandler<T, R> handler) {
 		final Subscription subscribe = nats.subscribe(getSubject(type), queueGroup, maxMessages);
-		final ObjectReader reader = (JsonObject.class.isAssignableFrom(type)) ? mapper.reader(type) : null;
-		subscribe.addMessageHandler(new MessageHandler() {
-			@Override
-			public void onMessage(final Message message) {
-				final String body = message.getBody();
-				try {
-					final T vcapMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
-					handler.onMessage(new Publication<T, R>() {
-						@Override
-						public Message getNatsMessage() {
-							return message;
-						}
-
-						@Override
-						public T getMessageBody() {
-							return vcapMessage;
-						}
-
-						@Override
-						public void reply(R replyMessage) {
-							message.reply(encode(replyMessage));
-						}
-
-						@Override
-						public void reply(R replyMessage, long delay, TimeUnit unit) {
-							message.reply(encode(replyMessage), delay, unit);
-						}
-					});
-				} catch (Exception e) {
-					throw new NatsException(e);
-				}
-
-			}
-		});
+		subscribe.addMessageHandler(createMessageHandler(type, handler));
 		return subscribe;
+	}
+
+	private <T extends MessageBody<R>, R> MessageHandler createMessageHandler(final Class<T> type, final PublicationHandler<T, R> handler) {
+		final ObjectReader reader = (JsonObject.class.isAssignableFrom(type)) ? mapper.reader(type) : null;
+		return new MessageHandler() {
+					@Override
+					public void onMessage(final Message message) {
+						final String body = message.getBody();
+						try {
+							final T vcapMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
+							handler.onMessage(new Publication<T, R>() {
+								@Override
+								public Message getNatsMessage() {
+									return message;
+								}
+
+								@Override
+								public T getMessageBody() {
+									return vcapMessage;
+								}
+
+								@Override
+								public void reply(R replyMessage) {
+									message.reply(encode(replyMessage));
+								}
+
+								@Override
+								public void reply(R replyMessage, long delay, TimeUnit unit) {
+									message.reply(encode(replyMessage), delay, unit);
+								}
+							});
+						} catch (Exception e) {
+							throw new NatsException(e);
+						}
+					}
+				};
 	}
 
 	public Nats getNats() {
