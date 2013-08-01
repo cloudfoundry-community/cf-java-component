@@ -68,14 +68,14 @@ public class DefaultCfNats implements CfNats {
 	}
 
 	@Override
-	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, final RequestResponseHandler<R> handler) {
+	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, long timeout, TimeUnit unit, final RequestResponseHandler<R> handler) {
 		final String subject = getPublishSubject(message);
 		final String encoding = encode(message);
 		final Type[] genericInterfaces = message.getClass().getGenericInterfaces();
 		final ParameterizedType replyType = (ParameterizedType) genericInterfaces[0];
 		final Class<R> messageReplyClass = (Class<R>) replyType.getActualTypeArguments()[0];
 
-		return nats.request(subject, encoding, createMessageHandler(messageReplyClass, new PublicationHandler<R, Void>() {
+		return nats.request(subject, encoding, timeout, unit, createMessageHandler(messageReplyClass, new PublicationHandler<R, Void>() {
 			@Override
 			public void onMessage(Publication<R, Void> publication) {
 				handler.onResponse(publication);

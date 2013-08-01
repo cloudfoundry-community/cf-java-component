@@ -51,7 +51,7 @@ public interface CfNats {
 
 	Registration publish(MessageBody message, long period, TimeUnit timeUnit);
 
-	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, RequestResponseHandler<R> handler);
+	public <R extends MessageBody<Void>> Request request(MessageBody<R> message, long timeout, TimeUnit unit, RequestResponseHandler<R> handler);
 
 	/**
 	 * Subscribes to a Cloud Foundry NATS subject.
