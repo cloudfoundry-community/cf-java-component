@@ -52,7 +52,7 @@ public class RouterRegisterHandler implements AutoCloseable {
 		this.cfNats = cfNats;
 		this.routerRegister = routerRegister;
 
-		cfNats.request(new RouterGreet(), new RequestResponseHandler<RouterStart>() {
+		cfNats.request(new RouterGreet(), 1, TimeUnit.MINUTES, new RequestResponseHandler<RouterStart>() {
 			@Override
 			public void onResponse(Publication<RouterStart, Void> response) {
 				updateRouterRegisterInterval(response.getMessageBody());

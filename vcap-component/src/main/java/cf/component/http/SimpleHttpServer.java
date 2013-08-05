@@ -24,7 +24,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.MessageList;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -139,61 +138,60 @@ public class SimpleHttpServer implements Closeable {
 
 	private class SimpleHttpServerHandler extends ChannelInboundHandlerAdapter {
 		@Override
-		public void messageReceived(final ChannelHandlerContext ctx, final MessageList<Object> messages) throws Exception {
-			for (Object message : messages) {
-				final FullHttpRequest request = (FullHttpRequest) message;
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Method: {}", request.getMethod());
-					LOGGER.debug("URI: " + request.getUri());
-					for (String name : request.headers().names()) {
-						for (String value : request.headers().getAll(name)) {
-							LOGGER.debug("{}: {}", name, value);
+		public void channelRead(final ChannelHandlerContext context, final Object message) throws Exception {
+			final FullHttpRequest request = (FullHttpRequest) message;
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Method: {}", request.getMethod());
+				LOGGER.debug("URI: " + request.getUri());
+				for (String name : request.headers().names()) {
+					for (String value : request.headers().getAll(name)) {
+						LOGGER.debug("{}: {}", name, value);
+					}
+				}
+				LOGGER.debug("Request body: {}", request.content().toString(CharsetUtil.UTF_8));
+				LOGGER.debug("=== End of Request ===============");
+			}
+
+			if (!request.getDecoderResult().isSuccess()) {
+				sendError(context, HttpResponseStatus.BAD_REQUEST, "Bad request");
+				return;
+			}
+
+			final String uri = request.getUri();
+			final RequestHandler requestHandler;
+			final Matcher uriMatcher;
+			lock: synchronized (requestHandles) {
+				for (RequestHandle handle : requestHandles) {
+					final Matcher matcher = handle.uriPattern.matcher(uri);
+					if (matcher.matches()) {
+						requestHandler = handle.handler;
+						uriMatcher = matcher;
+						break lock;
+					}
+				}
+				requestHandler = null;
+				uriMatcher = null;
+			}
+
+			if (requestHandler != null) {
+				// Copy buffer to make sure it's accessible if request is handled by another thread.
+				final ByteBuf content = Unpooled.copiedBuffer(request.content());
+				executor.execute(new Runnable() {
+						@Override
+						public void run() {
+						try {
+							final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, content);
+							// Close the connection as soon as the message is sent.
+							context.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+							context.flush();
+						} catch (Exception e) {
+							exceptionCaught(context, e);
 						}
 					}
-					LOGGER.debug("Request body: {}", request.content().toString(CharsetUtil.UTF_8));
-					LOGGER.debug("=== End of Request ===============");
-				}
-
-				if (!request.getDecoderResult().isSuccess()) {
-					sendError(ctx, HttpResponseStatus.BAD_REQUEST, "Bad request");
-					return;
-				}
-
-				final String uri = request.getUri();
-				final RequestHandler requestHandler;
-				final Matcher uriMatcher;
-				lock: synchronized (requestHandles) {
-					for (RequestHandle handle : requestHandles) {
-						final Matcher matcher = handle.uriPattern.matcher(uri);
-						if (matcher.matches()) {
-							requestHandler = handle.handler;
-							uriMatcher = matcher;
-							break lock;
-						}
-					}
-					requestHandler = null;
-					uriMatcher = null;
-				}
-
-				if (requestHandler != null) {
-					// Copy buffer to make sure it's accessible if request is handled by another thread.
-					final ByteBuf content = Unpooled.copiedBuffer(request.content());
-					executor.execute(new Runnable() {
-							@Override
-							public void run() {
-							try {
-								final HttpResponse httpResponse = requestHandler.handleRequest(request, uriMatcher, content);
-								// Close the connection as soon as the message is sent.
-								ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
-							} catch (Exception e) {
-								exceptionCaught(ctx, e);
-							}
-						}
-						});
-				} else {
-					LOGGER.debug("Returning 404");
-					sendError(ctx, HttpResponseStatus.NOT_FOUND, "Not found");
-				}
+					});
+			} else {
+				LOGGER.debug("Returning 404");
+				sendError(context, HttpResponseStatus.NOT_FOUND, "Not found");
 			}
 		}
 
@@ -219,7 +217,7 @@ public class SimpleHttpServer implements Closeable {
 			}
 		}
 
-		private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, String message) {
+		private void sendError(ChannelHandlerContext context, HttpResponseStatus status, String message) {
 			final ByteBuf buf = Unpooled.copiedBuffer(
 					"Failure: " + message + "\r\n",
 					CharsetUtil.UTF_8);
@@ -227,7 +225,8 @@ public class SimpleHttpServer implements Closeable {
 			response.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
 			// Close the connection as soon as the error message is sent.
-			ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+			context.write(response).addListener(ChannelFutureListener.CLOSE);
+			context.flush();
 		}
 	}
 
