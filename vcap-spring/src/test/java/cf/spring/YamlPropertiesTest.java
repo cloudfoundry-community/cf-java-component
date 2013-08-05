@@ -1,5 +1,7 @@
 package cf.spring;
 
+import java.util.Map;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.testng.Assert.*;
@@ -22,6 +24,17 @@ public class YamlPropertiesTest {
 			assertEquals(value2, "Nested value");
 			assertEquals(value3, "Some value");
 			assertEquals(value4, "1");
+		}
+	}
+
+	@Test
+	public void id() {
+		try (ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("classpath:yamlPropertiesContext.xml")) {
+			final Object yaml = context.getBean("yaml", Object.class);
+			
+			assertNotNull(yaml);
+			assertTrue(yaml instanceof Map);
+			assertTrue(((Map<String, Object>)yaml).get("root") instanceof Map);
 		}
 	}
 

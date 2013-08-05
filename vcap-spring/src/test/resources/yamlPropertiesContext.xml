@@ -9,7 +9,7 @@
 		"
 		default-lazy-init="true">
 
-	<cf:yaml-properties resource="classpath:testProperties.yml" />
+	<cf:yaml-properties id="yaml" resource="classpath:testProperties.yml" />
 
 	<bean id="value1" class="java.lang.String">
 		<constructor-arg value="${foo}" />
