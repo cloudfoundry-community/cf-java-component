@@ -37,12 +37,12 @@
 	</properties>
 
 	<modules>
-		<module>vcap-common</module>
-		<module>vcap-client</module>
-		<module>vcap-nats</module>
-		<module>vcap-component</module>
-		<module>vcap-service-gateway</module>
-		<module>vcap-spring</module>
+		<module>cf-common</module>
+		<module>cf-client</module>
+		<module>cf-nats</module>
+		<module>cf-component</module>
+		<module>cf-service-gateway</module>
+		<module>cf-spring</module>
 	</modules>
 
 	<build>
