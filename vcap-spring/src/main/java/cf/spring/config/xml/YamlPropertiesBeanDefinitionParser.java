@@ -7,7 +7,10 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
+
+import cf.spring.YamlFactoryBean;
 import cf.spring.YamlPropertiesPersister;
 
 /**
@@ -28,6 +31,14 @@ class YamlPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 		final BeanComponentDefinition definition = new BeanComponentDefinition(beanDefinition, beanId);
 		parserContext.registerBeanComponent(definition);
 
+		if(StringUtils.hasText(element.getAttribute("id"))) {
+			BeanDefinitionBuilder yamlBuilder = BeanDefinitionBuilder.genericBeanDefinition(YamlFactoryBean.class);
+			yamlBuilder.addPropertyValue("yamlFile", element.getAttribute("resource"));
+			
+			final BeanComponentDefinition yamlDefinition = new BeanComponentDefinition(yamlBuilder.getBeanDefinition(), element.getAttribute("id"));
+			parserContext.registerBeanComponent(yamlDefinition);
+		}
+		
 		return null;
 	}
 }
