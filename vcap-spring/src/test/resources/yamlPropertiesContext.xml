@@ -2,10 +2,10 @@
 <beans
 		xmlns="http://www.springframework.org/schema/beans"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:cf="http://irinc.github.com/cf-component/schema/spring"
+		xmlns:cf="http://cloudfoundry-community.github.com/cf-java-component/schema/spring"
 		xsi:schemaLocation="
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://irinc.github.com/cf-component/schema/spring http://irinc.github.com/cf-component/schema/spring/cf-0.1.xsd
+			http://cloudfoundry-community.github.com/cf-java-component/schema/spring http://cloudfoundry-community.github.com/cf-java-component/schema/spring/cf-0.1.xsd
 		"
 		default-lazy-init="true">
 

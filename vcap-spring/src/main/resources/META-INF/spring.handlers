@@ -1,1 +1,1 @@
-http\://irinc.github.com/cf-component/schema/spring=cf.spring.config.xml.CfNamespaceHandler
+http\://cloudfoundry-community.github.com/cf-java-component/schema/spring=cf.spring.config.xml.CfNamespaceHandler

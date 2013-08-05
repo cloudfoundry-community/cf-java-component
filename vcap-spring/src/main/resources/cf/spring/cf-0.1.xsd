@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://irinc.github.com/cf-component/schema/spring"
+<xsd:schema xmlns="http://cloudfoundry-community.github.com/cf-java-component/schema/spring"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://irinc.github.com/cf-component/schema/spring"
+            targetNamespace="http://cloudfoundry-community.github.com/cf-java-component/schema/spring"
             elementFormDefault="qualified" attributeFormDefault="unqualified"
 >
 
