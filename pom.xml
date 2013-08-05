@@ -12,7 +12,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.mheath</groupId>
-	<artifactId>java-vcap-component-parent</artifactId>
+	<artifactId>cf-java-component</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
