@@ -26,13 +26,14 @@
 		<java.version>1.7</java.version>
 		<jcommander.version>1.30</jcommander.version>
 		<logback.version>1.0.6</logback.version>
-		<nats.version>0.5</nats.version>
-		<netty.version>4.0.4.Final</netty.version>
+		<nats.version>0.5.1</nats.version>
+		<netty.version>4.0.6.Final</netty.version>
 		<slf4j.version>1.6.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
 		<spring.version>3.2.2.RELEASE</spring.version>
 		<testng.version>6.3.1</testng.version>
 		<spring.framework.version>${spring.version}</spring.framework.version>
+		<commons-codec.version>1.6</commons-codec.version>
 	</properties>
 
 	<modules>
@@ -155,6 +156,11 @@
 				<groupId>com.beust</groupId>
 				<artifactId>jcommander</artifactId>
 				<version>${jcommander.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

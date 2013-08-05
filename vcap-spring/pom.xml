@@ -24,7 +24,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.mheath</groupId>
+			<groupId>com.github.cloudfoundry-community</groupId>
 			<artifactId>nats-client-spring</artifactId>
 		</dependency>
 
