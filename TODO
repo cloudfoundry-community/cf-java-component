@@ -1,15 +1,5 @@
 - Add support for annotated vcap NATS subscriptions with Spring - make existing NATS Spring annotation extensible so we only need one annotation config.
 
-- Add copyright headers.
-- Attribute all copyrights to Intellectual Reserve, Inc.
-
-- Add Third party license information
-
-- Rename to cf-java-component
-  - Change all 'vcap' references to 'cf'
-
-- Change all mheath references to cloudfoundry-community in GitHub URLs.
-
 - Remove binding_id from gateway_data in service framework. Gateway name already holds that field.
 - Add support for getting Gateway config from service gateway config (service GUID, plans, etc.)
 

@@ -4,17 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
-		<groupId>com.github.mheath</groupId>
+		<groupId>com.github.cloudfoundry-community</groupId>
 		<artifactId>cf-java-component</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>vcap-nats</artifactId>
-
-	<name>Java NATS VCAP support</name>
-	<description>An abstraction for working with NATS on VCAP (Cloud Foundry).</description>
+	<artifactId>cf-nats</artifactId>
+	<name>NATS Support</name>
+	<description>An abstraction for working with NATS on Cloud Foundry.</description>
 
 	<dependencies>
 		<dependency>
@@ -22,8 +21,8 @@
 			<artifactId>nats-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mheath</groupId>
-			<artifactId>vcap-common</artifactId>
+			<groupId>com.github.cloudfoundry-community</groupId>
+			<artifactId>cf-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>

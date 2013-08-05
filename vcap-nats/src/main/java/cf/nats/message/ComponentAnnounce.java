@@ -26,9 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * See http://apidocs.cloudfoundry.com/cloud-controller/publish-vcap-component-announce,
- * http://apidocs.cloudfoundry.com/dea/publish-vcap-component-announce,
- * http://apidocs.cloudfoundry.com/health-manager/publish-vcap-component-announce, etc.
  *
  * @author Mike Heath <elcapo@gmail.com>
  */

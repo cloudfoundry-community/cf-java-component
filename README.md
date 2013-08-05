@@ -1,4 +1,4 @@
-vcap-java-component
+Cloud Foundry Java Component Libraries
 ===================
 
-A set of libraries for building vcap (Cloud Foundry) components on the Java platform
+A set of libraries for building Cloud Foundry components on the Java platform.

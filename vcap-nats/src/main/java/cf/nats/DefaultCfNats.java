@@ -123,7 +123,7 @@ public class DefaultCfNats implements CfNats {
 					public void onMessage(final Message message) {
 						final String body = message.getBody();
 						try {
-							final T vcapMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
+							final T cfMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
 							handler.onMessage(new Publication<T, R>() {
 								@Override
 								public Message getNatsMessage() {
@@ -132,7 +132,7 @@ public class DefaultCfNats implements CfNats {
 
 								@Override
 								public T getMessageBody() {
-									return vcapMessage;
+									return cfMessage;
 								}
 
 								@Override

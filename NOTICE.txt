@@ -57,3 +57,7 @@ HOMEPAGE: http://hc.apache.org/
 Snake YAML Parser
 LICENSE: Apache License 2.0
 HOMEPAGE: https://code.google.com/p/snakeyaml/
+
+JCommander
+LICENSE: Apache License 2.0
+HOMEPAGE: https://jcommander.org/

@@ -3,23 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<groupId>com.github.mheath</groupId>
+		<groupId>com.github.cloudfoundry-community</groupId>
 		<artifactId>cf-java-component</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>vcap-service-gateway</artifactId>
+	<artifactId>cf-service-gateway</artifactId>
+	<name>Service Gateway</name>
+	<description>Support for building service gateways.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.mheath</groupId>
-			<artifactId>vcap-client</artifactId>
+			<groupId>com.github.cloudfoundry-community</groupId>
+			<artifactId>cf-client</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.mheath</groupId>
-			<artifactId>vcap-component</artifactId>
+			<groupId>com.github.cloudfoundry-community</groupId>
+			<artifactId>cf-component</artifactId>
 		</dependency>
 
 		<dependency>

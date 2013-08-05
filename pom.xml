@@ -11,14 +11,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.mheath</groupId>
+	<groupId>com.github.cloudfoundry-community</groupId>
 	<artifactId>cf-java-component</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Java Framework for Building VCAP Components</name>
-	<description>Libraries for building Java based VCAP (Cloud Foundry) components.</description>
-	<url>https://github.com/mheath/vcap-java-component</url>
+	<name>Java Framework for Building Cloud Foundry Components</name>
+	<description>Libraries for building Java based Cloud Foundry components.</description>
+	<url>https://github.com/cloudfoundry-community/cf-java-component</url>
 
 	<properties>
 		<httpclient.version>4.2.3</httpclient.version>
@@ -64,28 +64,28 @@
 		<dependencies>
 			<!-- Module dependencies -->
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>vcap-common</artifactId>
+				<groupId>com.github.cloudfoundry-community</groupId>
+				<artifactId>cf-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>vcap-client</artifactId>
+				<groupId>com.github.cloudfoundry-community</groupId>
+				<artifactId>cf-client</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>vcap-nats</artifactId>
+				<groupId>com.github.cloudfoundry-community</groupId>
+				<artifactId>cf-nats</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>vcap-component</artifactId>
+				<groupId>com.github.cloudfoundry-community</groupId>
+				<artifactId>cf-component</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.mheath</groupId>
-				<artifactId>vcap-service-gateway</artifactId>
+				<groupId>com.github.cloudfoundry-community</groupId>
+				<artifactId>cf-service-gateway</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -174,8 +174,8 @@
 	</licenses>
 
 	<scm>
-		<url>https://mheath@github.com/mheath/jnats.git</url>
-		<connection>https://github.com/mheath/jnats</connection>
+		<url>https://github.com/cloudfoundry-community/cf-java-component</url>
+		<connection>https://github.com/cloudfoundry-community/cf-java-component</connection>
 	</scm>
 
 	<developers>

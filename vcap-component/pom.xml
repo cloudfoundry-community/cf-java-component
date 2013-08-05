@@ -5,12 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.mheath</groupId>
+		<groupId>com.github.cloudfoundry-community</groupId>
 		<artifactId>cf-java-component</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vcap-component</artifactId>
+	<artifactId>cf-component</artifactId>
+	<name>Component</name>
+	<description>Support for building Cloud Foundry components (/varz, /healthz, and NATS messages.)</description>
 
 	<dependencies>
 		<dependency>
@@ -18,8 +20,8 @@
 			<artifactId>netty-all</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mheath</groupId>
-			<artifactId>vcap-nats</artifactId>
+			<groupId>com.github.cloudfoundry-community</groupId>
+			<artifactId>cf-nats</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

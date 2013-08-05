@@ -23,8 +23,6 @@ import cf.common.JsonObject;
 /**
  * A request for components to announce themselves.
  *
- * See http://apidocs.cloudfoundry.com/health-manager/subscribe-vcap-component-discover
- *
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.discover")

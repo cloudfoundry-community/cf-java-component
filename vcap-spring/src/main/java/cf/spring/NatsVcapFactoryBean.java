@@ -36,23 +36,23 @@ import java.util.Collection;
  */
 public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBean {
 
-	private final CfNats vcap;
+	private final CfNats cfNats;
 
 	private final Collection<VcapSubscriptionConfig> subscriptions;
 
 	public NatsVcapFactoryBean(Nats nats, Collection<VcapSubscriptionConfig> subscriptions) {
-		vcap = new DefaultCfNats(nats);
+		cfNats = new DefaultCfNats(nats);
 		this.subscriptions = subscriptions;
 	}
 
 	@Override
 	public CfNats getObject() throws Exception {
-		return vcap;
+		return cfNats;
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return vcap == null ? DefaultCfNats.class : vcap.getClass();
+		return cfNats == null ? DefaultCfNats.class : cfNats.getClass();
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBea
 			final ParameterizedType parameterTypes = (ParameterizedType) method.getGenericParameterTypes()[0];
 			Class<MessageBody<Object>> parameterType = (Class<MessageBody<Object>>) parameterTypes.getActualTypeArguments()[0];
 			final String queueGroup = subscription.getQueueGroup();
-			vcap.subscribe(parameterType, queueGroup, new PublicationHandler<MessageBody<Object>, Object>() {
+			cfNats.subscribe(parameterType, queueGroup, new PublicationHandler<MessageBody<Object>, Object>() {
 				@Override
 				public void onMessage(Publication publication) {
 					try {
