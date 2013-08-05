@@ -1,0 +1,59 @@
+Cloud Foundry Java Component
+
+This project is hosted at:
+
+https://github.com/cloudfoundry-community/cf-java-component
+
+Copyright 2013 Intellectual Reserve, Inc.
+
+This project is licensed under the Apache License, version 2.0 (the
+"License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at:
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
+
+===========================================================================
+
+This project relies on the following third-party components:
+
+Netty
+LICENSE: Apache License 2.0
+HOMEPAGE: http://netty.io/
+
+Spring Framework
+LICENSE: Apache License 2.0
+HOMEPAGE: http://springframework.org/
+
+AOP Alliance
+LICENSE: Public Domain
+HOMEPAGE: http://aopalliance.sourceforge.net/
+
+Jackson JSON Processor
+LICENSE: Apache License 2.0
+HOMEPAGE: http://jackson.codehaus.org/
+
+SLF4j
+LICENSE: MIT (http://www.slf4j.org/license.html)
+HOMEPAGE: http://www.slf4j.org/
+
+Java NATS Client
+LICENSE: Apache License 2.0
+HOMEPAGE: http://github.com/cloudfoundry-community/java-nats
+
+Apache Commons Codec
+LICENSE: Apache License 2.0
+HOMEPAGE: http://commons.apache.org/proper/commons-codec/
+
+Apache HTTP Client
+LICENSE: Apache License 2.0
+HOMEPAGE: http://hc.apache.org/
+
+Snake YAML Parser
+LICENSE: Apache License 2.0
+HOMEPAGE: https://code.google.com/p/snakeyaml/
