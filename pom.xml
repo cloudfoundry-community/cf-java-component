@@ -174,8 +174,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/cloudfoundry-community/cf-java-component</url>
-		<connection>https://github.com/cloudfoundry-community/cf-java-component</connection>
+		<url>scm:git:https://github.com/cloudfoundry-community/cf-java-component</url>
+		<connection>scm:git:https://github.com/cloudfoundry-community/cf-java-component</connection>
+		<developerConnection>scm:git:https://github.com/cloudfoundry-community/cf-java-component</developerConnection>
 	</scm>
 
 	<developers>
