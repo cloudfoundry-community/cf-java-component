@@ -51,7 +51,7 @@ public class Bootstrap {
 	 * @return the guid of the service
 	 */
 	// TODO It would be nice to update the service in case the URL, description, etc change.
-	public UUID registerService(String label, String provider, String version, URI url, String description, URI infoUrl) {
+	public UUID registerService(String label, String provider, String version, URI url, String description, URI infoUrl, String uniqueId) {
 		final RestCollection<Service> services = cloudController.getServices(clientToken);
 		for (Resource<Service> service : services) {
 			final Service serviceEntity = service.getEntity();
@@ -65,11 +65,11 @@ public class Bootstrap {
 		}
 
 		LOGGER.info("Registering service with Cloud Controller");
-		final Service service = new Service(label, provider, url, description, version, infoUrl, true, null);
+		final Service service = new Service(label, provider, url, description, version, infoUrl, true, uniqueId);
 		return cloudController.createService(clientToken, service);
 	}
 
-	public UUID registerPlan(UUID serviceGuid, String planName, String planDescription) {
+	public UUID registerPlan(UUID serviceGuid, String planName, String planDescription, String uniqueId) {
 		final RestCollection<ServicePlan> servicePlans = cloudController.getServicePlans(clientToken, CloudController.ServicePlanQueryAttribute.SERVICE_GUID, serviceGuid.toString());
 		for (Resource<ServicePlan> servicePlan : servicePlans) {
 			final ServicePlan servicePlanEntity = servicePlan.getEntity();
@@ -80,7 +80,7 @@ public class Bootstrap {
 			}
 		}
 		LOGGER.info("Registering service plan {} with Cloud Controller", planName);
-		final ServicePlan servicePlan = new ServicePlan(planName, planDescription, serviceGuid, true, null);
+		final ServicePlan servicePlan = new ServicePlan(planName, planDescription, serviceGuid, true, uniqueId);
 		return cloudController.createServicePlan(clientToken, servicePlan);
 	}
 

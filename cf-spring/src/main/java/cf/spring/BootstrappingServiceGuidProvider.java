@@ -35,7 +35,6 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	private final String authToken;
 	private final List<ServicePlan> servicePlans;
 
-	// TODO Determine if Spring will automatically convert String to URI instances.
 	public BootstrappingServiceGuidProvider(CloudController cloudController, TokenProvider clientToken, String label, String provider, String version, String url, String description, String infoUrl, String authToken, List<ServicePlan> servicePlans) {
 		this.cloudController = cloudController;
 		this.clientToken = clientToken;
@@ -52,10 +51,11 @@ public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 	@Override
 	public UUID getObject() {
 		final Bootstrap bootstrap = new Bootstrap(cloudController, clientToken);
-		final UUID serviceGuid = bootstrap.registerService(label, provider, version, URI.create(url), description, URI.create(infoUrl));
+		final String uniqueId = provider + "_" + label;
+		final UUID serviceGuid = bootstrap.registerService(label, provider, version, URI.create(url), description, URI.create(infoUrl), uniqueId);
 
 		for (ServicePlan servicePlan : servicePlans) {
-			bootstrap.registerPlan(serviceGuid, servicePlan.name, servicePlan.description);
+			bootstrap.registerPlan(serviceGuid, servicePlan.name, servicePlan.description, uniqueId + "_" + servicePlan.name);
 		}
 
 		bootstrap.registerAuthToken(label, provider, authToken);
