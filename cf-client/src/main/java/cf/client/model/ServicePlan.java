@@ -24,7 +24,6 @@ import java.util.UUID;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-// TODO Can Jackson serialize/deserialize UUID objects?
 public class ServicePlan extends JsonObject {
 
 	private static final String SERVICE_GUID = "service_guid";
