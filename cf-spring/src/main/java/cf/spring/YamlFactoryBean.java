@@ -2,20 +2,19 @@ package cf.spring;
 
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.core.io.Resource;
-import org.yaml.snakeyaml.Yaml;
 
-public class YamlFactoryBean extends AbstractFactoryBean<Object> {
+public class YamlFactoryBean extends AbstractFactoryBean<YamlDocument> {
 
 	private Resource yamlFile;
 	
 	@Override
-	protected Object createInstance() throws Exception {
-		return new Yaml().load(yamlFile.getInputStream());
+	protected YamlDocument createInstance() throws Exception {
+		return YamlDocument.load(yamlFile);
 	}
 	
 	@Override
-	public Class<?> getObjectType() {
-		return Object.class;
+	public Class<YamlDocument> getObjectType() {
+		return YamlDocument.class;
 	}
 	
 	public void setYamlFile(Resource yamlFile) {

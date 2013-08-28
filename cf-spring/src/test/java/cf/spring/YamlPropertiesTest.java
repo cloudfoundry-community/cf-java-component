@@ -16,12 +16,15 @@
  */
 package cf.spring;
 
-import java.util.Map;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import static org.testng.Assert.*;
 import org.testng.annotations.Test;
+
+import java.util.Map;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -43,6 +46,7 @@ public class YamlPropertiesTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void id() {
 		try (ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("classpath:yamlPropertiesContext.xml")) {

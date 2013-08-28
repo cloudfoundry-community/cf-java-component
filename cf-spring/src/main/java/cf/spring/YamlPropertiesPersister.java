@@ -14,7 +14,9 @@ import java.util.Properties;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use @{link YamlPropertySource} instead.
  */
+
 public class YamlPropertiesPersister implements PropertiesPersister {
 	@Override
 	public void load(Properties props, InputStream is) throws IOException {
