@@ -27,7 +27,7 @@ public class ClientTest {
 		System.out.println(tokenContents.getEmail());
 		System.out.println(tokenContents.getExpires());
 
-		final Map<String,ApplicationInstance> instances = cloudController.getApplicationInstances(tokens.getCurrentTargetToken().getToken(), UUID.fromString("d7539d5e-9a59-45f7-879d-47d76f9a4be4"));
+		final Map<String,ApplicationInstance> instances = cloudController.getApplicationInstances(tokens.getCurrentTargetToken().getToken(), UUID.fromString("be25b808-c7ab-44df-83f6-f46f38f9d649"));
 		System.out.println(instances);
 	}
 }

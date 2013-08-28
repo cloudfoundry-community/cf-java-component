@@ -18,8 +18,8 @@ package cf.nats.message;
 
 import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import cf.common.JsonObject;
 
 import java.util.ArrayList;

@@ -16,9 +16,8 @@
  */
 package cf.service;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>

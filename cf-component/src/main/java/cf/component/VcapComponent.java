@@ -17,6 +17,7 @@
 package cf.component;
 
 import cf.nats.CfNats;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
@@ -27,7 +28,6 @@ import cf.nats.PublicationHandler;
 import cf.nats.message.ComponentAnnounce;
 import cf.nats.message.ComponentDiscover;
 import org.apache.commons.codec.binary.Base64;
-import org.codehaus.jackson.map.ObjectMapper;
 import cf.component.http.JsonTextResponseRequestHandler;
 import cf.component.http.RequestException;
 import cf.component.http.SimpleHttpServer;

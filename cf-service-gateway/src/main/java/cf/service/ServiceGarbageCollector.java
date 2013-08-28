@@ -16,7 +16,7 @@
  */
 package cf.service;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cf.client.CloudController;

@@ -16,8 +16,8 @@
  */
 package cf.client;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.net.URI;
 import java.util.Date;

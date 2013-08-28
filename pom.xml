@@ -19,18 +19,17 @@
 	<url>https://github.com/cloudfoundry-community/cf-java-component</url>
 
 	<properties>
-		<httpclient.version>4.2.3</httpclient.version>
-		<jackson.version>1.9.8</jackson.version>
+		<httpclient.version>4.2.5</httpclient.version>
+		<jackson.version>2.2.2</jackson.version>
 		<java.version>1.7</java.version>
 		<jcommander.version>1.30</jcommander.version>
-		<logback.version>1.0.6</logback.version>
-		<nats.version>0.5.1</nats.version>
-		<netty.version>4.0.6.Final</netty.version>
-		<slf4j.version>1.6.5</slf4j.version>
+		<logback.version>1.0.13</logback.version>
+		<nats.version>0.6-SNAPSHOT</nats.version>
+		<netty.version>4.0.7.Final</netty.version>
+		<slf4j.version>1.7.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
-		<spring.version>3.2.2.RELEASE</spring.version>
+		<springBoot.version>0.5.0.M1</springBoot.version>
 		<testng.version>6.3.1</testng.version>
-		<spring.framework.version>${spring.version}</spring.framework.version>
 		<commons-codec.version>1.6</commons-codec.version>
 	</properties>
 
@@ -94,8 +93,8 @@
 				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.codehaus.jackson</groupId>
-				<artifactId>jackson-mapper-asl</artifactId>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -110,9 +109,9 @@
 				<version>${httpclient.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring.version}</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot</artifactId>
+				<version>${springBoot.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -162,6 +161,16 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<url>http://repo.springsource.org/milestone</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<licenses>
 		<license>

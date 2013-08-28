@@ -17,6 +17,10 @@
 package cf.client;
 
 import cf.client.model.ApplicationInstance;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -26,10 +30,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cf.client.model.Info;
@@ -81,7 +81,7 @@ public class DefaultCloudController implements CloudController {
 		this.target = target;
 
 		mapper = new ObjectMapper();
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	public DefaultCloudController(HttpClient httpClient, String uri) {
@@ -110,13 +110,13 @@ public class DefaultCloudController implements CloudController {
 
 	@Override
 	public Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid) {
-		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + "/" + APP_INSTANCES);
-		final Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.getFields();
+		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + APP_INSTANCES);
+		final Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
 		final Map<String, ApplicationInstance> instances = new HashMap<>();
 		while (fields.hasNext()) {
 			final Map.Entry<String, JsonNode> field = fields.next();
 			try {
-				instances.put(field.getKey(), mapper.readValue(field.getValue(), ApplicationInstance.class));
+				instances.put(field.getKey(), mapper.readValue(field.getValue().traverse(), ApplicationInstance.class));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -382,7 +382,7 @@ public class DefaultCloudController implements CloudController {
 		private void parseResources(JsonNode jsonNode) {
 			final JsonNode nextUrlNode = jsonNode.get("next_url");
 			nextUri = nextUrlNode.isNull() ? null : nextUrlNode.asText();
-			final Iterator<JsonNode> resourceNodeIterator = jsonNode.get("resources").getElements();
+			final Iterator<JsonNode> resourceNodeIterator = jsonNode.get("resources").elements();
 			final ArrayList<Resource<T>> resources = new ArrayList<>();
 			while (resourceNodeIterator.hasNext()) {
 				final JsonNode node = resourceNodeIterator.next();
@@ -404,7 +404,7 @@ public class DefaultCloudController implements CloudController {
 				}
 				final T entity;
 				try {
-					entity = mapper.readValue(node.get("entity"), type);
+					entity = mapper.readValue(node.get("entity").traverse(), type);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

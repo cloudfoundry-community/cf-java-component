@@ -17,7 +17,7 @@
 package cf.nats.message;
 
 import cf.nats.NatsSubject;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.Map;

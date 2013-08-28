@@ -17,8 +17,9 @@
 package cf.nats.message;
 
 import static junit.framework.Assert.*;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectReader;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.testng.annotations.Test;
 
 import java.io.IOException;

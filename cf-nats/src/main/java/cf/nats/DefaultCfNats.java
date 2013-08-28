@@ -17,6 +17,10 @@
 package cf.nats;
 
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import nats.NatsException;
 import nats.client.Message;
 import nats.client.MessageHandler;
@@ -24,10 +28,6 @@ import nats.client.Nats;
 import nats.client.Registration;
 import nats.client.Request;
 import nats.client.Subscription;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectReader;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -49,8 +49,8 @@ public class DefaultCfNats implements CfNats {
 
 		// Configure the Jackson JSON mapper
 		mapper = new ObjectMapper();
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 	}
 
 	@Override
