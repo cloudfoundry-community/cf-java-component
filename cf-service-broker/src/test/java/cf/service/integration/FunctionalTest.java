@@ -16,6 +16,7 @@
  */
 package cf.service.integration;
 
+import cf.service.BrokerServer;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,6 @@ import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServicePlan;
 import cf.component.http.SimpleHttpServer;
-import cf.service.GatewayServer;
 
 import static org.testng.Assert.*;
 
@@ -85,7 +85,7 @@ public class FunctionalTest {
 			LOGGER.debug("Created service with guid: {}", serviceGuid);
 
 			final TestProvisioner provisioner = new TestProvisioner();
-			new GatewayServer(server, provisioner, authToken);
+			new BrokerServer(server, provisioner, authToken);
 
 			try {
 				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid, true, null));

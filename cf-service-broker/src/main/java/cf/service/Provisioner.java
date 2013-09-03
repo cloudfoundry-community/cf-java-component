@@ -61,18 +61,18 @@ public interface Provisioner {
 	/**
 	 * Returns binding ids for the given service instance id.
 	 *
-	 * @return binding ids for the given service instance id, or {@code null} if this service gateway does not track
+	 * @return binding ids for the given service instance id, or {@code null} if this service broker does not track
 	 *         bindings.
 	 */
 	Iterable<String> bindingIds(String instanceId);
 
 	/**
-	 * This gets called when the cc deletes a service binding but the delete request didn't make it to the gateway.
+	 * This gets called when the cc deletes a service binding but the delete request didn't make it to the broker.
 	 */
 	void removeOrphanedBinding(String instanceId, String bindingId);
 
 	/**
-	 * This gets called when the cc deletes a service instance but the delete request didn't make it to the gateway.
+	 * This gets called when the cc deletes a service instance but the delete request didn't make it to the broker.
 	 * @param instanceId
 	 */
 	void removeOrphanedServiceInstance(String instanceId);

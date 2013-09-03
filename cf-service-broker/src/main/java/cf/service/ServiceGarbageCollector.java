@@ -85,14 +85,14 @@ public class ServiceGarbageCollector {
 					servicePlan.getGuid().toString());
 			for (Resource<ServiceInstance> serviceInstance : serviceInstances) {
 				final JsonNode gatewayData = serviceInstance.getEntity().getGatewayData();
-				final String serviceInstanceId = gatewayData.get(GatewayServer.SERVICE_INSTANCE_ID).asText();
+				final String serviceInstanceId = gatewayData.get(BrokerServer.SERVICE_INSTANCE_ID).asText();
 
 				final boolean removed = serviceInstanceIds.remove(serviceInstanceId);
 				if (removed) {
 					collectBindings(serviceInstance, serviceInstanceId);
 				} else {
 					LOGGER.warn(
-							"Service instance {} in space {} is in the Cloud Controller but is not known by the gateway",
+							"Service instance {} in space {} is in the Cloud Controller but is not known by the broker",
 							serviceInstance.getEntity().getName(),
 							serviceInstance.getEntity().getSpaceGuid());
 				}
@@ -126,10 +126,10 @@ public class ServiceGarbageCollector {
 				serviceInstance.getGuid().toString()
 		);
 		for (Resource<ServiceBinding> serviceBinding : serviceBindings) {
-			final String bindingId = serviceBinding.getEntity().getGatewayData().get(GatewayServer.SERVICE_BINDING_ID).asText();
+			final String bindingId = serviceBinding.getEntity().getGatewayData().get(BrokerServer.SERVICE_BINDING_ID).asText();
 			final boolean removed = bindingIds.remove(bindingId);
 			if (!removed) {
-				LOGGER.warn("Service binding {} for service {} is in the Cloud Controller but is not known by the gateway", bindingId, serviceInstanceId);
+				LOGGER.warn("Service binding {} for service {} is in the Cloud Controller but is not known by the broker", bindingId, serviceInstanceId);
 			}
 		}
 

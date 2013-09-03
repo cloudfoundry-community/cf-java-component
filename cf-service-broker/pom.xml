@@ -7,9 +7,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cf-service-gateway</artifactId>
-	<name>Service Gateway</name>
-	<description>Support for building service gateways.</description>
+	<artifactId>cf-service-broker</artifactId>
+	<name>Service Broker</name>
+	<description>Support for building service brokers.</description>
 
 	<dependencies>
 		<dependency>

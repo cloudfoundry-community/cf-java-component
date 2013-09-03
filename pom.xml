@@ -38,7 +38,7 @@
 		<module>cf-client</module>
 		<module>cf-nats</module>
 		<module>cf-component</module>
-		<module>cf-service-gateway</module>
+		<module>cf-service-broker</module>
 		<module>cf-spring</module>
 	</modules>
 

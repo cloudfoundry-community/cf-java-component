@@ -35,9 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class TestGateway {
+public class TestBroker {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestGateway.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestBroker.class);
 
 	public static void main(String[] args) throws Exception {
 		final CfTokens cfTokens = new CfTokens();
@@ -60,8 +60,8 @@ public class TestGateway {
 
 		final int serverPort = 8000;
 
-		final String label = "testgateway";
-		final String provider = "Mike Heath";
+		final String label = "testbroker";
+		final String provider = "Tester";
 		final String url = "http://" + localIp(target.getTarget()) + ":" + serverPort;
 		final String description = "A service used for testing the service framework.";
 		final String version = "0.1";
@@ -82,7 +82,7 @@ public class TestGateway {
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {
-			new GatewayServer(server, new Provisioner() {
+			new BrokerServer(server, new Provisioner() {
 
 				private final AtomicInteger id = new AtomicInteger();
 

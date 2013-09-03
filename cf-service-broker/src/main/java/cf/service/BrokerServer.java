@@ -46,9 +46,9 @@ import java.util.regex.Pattern;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class GatewayServer {
+public class BrokerServer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GatewayServer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrokerServer.class);
 
 	public static final String SERVICE_INSTANCE_ID = "service_id";
 	public static final String SERVICE_BINDING_ID = "binding_id";
@@ -60,7 +60,7 @@ public class GatewayServer {
 
 	private final String authToken;
 
-	public GatewayServer(SimpleHttpServer server, final Provisioner provisioner, String authToken) {
+	public BrokerServer(SimpleHttpServer server, final Provisioner provisioner, String authToken) {
 		if (authToken == null) {
 			throw new IllegalArgumentException("authToken can not be null");
 		}
