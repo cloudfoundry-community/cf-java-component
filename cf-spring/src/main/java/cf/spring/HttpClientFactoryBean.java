@@ -32,4 +32,5 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient>, Disposabl
 	public boolean isSingleton() {
 		return true;
 	}
+
 }
