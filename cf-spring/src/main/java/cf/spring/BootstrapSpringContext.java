@@ -11,7 +11,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Mike Heath <heathma@ldschurch.org>
+ * @deprecated Use Spring Boot.
  */
+@Deprecated
 public class BootstrapSpringContext {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapSpringContext.class);
