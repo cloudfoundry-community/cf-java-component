@@ -7,7 +7,7 @@
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://cloudfoundry-community.github.com/cf-java-component/schema/spring http://cloudfoundry-community.github.com/cf-java-component/schema/spring/cf-0.1.xsd
 		"
-		default-lazy-init="true">
+		default-lazy-init="false">
 
 	<cf:netty-event-loop-group id="parentEventLoopGroup" />
 	<cf:netty-event-loop-group id="childEventLoopGroup" />
@@ -32,7 +32,7 @@
 				provider="CloudFoundry-Community"
 				version="0.1"
 				url="http://#{config.host.public}"
-				description="An example service for creating a custom service."
+				description="An example broker for creating a custom service."
 				info-url="http://#{config.host.public}/info"
 				>
 			<cf:plan name="Default" description="The default service plan."/>
