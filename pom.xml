@@ -82,7 +82,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.cloudfoundry-community</groupId>
-				<artifactId>cf-service-gateway</artifactId>
+				<artifactId>cf-service-broker</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -110,7 +110,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
+				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${springBoot.version}</version>
 				<exclusions>
 					<exclusion>
