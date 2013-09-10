@@ -14,8 +14,10 @@
  *   limitations under the License.
  *
  */
-package cf.spring;
+package cf.spring.config;
 
+import cf.spring.YamlDocument;
+import cf.spring.YamlPropertySource;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;

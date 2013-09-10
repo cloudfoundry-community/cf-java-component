@@ -14,14 +14,18 @@
  *   limitations under the License.
  *
  */
-package cf.spring;
+package cf.spring.config;
 
+import cf.spring.YamlDocument;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -29,6 +33,7 @@ import static org.testng.Assert.*;
 public class YamlPropertyContextInitializerTest {
 
 	@Configuration
+	@EnableAutoConfiguration
 	public static class Config {}
 
 	@Test
