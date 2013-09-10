@@ -82,7 +82,7 @@ public class TestBroker {
 		try (
 				final SimpleHttpServer server = new SimpleHttpServer(new InetSocketAddress(serverPort))
 			) {
-			new BrokerServer(server, new Provisioner() {
+			new NettyBrokerServer(server, new Provisioner() {
 
 				private final AtomicInteger id = new AtomicInteger();
 

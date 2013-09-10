@@ -1,5 +1,6 @@
 package cf.spring.config.xml;
 
+import cf.service.NettyBrokerServer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
-import cf.service.GatewayServer;
 import cf.service.ServiceGarbageCollector;
 import cf.spring.BootstrappingServiceGuidProvider;
 import cf.spring.DefaultServiceGuidFactoryBean;
@@ -38,7 +38,7 @@ public class ServiceGatewayBeanDefinitionParser implements BeanDefinitionParser 
 	}
 
 	private void createGatewayServer(ParserContext parserContext, String provisioner, String httpServer, String authToken) {
-		final BeanDefinitionBuilder gatewayServerBuilder = BeanDefinitionBuilder.genericBeanDefinition(GatewayServer.class);
+		final BeanDefinitionBuilder gatewayServerBuilder = BeanDefinitionBuilder.genericBeanDefinition(NettyBrokerServer.class);
 		gatewayServerBuilder.addConstructorArgReference(httpServer);
 		gatewayServerBuilder.addConstructorArgReference(provisioner);
 		gatewayServerBuilder.addConstructorArgValue(authToken);

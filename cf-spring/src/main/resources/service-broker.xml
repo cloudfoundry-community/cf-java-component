@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+		xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:cf="http://cloudfoundry-community.github.com/cf-java-component/schema/spring"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://cloudfoundry-community.github.com/cf-java-component/schema/spring http://cloudfoundry-community.github.com/cf-java-component/schema/spring/cf-0.1.xsd
+		"
+		default-lazy-init="true">
+
+	<cf:netty-event-loop-group id="parentEventLoopGroup" />
+	<cf:netty-event-loop-group id="childEventLoopGroup" />
+
+	<!-- Create an HTTP server to be used by the service gateway to handle REST calls from the Cloud Controller -->
+	<cf:http-server
+			id="gatewayHttpServer"
+			host="0.0.0.0"
+			port="#{config.host.port}"
+			parent-netty-event-loop-ref="parentEventLoopGroup"
+			child-netty-event-loop-ref="childEventLoopGroup"
+			/>
+
+	<!-- Create the service gateway -->
+	<cf:service-gateway
+			provisioner-ref="provisioner"
+			http-server-ref="gatewayHttpServer"
+			auth-token="#{config.serviceAuthToken}">
+		<!-- If the service hasn't been registered with the Cloud Controller, do so automatically at startup -->
+		<cf:bootstrap
+				label="example-service-broker"
+				provider="CloudFoundry-Community"
+				version="0.1"
+				url="http://#{config.host.public}"
+				description="An example service for creating a custom service."
+				info-url="http://#{config.host.public}/info"
+				>
+			<cf:plan name="Default" description="The default service plan."/>
+		</cf:bootstrap>
+	</cf:service-gateway>
+
+</beans>
