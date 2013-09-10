@@ -16,7 +16,7 @@
  */
 package cf.service.integration;
 
-import cf.service.BrokerServer;
+import cf.service.NettyBrokerServer;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class FunctionalTest {
 			LOGGER.debug("Created service with guid: {}", serviceGuid);
 
 			final TestProvisioner provisioner = new TestProvisioner();
-			new BrokerServer(server, provisioner, authToken);
+			new NettyBrokerServer(server, provisioner, authToken);
 
 			try {
 				final UUID servicePlanGuid = cloudControllerClient.createServicePlan(target.getToken(), new ServicePlan(servicePlan, servicePlanDescription, serviceGuid, true, null));

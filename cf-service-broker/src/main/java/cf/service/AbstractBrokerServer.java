@@ -29,12 +29,12 @@ public abstract class AbstractBrokerServer {
 	private final String authToken;
 	private final Provisioner provisioner;
 
-	public AbstractBrokerServer(String authToken, Provisioner provisioner) {
+	public AbstractBrokerServer(Provisioner provisioner, String authToken) {
 		if (authToken == null) {
 			throw new IllegalArgumentException("authToken can not be null");
 		}
-		this.authToken = authToken;
 		this.provisioner = provisioner;
+		this.authToken = authToken;
 
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}

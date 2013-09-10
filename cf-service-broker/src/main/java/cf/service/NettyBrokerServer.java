@@ -46,7 +46,7 @@ public class NettyBrokerServer extends AbstractBrokerServer {
 	private static final JsonObject EMPTY_JSON_OBJECT = new JsonObject();
 
 	public NettyBrokerServer(SimpleHttpServer server, Provisioner provisioner, String authToken) {
-		super(authToken, provisioner);
+		super(provisioner, authToken);
 		server.addHandler(Pattern.compile("/+gateway/v1/configurations/(.*?)/handles(/(.*))?"), new RequestHandler() {
 			@Override
 			public HttpResponse handleRequest(HttpRequest request, Matcher uriMatcher, ByteBuf body) throws RequestException {
