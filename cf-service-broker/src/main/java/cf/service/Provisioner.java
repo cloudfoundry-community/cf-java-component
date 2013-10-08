@@ -17,6 +17,8 @@
 package cf.service;
 
 /**
+ * Service providers must implement this interface.
+ *
  * @author Mike Heath <elcapo@gmail.com>
  */
 public interface Provisioner {
@@ -35,12 +37,12 @@ public interface Provisioner {
 	 * @param instanceId the id of the service instance to be deleted. The value of this is the instance id that is
 	 *                   returned by {@link #create(CreateRequest)}.
 	 */
-	void delete(String instanceId);
+	void delete(String instanceId) throws ResourceNotFoundException;
 
 	/**
 	 * When the user types 'cf bind-service ...' this method will get called.
 	 */
-	ServiceBinding bind(BindRequest request);
+	ServiceBinding bind(BindRequest request) throws ResourceNotFoundException;
 
 	/**
 	 * When the user types 'cf unbind-service ...' this method will probably get called.
@@ -48,7 +50,7 @@ public interface Provisioner {
 	 * @param instanceId
 	 * @param bindingId
 	 */
-	void unbind(String instanceId, String bindingId);
+	void unbind(String instanceId, String bindingId) throws ResourceNotFoundException;
 
 	/**
 	 * Returns iterable for each service ids for the services the gateway is aware of.

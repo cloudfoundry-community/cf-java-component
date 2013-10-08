@@ -85,7 +85,7 @@ public class ServiceGarbageCollector {
 					servicePlan.getGuid().toString());
 			for (Resource<ServiceInstance> serviceInstance : serviceInstances) {
 				final JsonNode gatewayData = serviceInstance.getEntity().getGatewayData();
-				final String serviceInstanceId = gatewayData.get(NettyBrokerServer.SERVICE_INSTANCE_ID).asText();
+				final String serviceInstanceId = gatewayData.get(ServiceBroker.SERVICE_INSTANCE_ID).asText();
 
 				final boolean removed = serviceInstanceIds.remove(serviceInstanceId);
 				if (removed) {
@@ -126,7 +126,7 @@ public class ServiceGarbageCollector {
 				serviceInstance.getGuid().toString()
 		);
 		for (Resource<ServiceBinding> serviceBinding : serviceBindings) {
-			final String bindingId = serviceBinding.getEntity().getGatewayData().get(NettyBrokerServer.SERVICE_BINDING_ID).asText();
+			final String bindingId = serviceBinding.getEntity().getGatewayData().get(ServiceBroker.SERVICE_BINDING_ID).asText();
 			final boolean removed = bindingIds.remove(bindingId);
 			if (!removed) {
 				LOGGER.warn("Service binding {} for service {} is in the Cloud Controller but is not known by the broker", bindingId, serviceInstanceId);
