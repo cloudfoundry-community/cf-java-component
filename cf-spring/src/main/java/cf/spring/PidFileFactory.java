@@ -34,6 +34,7 @@ public class PidFileFactory implements FactoryBean<PidFile>, DisposableBean {
 	private final PidFile pidFile;
 
 	public PidFileFactory(String pidFileName) throws IOException {
+		LOGGER.info("Using pid file: {}", pidFileName);
 		pidFile = new PidFile(pidFileName);
 	}
 
