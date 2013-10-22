@@ -3,6 +3,6 @@ package cf.spring.config;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class ServiceBrokerConfigurationTest {
+public class ServiceProvisionerAnnotationTest {
 
 }

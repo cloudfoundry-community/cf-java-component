@@ -29,19 +29,18 @@ import java.nio.file.StandardOpenOption;
 public class PidFile implements Closeable {
 
 	private final Path pidFile;
-	private final Integer pid;
+	private final String pid = processId();
 
 	public PidFile(String pidFileName) throws IOException {
-		pid = processId();
 		if (pid == null) {
 			pidFile = null;
 		} else {
 			pidFile = Paths.get(pidFileName);
-			Files.write(pidFile, pid.toString().getBytes(), StandardOpenOption.CREATE);
+			Files.write(pidFile, pid.getBytes(), StandardOpenOption.CREATE);
 		}
 	}
 
-	public Integer getPid() {
+	public String getPid() {
 		return pid;
 	}
 
@@ -57,13 +56,7 @@ public class PidFile implements Closeable {
 		}
 	}
 
-	public static Integer processId() {
-		try {
-			// Open the symlink /proc/self and follow symlink to determine pid -- This will only work on Unix based systems.
-			final Path pidPath = Paths.get("/proc", "self").toRealPath();
-			return Integer.valueOf(pidPath.getFileName().toString());
-		} catch (Exception e) {
-			return null;
-		}
+	public static String processId() {
+		return System.getProperty("PID");
 	}
 }

@@ -43,11 +43,11 @@ public class ProcessUtils {
 	}
 
 	public static ProcessStats getProcessStats() throws IOException {
-		final Integer pid = PidFile.processId();
+		final String pid = PidFile.processId();
 		if (pid == null) {
 			return null;
 		}
-		final String ps = run("ps", "-o", "rss=", "-o", "vsize=", "-o", "pcpu=", "-p", pid.toString());
+		final String ps = run("ps", "-o", "rss=", "-o", "vsize=", "-o", "pcpu=", "-p", pid);
 		final String[] parts = ps.split("\\s+");
 		return new ProcessStats(
 				Long.valueOf(parts[0]),

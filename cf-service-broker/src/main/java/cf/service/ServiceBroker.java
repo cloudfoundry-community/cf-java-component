@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ import java.util.regex.Pattern;
  */
 public class ServiceBroker {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceBroker.class);
+
 	/**
 	 * The name of the HTTP header holding the service auth token.
 	 */
@@ -45,8 +49,8 @@ public class ServiceBroker {
 	public static final String SERVICE_INSTANCE_ID = "service_id";
 	public static final String SERVICE_BINDING_ID = "binding_id";
 
-	private static final Pattern DELETE_URI = Pattern.compile("/+gateway/v1/configurations/(.*)");
-	private static final Pattern UNBIND_URI = Pattern.compile("/+gateway/v1/configurations/(.*?)/handles/(.*)?");
+	public static final Pattern BINDING_PATTERN = Pattern.compile("/+gateway/v1/configurations/(.*?)/handles(/(.*))?");
+	public static final Pattern INSTANCE_PATTERN = Pattern.compile("/+gateway/v1/configurations(/(.*))?");
 
 	final private ObjectMapper mapper = new ObjectMapper();
 
@@ -65,6 +69,8 @@ public class ServiceBroker {
 
 	public String createService(String authToken, byte[] body)
 			throws AuthenticationException, BadRequestException {
+		LOGGER.debug("Creating service");
+
 		validateAuthToken(authToken);
 		final CreateRequest createRequest = decode(CreateRequest.class, body);
 		final ServiceInstance serviceInstance = provisioner.create(createRequest);
@@ -82,9 +88,10 @@ public class ServiceBroker {
 
 	public String deleteService(String authToken, String uri)
 			throws AuthenticationException, ResourceNotFoundException {
+		LOGGER.debug("Deleting service");
 		validateAuthToken(authToken);
-		final Matcher matcher = DELETE_URI.matcher(uri);
-		if (!matcher.matches()) {
+		final Matcher matcher = INSTANCE_PATTERN.matcher(uri);
+		if (!matcher.matches() && matcher.groupCount() != 2) {
 			throw new ResourceNotFoundException();
 		}
 		final String serviceInstanceId = matcher.group(1);
@@ -94,6 +101,7 @@ public class ServiceBroker {
 
 	public String bindService(String authToken, byte[] body)
 			throws AuthenticationException, BadRequestException, ResourceNotFoundException {
+		LOGGER.debug("Binding service");
 		validateAuthToken(authToken);
 		final BindRequest bindRequest = decode(BindRequest.class, body);
 		final ServiceBinding serviceBinding = provisioner.bind(bindRequest);
@@ -108,9 +116,10 @@ public class ServiceBroker {
 	}
 
 	public String unbindService(String authToken, String uri) throws AuthenticationException, ResourceNotFoundException {
+		LOGGER.debug("Unbinding service");
 		validateAuthToken(authToken);
-		final Matcher matcher = UNBIND_URI.matcher(uri);
-		if (!matcher.matches()) {
+		final Matcher matcher = BINDING_PATTERN.matcher(uri);
+		if (!matcher.matches() && matcher.groupCount() != 3) {
 			throw new ResourceNotFoundException();
 		}
 		final String instanceId = matcher.group(1);

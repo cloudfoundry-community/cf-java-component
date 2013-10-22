@@ -22,5 +22,5 @@ package cf.service;
  *
  * @author Mike Heath <elcapo@gmail.com>
  */
-public class ResourceNotFoundException extends Throwable {
+public class ResourceNotFoundException extends ServiceBrokerException {
 }
