@@ -23,4 +23,14 @@ package cf.service;
  * @author Mike Heath <elcapo@gmail.com>
  */
 public class ResourceNotFoundException extends ServiceBrokerException {
+	public ResourceNotFoundException() {
+	}
+
+	public ResourceNotFoundException(String message) {
+		super(message);
+	}
+
+	public ResourceNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -23,6 +23,14 @@ package cf.service;
  */
 public class BadRequestException extends ServiceBrokerException {
 
+	public BadRequestException() {
+	}
 
+	public BadRequestException(String message) {
+		super(message);
+	}
 
+	public BadRequestException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
