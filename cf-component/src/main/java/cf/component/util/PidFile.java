@@ -18,10 +18,12 @@ package cf.component.util;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -36,6 +38,16 @@ public class PidFile implements Closeable {
 			pidFile = null;
 		} else {
 			pidFile = Paths.get(pidFileName);
+			if (Files.exists(pidFile)) {
+				final List<String> existingPidLines = Files.readAllLines(pidFile, Charset.defaultCharset());
+				if (existingPidLines.size() > 0) {
+					final String existingPid = existingPidLines.get(0).trim();
+					final Path existingProcess = Paths.get("proc", existingPid);
+					if (Files.exists(existingProcess)) {
+						throw new Error("Process is already running with pid " + existingPid);
+					}
+				}
+			}
 			Files.write(pidFile, pid.getBytes(), StandardOpenOption.CREATE);
 		}
 	}
