@@ -65,7 +65,7 @@ public class Token {
 			final JsonNode node = new ObjectMapper().readTree(json);
 			final String accessToken = node.get("access_token").asText();
 			final Type type = Type.getType(node.get("token_type").asText());
-			final Date expiration = new Date(System.currentTimeMillis() + node.get("expires_in").asLong());
+			final Date expiration = new Date(System.currentTimeMillis() + node.get("expires_in").asLong() * 1000);
 			final String rawScopes = node.get("scope").asText();
 			final String[] splitScopes = rawScopes.split("\\s+");
 			final List<String> scopes = Collections.unmodifiableList(Arrays.asList(splitScopes));
