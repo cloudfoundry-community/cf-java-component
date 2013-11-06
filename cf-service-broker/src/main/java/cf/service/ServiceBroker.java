@@ -94,7 +94,7 @@ public class ServiceBroker {
 		if (!matcher.matches() && matcher.groupCount() != 2) {
 			throw new ResourceNotFoundException();
 		}
-		final String serviceInstanceId = matcher.group(1);
+		final String serviceInstanceId = matcher.group(2);
 		provisioner.delete(serviceInstanceId);
 		return "{}";
 	}
