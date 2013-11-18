@@ -81,7 +81,7 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 			}
 		});
 
-		registerHandler("/gateway/v1/configurations/*", new RequestHandler("DELETE", "POST") {
+		registerHandler("/gateway/v1/configurations/**", new RequestHandler("DELETE", "POST") {
 			@Override
 			protected String handleRequest(HttpServletRequest request, HttpServletResponse response, String authToken, byte[] body) throws ServiceBrokerException {
 				final String requestUri = request.getRequestURI();
