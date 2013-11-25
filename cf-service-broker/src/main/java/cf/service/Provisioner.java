@@ -29,7 +29,7 @@ public interface Provisioner {
 	 * @param request the create request sent by the Cloud Controller
 	 * @return
 	 */
-	ServiceInstance create(CreateRequest request);
+	ServiceInstance create(CreateRequest request) throws ServiceBrokerException;
 
 	/**
 	 * When the user types 'cf delete-service ...' this method will probably get called.
@@ -37,12 +37,12 @@ public interface Provisioner {
 	 * @param instanceId the id of the service instance to be deleted. The value of this is the instance id that is
 	 *                   returned by {@link #create(CreateRequest)}.
 	 */
-	void delete(String instanceId) throws ResourceNotFoundException;
+	void delete(String instanceId) throws ServiceBrokerException;
 
 	/**
 	 * When the user types 'cf bind-service ...' this method will get called.
 	 */
-	ServiceBinding bind(BindRequest request) throws ResourceNotFoundException;
+	ServiceBinding bind(BindRequest request) throws ServiceBrokerException;
 
 	/**
 	 * When the user types 'cf unbind-service ...' this method will probably get called.
@@ -50,7 +50,7 @@ public interface Provisioner {
 	 * @param instanceId
 	 * @param bindingId
 	 */
-	void unbind(String instanceId, String bindingId) throws ResourceNotFoundException;
+	void unbind(String instanceId, String bindingId) throws ServiceBrokerException;
 
 	/**
 	 * Returns iterable for each service ids for the services the gateway is aware of.
