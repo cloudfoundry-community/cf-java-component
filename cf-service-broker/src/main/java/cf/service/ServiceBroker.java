@@ -68,7 +68,7 @@ public class ServiceBroker {
 	}
 
 	public String createService(String authToken, byte[] body)
-			throws AuthenticationException, BadRequestException {
+			throws ServiceBrokerException {
 		LOGGER.debug("Creating service");
 
 		validateAuthToken(authToken);
@@ -87,7 +87,7 @@ public class ServiceBroker {
 	}
 
 	public String deleteService(String authToken, String uri)
-			throws AuthenticationException, ResourceNotFoundException {
+			throws ServiceBrokerException {
 		LOGGER.debug("Deleting service");
 		validateAuthToken(authToken);
 		final Matcher matcher = INSTANCE_PATTERN.matcher(uri);
@@ -100,7 +100,7 @@ public class ServiceBroker {
 	}
 
 	public String bindService(String authToken, byte[] body)
-			throws AuthenticationException, BadRequestException, ResourceNotFoundException {
+			throws ServiceBrokerException {
 		LOGGER.debug("Binding service");
 		validateAuthToken(authToken);
 		final BindRequest bindRequest = decode(BindRequest.class, body);
@@ -115,7 +115,7 @@ public class ServiceBroker {
 		return encode(bindResponse);
 	}
 
-	public String unbindService(String authToken, String uri) throws AuthenticationException, ResourceNotFoundException {
+	public String unbindService(String authToken, String uri) throws ServiceBrokerException {
 		LOGGER.debug("Unbinding service");
 		validateAuthToken(authToken);
 		final Matcher matcher = BINDING_PATTERN.matcher(uri);
