@@ -46,13 +46,13 @@ public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBea
 	}
 
 	@Override
-	public CfNats getObject() throws Exception {
+	public CfNats getObject() {
 		return cfNats;
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return cfNats == null ? DefaultCfNats.class : cfNats.getClass();
+		return cfNats.getClass();
 	}
 
 	@Override
