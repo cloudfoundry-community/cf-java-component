@@ -22,13 +22,17 @@ import cf.service.Provisioner;
 import cf.service.ResourceNotFoundException;
 import cf.service.ServiceBroker;
 import cf.service.ServiceBrokerException;
+
 import org.springframework.util.StreamUtils;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -65,8 +69,9 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 	}
 
 	private final ServiceBroker serviceBroker;
+	private final ObjectMapper objectMapper = new ObjectMapper(); 
 
-	 private ServiceBrokerHandler(ServiceBrokerHandlerBuilder builder) {
+	private ServiceBrokerHandler(ServiceBrokerHandlerBuilder builder) {
 		this.serviceBroker = builder.serviceBroker;
 		setOrder(builder.order);
 		registerHandlers();
@@ -115,7 +120,7 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 		@Override
 		public final void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			if (!allowedHttpMethods.contains(request.getMethod())) {
-				response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 				return;
 			}
 			final String authToken = request.getHeader(ServiceBroker.VCAP_SERVICE_TOKEN_HEADER);
@@ -125,11 +130,14 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 				response.setContentType("application/json;charset=utf-8");
 				response.getWriter().write(responseBody);
 			} catch (AuthenticationException e) {
-				response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
 			} catch (BadRequestException e) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
 			} catch (ResourceNotFoundException e) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
 			} catch (Exception e) {
 				throw new ServletException(e);
 			}

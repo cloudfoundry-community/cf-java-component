@@ -17,10 +17,12 @@
 package cf.client;
 
 import cf.client.model.ApplicationInstance;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -32,6 +34,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import cf.client.model.Info;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
@@ -123,7 +126,7 @@ public class DefaultCloudController implements CloudController {
 		}
 		return instances;
 	}
-
+	
 	@Override
 	public UUID createService(Token token, Service service) {
 		try {
@@ -159,6 +162,16 @@ public class DefaultCloudController implements CloudController {
 				servicePlanGuid == null ? null : servicePlanGuid.toString());
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
+	
+	@Override
+	public Service getService(Token token, UUID serviceGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SERVICES +"/"+ serviceGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Service.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public RestCollection<ServicePlan> getServicePlans(Token token) {
@@ -191,12 +204,12 @@ public class DefaultCloudController implements CloudController {
 				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
-
+	
 	@Override
 	public RestCollection<ServiceBinding> getServiceBindings(Token token) {
 		return getServiceBindings(token, null, null);
 	}
-
+	
 	@Override
 	public RestCollection<ServiceBinding> getServiceBindings(Token token, ServiceBindingQueryAttribute queryAttribute, String queryValue) {
 		final ResultIterator<ServiceBinding> iterator = new ResultIterator<>(

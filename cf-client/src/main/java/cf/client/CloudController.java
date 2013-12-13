@@ -78,6 +78,15 @@ public interface CloudController {
 	 */
 	RestCollection<Service> getServices(Token token, UUID servicePlanGuid);
 
+	/**
+	 * Returns the service.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param serviceGuid the guid of the service.
+	 * @return the service with the specified guid.
+	 */
+	Service getService(Token token, UUID serviceGuid);
+
 	void deleteService(Token token, UUID serviceGuid);
 
 	/**
