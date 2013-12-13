@@ -26,7 +26,7 @@ public class NettyEventLoopGroupFactoryBean implements FactoryBean<EventLoopGrou
 	}
 
 	@Override
-	public EventLoopGroup getObject() throws Exception {
+	public EventLoopGroup getObject() {
 		return eventLoopGroup;
 	}
 
