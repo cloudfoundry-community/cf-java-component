@@ -16,7 +16,10 @@
  */
 package cf.service;
 
+import java.util.UUID;
+
 import cf.common.JsonObject;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -27,14 +30,14 @@ public class BindRequest extends JsonObject {
 	private final String serviceInstanceId;
 	private final String label;
 	private final String email;
-	private final String appId;
+	private final UUID appId;
 	// Ignore bind_options field, it is always empty in v2
 
 	public BindRequest(
 			@JsonProperty("service_id") String serviceInstanceId,
 			@JsonProperty("label") String label,
 			@JsonProperty("email") String email,
-			@JsonProperty("app_id") String appId) {
+			@JsonProperty("app_id") UUID appId) {
 		this.serviceInstanceId = serviceInstanceId;
 		this.label = label;
 		this.email = email;
@@ -53,7 +56,7 @@ public class BindRequest extends JsonObject {
 		return email;
 	}
 	
-	public String getAppId() {
+	public UUID getAppId() {
 		return appId;
 	}
 }
