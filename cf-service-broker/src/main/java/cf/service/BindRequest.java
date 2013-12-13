@@ -27,15 +27,18 @@ public class BindRequest extends JsonObject {
 	private final String serviceInstanceId;
 	private final String label;
 	private final String email;
+	private final String appId;
 	// Ignore bind_options field, it is always empty in v2
 
 	public BindRequest(
 			@JsonProperty("service_id") String serviceInstanceId,
 			@JsonProperty("label") String label,
-			@JsonProperty("email") String email) {
+			@JsonProperty("email") String email,
+			@JsonProperty("app_id") String appId) {
 		this.serviceInstanceId = serviceInstanceId;
 		this.label = label;
 		this.email = email;
+		this.appId = appId;
 	}
 
 	public String getServiceInstanceId() {
