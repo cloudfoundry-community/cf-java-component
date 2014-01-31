@@ -90,6 +90,15 @@ public interface CloudController {
 	void deleteService(Token token, UUID serviceGuid);
 
 	/**
+	 * Returns a service plan given the Guid.
+	 * 
+	 * @param token
+	 * @param servicePlanGuid
+	 * @return
+	 */
+	ServicePlan getServicePlan(Token token, UUID servicePlanGuid);
+	
+	/**
 	 * Returns all the service plans.
 	 *
 	 * @param token the token used to authenticate the request.

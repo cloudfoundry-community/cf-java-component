@@ -174,6 +174,16 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public ServicePlan getServicePlan(Token token, UUID servicePlanGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SERVICE_PLANS +"/"+ servicePlanGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), ServicePlan.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
 	public RestCollection<ServicePlan> getServicePlans(Token token) {
 		return getServicePlans(token, null, null);
 	}
