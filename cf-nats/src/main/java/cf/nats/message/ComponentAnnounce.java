@@ -58,7 +58,7 @@ public class ComponentAnnounce extends JsonObject implements MessageBody<Void> {
 		this.index = index;
 		this.uuid = uuid;
 		this.host = host;
-		this.credentials = Collections.unmodifiableList(new ArrayList<String>(credentials));
+		this.credentials = Collections.unmodifiableList(new ArrayList<>(credentials));
 		this.start = start;
 		this.uptime = uptime;
 	}
@@ -90,4 +90,18 @@ public class ComponentAnnounce extends JsonObject implements MessageBody<Void> {
 	public String getUuid() {
 		return uuid;
 	}
+
+	@Override
+	public String toString() {
+		return "ComponentAnnounce{" +
+				"type='" + type + '\'' +
+				", index=" + index +
+				", uuid='" + uuid + '\'' +
+				", host='" + host + '\'' +
+				", credentials=" + credentials +
+				", start='" + start + '\'' +
+				", uptime='" + uptime + '\'' +
+				'}';
+	}
+
 }
