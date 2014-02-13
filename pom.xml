@@ -28,7 +28,7 @@
 		<netty.version>4.0.7.Final</netty.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
-		<springBoot.version>0.5.0.M5</springBoot.version>
+		<springBoot.version>1.0.0.RC2</springBoot.version>
 		<testng.version>6.3.1</testng.version>
 		<commons-codec.version>1.6</commons-codec.version>
 	</properties>
