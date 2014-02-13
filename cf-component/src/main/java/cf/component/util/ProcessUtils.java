@@ -47,24 +47,21 @@ public class ProcessUtils {
 		if (pid == null) {
 			return null;
 		}
-		final String ps = run("ps", "-o", "rss=", "-o", "vsize=", "-o", "pcpu=", "-p", pid);
+		final String ps = run("ps", "-o", "rss=", "-o", "pcpu=", "-p", pid);
 		final String[] parts = ps.split("\\s+");
 		return new ProcessStats(
 				Long.valueOf(parts[0]),
-				Long.valueOf(parts[1]),
-				Float.valueOf(parts[2])
+				Float.valueOf(parts[1])
 		);
 
 	}
 
 	public static class ProcessStats {
 		public final long residentSetSize;
-		public final long  vmSize;
 		public final float cpuUtilization;
 
-		public ProcessStats(long residentSetSize, long vmSize, float cpuUtilization) {
+		public ProcessStats(long residentSetSize, float cpuUtilization) {
 			this.residentSetSize = residentSetSize;
-			this.vmSize = vmSize;
 			this.cpuUtilization = cpuUtilization;
 		}
 
@@ -72,7 +69,6 @@ public class ProcessUtils {
 		public String toString() {
 			return "ProcessStats{" +
 					"rss=" + residentSetSize +
-					", vsize=" + vmSize +
 					", pcpu=" + cpuUtilization +
 					'}';
 		}
