@@ -29,6 +29,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -246,10 +247,30 @@ public class DefaultCloudController implements CloudController {
 	public void deleteService(Token token, UUID serviceGuid) {
 		deleteUri(token, V2_SERVICES + "/" + serviceGuid);
 	}
+	
+	@Override
+	public Service updateService(Token token, UUID serviceGuid, Service service) {
+		JsonNode jsonNode = putJsonToUri(token, service, V2_SERVICES, serviceGuid);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Service.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public UUID createServicePlan(Token token, ServicePlan request) {
 		return postJsonToUri(token, request, V2_SERVICE_PLANS);
+	}
+	
+	@Override
+	public ServicePlan updateServicePlan(Token token, UUID servicePlanGuid, ServicePlan service) {
+		JsonNode jsonNode = putJsonToUri(token, service, V2_SERVICE_PLANS, servicePlanGuid);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), ServicePlan.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -312,6 +333,24 @@ public class DefaultCloudController implements CloudController {
 				validateResponse(response, 201);
 				final JsonNode responseJson = mapper.readTree(response.getEntity().getContent());
 				return UUID.fromString(responseJson.get("metadata").get("guid").asText());
+			} finally {
+				HttpClientUtils.closeQuietly(response);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private JsonNode putJsonToUri(Token token, Object json, String uri, UUID guid) {
+		try {
+			final String requestString = mapper.writeValueAsString(json);
+			final HttpPut put = new HttpPut(target.resolve(uri+"/"+ guid.toString()));
+			put.addHeader(token.toAuthorizationHeader());
+			put.setEntity(new StringEntity(requestString, ContentType.APPLICATION_JSON));
+			final HttpResponse response = httpClient.execute(put);
+			try {
+				validateResponse(response, 201);
+				return mapper.readTree(response.getEntity().getContent());
 			} finally {
 				HttpClientUtils.closeQuietly(response);
 			}

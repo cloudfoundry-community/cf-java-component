@@ -31,21 +31,34 @@ public class ServicePlan extends JsonObject {
 	private final String name;
 	private final String description;
 	private final UUID serviceGuid;
-	private final boolean free;
+	private final Boolean free;
 	private final String uniqueId;
+	private final Boolean publicPlan;
 
+	
+	@Deprecated
+	public ServicePlan(
+			String name,
+			String description,
+			UUID serviceGuid,
+			Boolean free,
+			String uniqueId) {
+		this(name, description, serviceGuid, free, uniqueId, true);
+	}
 
 	public ServicePlan(
 			@JsonProperty("name") String name,
 			@JsonProperty("description") String description,
 			@JsonProperty(SERVICE_GUID) UUID serviceGuid,
-			@JsonProperty("free") boolean free,
-			@JsonProperty(UNIQUE_ID) String uniqueId) {
+			@JsonProperty("free") Boolean free,
+			@JsonProperty(UNIQUE_ID) String uniqueId,
+			@JsonProperty("public") Boolean publicPlan) {
 		this.name = name;
 		this.description = description;
 		this.serviceGuid = serviceGuid;
 		this.free = free;
 		this.uniqueId = uniqueId;
+		this.publicPlan = publicPlan;
 	}
 
 	public String getName() {
@@ -56,9 +69,15 @@ public class ServicePlan extends JsonObject {
 		return description;
 	}
 
-	public boolean isFree() {
+	public Boolean isFree() {
 		return free;
 	}
+
+	@JsonProperty("public")
+	public Boolean isPublicPlan() {
+		return publicPlan;
+	}
+
 
 	@JsonProperty(SERVICE_GUID)
 	public UUID getServiceGuid() {

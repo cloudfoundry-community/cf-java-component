@@ -88,6 +88,8 @@ public interface CloudController {
 	Service getService(Token token, UUID serviceGuid);
 
 	void deleteService(Token token, UUID serviceGuid);
+	
+	Service updateService(Token token, UUID serviceGuid, Service service);
 
 	/**
 	 * Returns a service plan given the Guid.
@@ -115,6 +117,8 @@ public interface CloudController {
 	 */
 	UUID createServicePlan(Token token, ServicePlan servicePlan);
 
+	ServicePlan updateServicePlan(Token token, UUID servicePlanGuid, ServicePlan servicePlan);
+	
 	/**
 	 * Returns a list of service plans filtered by the query arguments.
 	 *
