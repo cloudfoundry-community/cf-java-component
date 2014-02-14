@@ -16,6 +16,22 @@
  */
 package cf.spring;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.HttpRequestHandler;
+import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
+
 import cf.service.AuthenticationException;
 import cf.service.BadRequestException;
 import cf.service.Provisioner;
@@ -23,26 +39,14 @@ import cf.service.ResourceNotFoundException;
 import cf.service.ServiceBroker;
 import cf.service.ServiceBrokerException;
 
-import org.springframework.util.StreamUtils;
-import org.springframework.web.HttpRequestHandler;
-import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
 public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceBrokerHandler.class);
 
 	public static class ServiceBrokerHandlerBuilder {
 		private final ServiceBroker serviceBroker;
@@ -138,8 +142,14 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 			} catch (ResourceNotFoundException e) {
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
+			} catch (ServiceBrokerException e) {
+				LOGGER.error("Unexpected Error", e);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
 			} catch (Exception e) {
-				throw new ServletException(e);
+				LOGGER.error("Unexpected Error", e);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				objectMapper.writeValue(response.getWriter(), objectMapper.createObjectNode().put("description", e.getMessage()));
 			}
 		}
 
