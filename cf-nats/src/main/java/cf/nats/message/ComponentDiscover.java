@@ -18,7 +18,6 @@ package cf.nats.message;
 
 import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
-import cf.common.JsonObject;
 
 /**
  * A request for components to announce themselves.
@@ -26,5 +25,5 @@ import cf.common.JsonObject;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("vcap.component.discover")
-public class ComponentDiscover  extends JsonObject implements MessageBody<ComponentAnnounce> {
+public class ComponentDiscover implements MessageBody<ComponentAnnounce> {
 }
