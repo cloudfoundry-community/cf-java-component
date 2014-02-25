@@ -38,7 +38,7 @@ public class CfComponentSettings {
 		private int index = 0;
 		private String uuid = UUID.randomUUID().toString();
 		private String username = "varz";
-		private String password = new BigInteger(130, ThreadLocalRandom.current()).toString(32);
+		private String password = new BigInteger(256, ThreadLocalRandom.current()).toString(32);
 
 		public Builder host(String host) {
 			this.host = host;
