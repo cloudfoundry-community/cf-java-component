@@ -16,10 +16,10 @@
  */
 package cf.nats.message;
 
+import cf.common.JsonObject;
 import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import cf.common.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,6 +89,11 @@ public class ComponentAnnounce extends JsonObject implements MessageBody<Void> {
 
 	public String getUuid() {
 		return uuid;
+	}
+
+	@JsonProperty("varz_url")
+	public String getVarzUrl() {
+		return "http://" + credentials.get(0) + ':' + credentials.get(1) + '@' + host + "/varz";
 	}
 
 	@Override
