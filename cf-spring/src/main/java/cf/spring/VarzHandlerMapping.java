@@ -43,7 +43,6 @@ public class VarzHandlerMapping extends AbstractUrlHandlerMapping {
 		registerHandler("/varz", new HttpRequestHandler() {
 			@Override
 			public void handleRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-				System.out.println("Handling request");
 				if (httpServletRequest.getMethod().equalsIgnoreCase("GET")) {
 					if (authenticator.authenticate(httpServletRequest, httpServletResponse)) {
 						httpServletResponse.setContentType("application/json;charset=utf-8");
