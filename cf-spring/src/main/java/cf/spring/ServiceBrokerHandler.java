@@ -69,7 +69,6 @@ public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 			return new ServiceBrokerHandler(this);
 		}
 
-		// TODO Add URI prefix
 	}
 
 	private final ServiceBroker serviceBroker;
