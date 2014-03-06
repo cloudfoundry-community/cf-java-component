@@ -49,7 +49,7 @@ import static org.testng.Assert.fail;
  */
 public class CfComponentTest {
 
-	@EnableAutoConfiguration(exclude = WebSocketAutoConfiguration.class)
+	@EnableAutoConfiguration
 	@Configuration
 	@CfComponent("Test")
 	static class TestConfiguration {
