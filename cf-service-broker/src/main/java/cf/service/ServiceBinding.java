@@ -18,7 +18,9 @@ package cf.service;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ServiceBinding extends ServiceInstance {
 
 	private final String bindingId;

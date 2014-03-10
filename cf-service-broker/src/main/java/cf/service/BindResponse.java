@@ -21,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class BindResponse extends JsonObject {
 
 	private final String handleId;

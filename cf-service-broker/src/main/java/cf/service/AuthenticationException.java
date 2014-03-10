@@ -20,6 +20,8 @@ package cf.service;
  * Indicates there was an error authenticating the request and that an HTTP 403 response should be returned.
  *
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class AuthenticationException extends ServiceBrokerException {
 }

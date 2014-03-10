@@ -18,6 +18,8 @@ package cf.common;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.Map;
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class JsonObject {
 
 	protected final Map<String, Object> other = new HashMap<>();

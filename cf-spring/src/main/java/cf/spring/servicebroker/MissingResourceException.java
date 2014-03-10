@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013 Intellectual Reserve, Inc.  All rights reserved.
+ *   Copyright (c) 2014 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,25 +14,18 @@
  *   limitations under the License.
  *
  */
-package cf.service;
+package cf.spring.servicebroker;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * Indicates the request was malformed in some way.
+ * Thrown during unbind or deprovision if the requests service or binding are not found.
  *
  * @author Mike Heath <elcapo@gmail.com>
- * @deprecated Use the V2 services.
  */
-@Deprecated
-public class BadRequestException extends ServiceBrokerException {
+public class MissingResourceException extends ServiceBrokerException {
 
-	public BadRequestException() {
-	}
-
-	public BadRequestException(String message) {
-		super(message);
-	}
-
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
+	public MissingResourceException() {
+		super(HttpServletResponse.SC_GONE, "");
 	}
 }

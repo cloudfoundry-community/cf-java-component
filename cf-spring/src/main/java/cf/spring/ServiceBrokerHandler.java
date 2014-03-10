@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
 public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {
 	

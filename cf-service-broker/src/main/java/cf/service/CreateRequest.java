@@ -21,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class CreateRequest extends JsonObject {
 	private static final String SPACE_GUID = "space_guid";
 	private static final String ORGANIZATION_GUID = "organization_guid";

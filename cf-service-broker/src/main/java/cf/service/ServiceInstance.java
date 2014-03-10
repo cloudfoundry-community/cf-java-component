@@ -21,7 +21,9 @@ import java.util.Map;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ServiceInstance {
 
 	private final String instanceId;

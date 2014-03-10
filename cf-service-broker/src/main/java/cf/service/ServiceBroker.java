@@ -36,7 +36,9 @@ import java.util.regex.Pattern;
  * a set of HTTP endpoints and a user provide implementation of {@link cf.service.Provisioner}.
  *
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ServiceBroker {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceBroker.class);

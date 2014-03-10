@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013 Intellectual Reserve, Inc.  All rights reserved.
+ *   Copyright (c) 2014 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,25 +14,17 @@
  *   limitations under the License.
  *
  */
-package cf.service;
+package cf.spring.servicebroker;
 
 /**
- * Indicates the request was malformed in some way.
- *
  * @author Mike Heath <elcapo@gmail.com>
- * @deprecated Use the V2 services.
  */
-@Deprecated
-public class BadRequestException extends ServiceBrokerException {
+final class Constants {
 
-	public BadRequestException() {
-	}
+	public static final String CATALOG_URI = "/v2/catalog";
 
-	public BadRequestException(String message) {
-		super(message);
-	}
+	public static final String JSON_CONTENT_TYPE = "application/json;charset=utf8";
 
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
-	}
+	private Constants() {}
+
 }

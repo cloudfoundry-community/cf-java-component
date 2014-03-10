@@ -22,7 +22,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class CreateResponse extends JsonObject {
 	private final String serviceInstanceId;
 	private final JsonNode configuration; // TODO Figure out what this is used for, it shows up in CC REST services but nowhere else

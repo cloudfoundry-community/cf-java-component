@@ -35,7 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ServiceGarbageCollector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceGarbageCollector.class);

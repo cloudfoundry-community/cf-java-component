@@ -21,7 +21,9 @@ package cf.service;
  * returned.
  *
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ResourceNotFoundException extends ServiceBrokerException {
 	public ResourceNotFoundException() {
 	}

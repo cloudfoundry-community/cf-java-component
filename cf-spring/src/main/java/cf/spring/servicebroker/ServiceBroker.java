@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2013 Intellectual Reserve, Inc.  All rights reserved.
+ *   Copyright (c) 2014 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,25 +14,28 @@
  *   limitations under the License.
  *
  */
-package cf.service;
+package cf.spring.servicebroker;
+
+import org.springframework.stereotype.Component;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Indicates the request was malformed in some way.
+ * Classes annotated with this method are marked as being service brokers.
  *
  * @author Mike Heath <elcapo@gmail.com>
- * @deprecated Use the V2 services.
  */
-@Deprecated
-public class BadRequestException extends ServiceBrokerException {
-
-	public BadRequestException() {
-	}
-
-	public BadRequestException(String message) {
-		super(message);
-	}
-
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+@Component
+public @interface ServiceBroker {
+	/**
+	 * The services managed by this service broker.
+	 */
+	Service[] value();
 }

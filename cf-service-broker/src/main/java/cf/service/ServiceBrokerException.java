@@ -20,7 +20,9 @@ package cf.service;
  * Root exception for all service broker exceptions.
  *
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class ServiceBrokerException extends Exception {
 
 	public ServiceBrokerException() {

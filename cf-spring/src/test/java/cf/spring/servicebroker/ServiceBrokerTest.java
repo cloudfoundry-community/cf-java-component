@@ -1,0 +1,246 @@
+/*
+ *   Copyright (c) 2014 Intellectual Reserve, Inc.  All rights reserved.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+package cf.spring.servicebroker;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+/**
+ * @author Mike Heath <elcapo@gmail.com>
+ */
+public class ServiceBrokerTest extends AbstractServiceBrokerTest {
+
+	private static final UUID ORG_GUID = UUID.randomUUID();
+	private static final UUID SPACE_GUID = UUID.randomUUID();
+	private static final UUID SERVICE_INSTANCE_GUID = UUID.randomUUID();
+	private static final UUID APPLICATION_GUID = UUID.randomUUID();
+	private static final UUID BINDING_GUID = UUID.randomUUID();
+
+	private static final String DASHBOARD_URL = "http:/some.url/yourservice/" + SERVICE_INSTANCE_GUID;
+
+	private static final String BROKER_ID = "some-broker-id-1";
+	private static final String PLAN_ID = "plan-id-2";
+
+	private static final String SOME_USERNAME = "some-username";
+	private static final String SOME_PASSWORD = "some-password";
+
+	static class Credentials {
+		private final String username;
+		private final String password;
+
+		Credentials(String username, String password) {
+			this.username = username;
+			this.password = password;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableServiceBroker(username = USERNAME, password = PASSWORD)
+	@ServiceBroker(
+			@Service(id = BROKER_ID, name="test-broker", description = "This is for testing", plans = {
+					@ServicePlan(id = PLAN_ID, name = "test-plan", description = "Some test plan for testing.")
+	}))
+	static class ServiceBrokerConfiguration {
+
+		@Provision
+		public ProvisionResponse provision(ProvisionRequest request) {
+			assertEquals(request.getInstanceGuid(), SERVICE_INSTANCE_GUID);
+			assertEquals(request.getPlanId(), PLAN_ID);
+			assertEquals(request.getOrganizationGuid(), ORG_GUID);
+			assertEquals(request.getSpaceGuid(), SPACE_GUID);
+			provisionCounter().incrementAndGet();
+			return new ProvisionResponse(DASHBOARD_URL);
+		}
+
+		@Bind
+		public BindResponse bind(BindRequest request) {
+			assertEquals(request.getPlanId(), PLAN_ID);
+			assertEquals(request.getApplicationGuid(), APPLICATION_GUID);
+			assertEquals(request.getBindingGuid(), BINDING_GUID);
+			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
+			bindCounter().incrementAndGet();
+			return new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD));
+		}
+
+		@Unbind
+		public void unbind(UnbindRequest request) {
+			assertEquals(request.getPlanId(), PLAN_ID);
+			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
+			assertEquals(request.getBindingGuid(), BINDING_GUID);
+			unbindCounter().incrementAndGet();
+		}
+
+		@Deprovision
+		public void deprovision(DeprovisionRequest request) {
+			assertEquals(request.getPlanId(), PLAN_ID);
+			assertEquals(request.getInstanceGuid(), SERVICE_INSTANCE_GUID);
+			deprovisionCounter().incrementAndGet();
+		}
+
+		@Bean
+		AtomicInteger provisionCounter() {
+			return new AtomicInteger();
+		}
+
+		@Bean
+		AtomicInteger deprovisionCounter() {
+			return new AtomicInteger();
+		}
+
+		@Bean
+		AtomicInteger bindCounter() {
+			return new AtomicInteger();
+		}
+
+		@Bean
+		AtomicInteger unbindCounter() {
+			return new AtomicInteger();
+		}
+
+	}
+
+	private ConfigurableApplicationContext context;
+	private CloseableHttpClient client;
+
+	@BeforeClass
+	public void init() {
+		final SpringApplication application = new SpringApplication(ServiceBrokerConfiguration.class);
+		context = application.run();
+		client = buildAuthenticatingClient();
+	}
+
+	@AfterClass
+	public void cleanup() throws Exception {
+		context.close();
+		client.close();
+	}
+
+
+	final String instanceUri = "http://localhost:8080/v2/service_instances/" + SERVICE_INSTANCE_GUID;
+	final String bindingUri = "http://localhost:8080/v2/service_instances/" + SERVICE_INSTANCE_GUID + "/service_bindings/" + BINDING_GUID;
+
+	@Test
+	public void provision() throws Exception {
+		final AtomicInteger provisionCounter = context.getBean("provisionCounter", AtomicInteger.class);
+		assertEquals(provisionCounter.get(), 0);
+		// Do provision
+		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, ORG_GUID, SPACE_GUID);
+		final HttpUriRequest provisionRequest = RequestBuilder.put()
+				.setUri(instanceUri)
+				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
+				.build();
+		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
+		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(provisionCounter.get(), 1);
+
+		final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
+		assertTrue(provisionResponseJson.has("dashboard_url"));
+		assertEquals(provisionResponseJson.get("dashboard_url").asText(), DASHBOARD_URL);
+	}
+
+	@Test
+	public void bind() throws Exception {
+		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
+		assertEquals(bindCounter.get(), 0);
+		// Do bind
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, APPLICATION_GUID);
+		final HttpUriRequest bindRequest = RequestBuilder.put()
+				.setUri(bindingUri)
+				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
+				.build();
+		final CloseableHttpResponse bindResponse = client.execute(bindRequest);
+		assertEquals(bindResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(bindCounter.get(), 1);
+		final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
+		assertTrue(bindResponseJson.has("credentials"));
+		assertFalse(bindResponseJson.has("syslog_drain_url"));
+
+		final JsonNode credentials = bindResponseJson.get("credentials");
+		assertEquals(credentials.get("username").asText(), SOME_USERNAME);
+		assertEquals(credentials.get("password").asText(), SOME_PASSWORD);
+	}
+
+	@Test
+	public void unbind() throws Exception {
+		final AtomicInteger unbindCounter = context.getBean("unbindCounter", AtomicInteger.class);
+		assertEquals(unbindCounter.get(), 0);
+
+		final HttpUriRequest unbindRequest = RequestBuilder.delete()
+				.setUri(bindingUri + "?service_id=" + BROKER_ID + "&" + "plan_id=" + PLAN_ID)
+				.build();
+		final CloseableHttpResponse unbindResponse = client.execute(unbindRequest);
+		assertEquals(unbindResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(unbindCounter.get(), 1);
+	}
+
+	// Do unbind
+	@Test
+	public void deprovision() throws Exception {
+		final AtomicInteger deprovisionCounter = context.getBean("deprovisionCounter", AtomicInteger.class);
+		assertEquals(deprovisionCounter.get(), 0);
+
+		// Do deprovision
+		final HttpUriRequest deprovisionRequest = RequestBuilder.delete()
+				.setUri(instanceUri + "?service_id=" + BROKER_ID + "&" + "plan_id=" + PLAN_ID)
+				.build();
+		final CloseableHttpResponse deprovisionResponse = client.execute(deprovisionRequest);
+		assertEquals(deprovisionResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(deprovisionCounter.get(), 1);
+	}
+
+	@Test
+	public void errorWhenCallingUnknownService() throws Exception {
+		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody("invalid-broker-id", PLAN_ID, ORG_GUID, SPACE_GUID);
+		final HttpUriRequest provisionRequest = RequestBuilder.put()
+				.setUri(instanceUri)
+				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
+				.build();
+		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
+		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 404);
+		final JsonNode errorJson = mapper.readTree(provisionResponse.getEntity().getContent());
+		assertTrue(errorJson.has("description"));
+	}
+}

@@ -32,7 +32,9 @@ import java.util.UUID;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
+ * @deprecated Use the V2 services.
  */
+@Deprecated
 public class Bootstrap {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrap.class);
