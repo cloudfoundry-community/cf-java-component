@@ -31,6 +31,18 @@ import java.lang.annotation.Target;
 @Import(CfComponentConfiguration.class)
 public @interface CfComponent {
 
-	String value();
+	String type();
+
+	String host() default "127.0.0.1";
+
+	String port() default "8080";
+
+	String index() default "0";
+
+	String uuid() default "";
+
+	String username() default "varz";
+
+	String password() default "";
 
 }

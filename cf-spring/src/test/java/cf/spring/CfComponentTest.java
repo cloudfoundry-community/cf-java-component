@@ -21,7 +21,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +50,7 @@ public class CfComponentTest {
 
 	@EnableAutoConfiguration
 	@Configuration
-	@CfComponent("Test")
+	@CfComponent(type = "Test")
 	static class TestConfiguration {
 		final Queue<ComponentAnnounce> componentAnnouncements = new LinkedList<>();
 
@@ -111,19 +110,18 @@ public class CfComponentTest {
 		final SpringApplication application = new SpringApplication(TestConfiguration.class);
 		try (ConfigurableApplicationContext context = application.run()) {
 			final CfComponentConfiguration componentConfiguration = context.getBean(CfComponentConfiguration.class);
-			final CfComponentSettings settings = componentConfiguration.getSettings();
 			final ComponentAnnounce natsAnnouncement = getComponentAnnounce(context);
 
 			final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(settings.getUsername(), settings.getPassword()));
+			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(componentConfiguration.getUsername(), componentConfiguration.getPassword()));
 			HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
 			HttpGet get = new HttpGet("http://" + natsAnnouncement.getHost() + "/varz");
 			final HttpResponse response = client.execute(get);
 			assertEquals(200, response.getStatusLine().getStatusCode());
 			final JsonNode node = new ObjectMapper().readTree(response.getEntity().getContent());
 			assertEquals(node.get("type").asText(), "Test");
-			assertEquals(node.get("index").asInt(), settings.getIndex());
-			assertEquals(node.get("uuid").asText(), settings.getUuid());
+			assertEquals(node.get("index").asInt(), componentConfiguration.getIndex());
+			assertEquals(node.get("uuid").asText(), componentConfiguration.getUuid());
 			assertTrue(node.has("num_cores"));
 			assertTrue(node.has("num_cores"));
 		}
@@ -149,11 +147,10 @@ public class CfComponentTest {
 		final SpringApplication application = new SpringApplication(TestConfiguration.class, ExtraVarzConfiguration.class);
 		try (ConfigurableApplicationContext context = application.run()) {
 			final CfComponentConfiguration componentConfiguration = context.getBean(CfComponentConfiguration.class);
-			final CfComponentSettings settings = componentConfiguration.getSettings();
 			final ComponentAnnounce natsAnnouncement = getComponentAnnounce(context);
 
 			final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(settings.getUsername(), settings.getPassword()));
+			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(componentConfiguration.getUsername(), componentConfiguration.getPassword()));
 			HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
 			HttpGet get = new HttpGet("http://" + natsAnnouncement.getHost() + "/varz");
 			final HttpResponse response = client.execute(get);

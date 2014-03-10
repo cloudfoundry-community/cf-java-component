@@ -57,7 +57,6 @@ import java.util.Map;
 class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware, BeanFactoryAware, InitializingBean {
 
 	private ApplicationContext context;
-//	private ConfigurableBeanFactory beanFactory;
 	private BeanExpressionResolver expressionResolver;
 	private BeanExpressionContext expressionContext;
 

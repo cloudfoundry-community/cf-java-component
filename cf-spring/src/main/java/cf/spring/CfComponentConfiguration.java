@@ -26,46 +26,81 @@ import cf.nats.PublicationHandler;
 import cf.nats.message.ComponentAnnounce;
 import cf.nats.message.ComponentDiscover;
 import nats.client.Subscription;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanExpressionContext;
+import org.springframework.beans.factory.config.BeanExpressionResolver;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 import java.lang.management.ManagementFactory;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
 @Configuration
-public class CfComponentConfiguration implements InitializingBean, DisposableBean, ImportAware {
+public class CfComponentConfiguration implements InitializingBean, DisposableBean, ImportAware, BeanFactoryAware {
 
 	@Autowired
 	private CfNats nats;
-	@Autowired(required = false)
-	private CfComponentSettings settings;
+
+	private BeanExpressionResolver expressionResolver;
+	private BeanExpressionContext expressionContext;
 
 	private String type;
+	private int index;
+	private String uuid;
+	private String host;
+	private int port;
+	private String username;
+	private String password;
+
 	private Subscription componentDiscoverSubscription;
 
 	private final long startTime = ManagementFactory.getRuntimeMXBean().getStartTime();
 
 	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
-		final MultiValueMap<String,Object> annotationAttributes = importMetadata.getAllAnnotationAttributes(CfComponent.class.getName());
-		type = annotationAttributes.getFirst("value").toString();
+		final MultiValueMap<String,Object> attributes = importMetadata.getAllAnnotationAttributes(CfComponent.class.getName());
+		type = evaluate(attributes, "type");
+		index = Integer.valueOf(evaluate(attributes, "index"));
+		uuid = evaluate(attributes, "uuid");
+		if (StringUtils.isEmpty(uuid)) {
+			uuid = UUID.randomUUID().toString();
+		}
+		host = evaluate(attributes, "host");
+		port = Integer.valueOf(evaluate(attributes, "port"));
+		username = evaluate(attributes, "username");
+		password = evaluate(attributes, "password");
+		if (StringUtils.isEmpty(password)) {
+			password = new BigInteger(256, ThreadLocalRandom.current()).toString(32);
+		}
 	}
+
+	private String evaluate(MultiValueMap<String,Object> annotationAttributes, String attribute) {
+		final String expression = annotationAttributes.getFirst(attribute).toString();
+		final Object value = expressionResolver.evaluate(expression, expressionContext);
+		return value == null ? null : value.toString();
+	}
+
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (settings == null) {
-			settings = new CfComponentSettings.Builder().build();
-		}
 		componentDiscoverSubscription = nats.subscribe(ComponentDiscover.class, new PublicationHandler<ComponentDiscover, ComponentAnnounce>() {
 			@Override
 			public void onMessage(Publication<ComponentDiscover, ComponentAnnounce> publication) {
@@ -80,10 +115,6 @@ public class CfComponentConfiguration implements InitializingBean, DisposableBea
 		componentDiscoverSubscription.close();
 	}
 
-	public CfComponentSettings getSettings() {
-		return settings;
-	}
-
 	@Bean
 	HealthzHandlerMapping healthzHandlerMapping() {
 		return new HealthzHandlerMapping();
@@ -91,24 +122,62 @@ public class CfComponentConfiguration implements InitializingBean, DisposableBea
 
 	@Bean
 	VarzHandlerMapping varzHandlerMapping(List<VarzProducer> varzProducers) {
-			return new VarzHandlerMapping(new VarzAggregator(varzProducers), new HttpBasicAuthenticator("", settings.getUsername(), settings.getPassword()));
+			return new VarzHandlerMapping(new VarzAggregator(varzProducers), new HttpBasicAuthenticator("", username, password));
 	}
 
 	@Bean
 	BasicVarzProducer basicVarz() {
-		return new BasicVarzProducer(type, settings.getIndex(), settings.getUuid());
+		return new BasicVarzProducer(type, index, uuid);
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 
 	private ComponentAnnounce buildComponentAnnounceMessage() {
 		return new ComponentAnnounce(
 				type,
-				settings.getIndex(),
-				settings.getUuid(),
-				settings.getHost() + ":" + settings.getPort(),
-				Arrays.asList(settings.getUsername(), settings.getPassword()),
+				index,
+				uuid,
+				host + ":" + port,
+				Arrays.asList(username, password),
 				DateTimeUtils.formatDateTime(startTime),
 				DateTimeUtils.formatUptime(startTime)
 		);
 	}
 
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		if (beanFactory instanceof ConfigurableBeanFactory) {
+			final ConfigurableBeanFactory cbf = (ConfigurableBeanFactory) beanFactory;
+			expressionResolver = cbf.getBeanExpressionResolver();
+			expressionContext = new BeanExpressionContext(cbf, cbf.getRegisteredScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE));
+		} else {
+			throw new BeanCreationException(getClass().getName() + " can only be used with a " + ConfigurableBeanFactory.class.getName());
+		}
+	}
 }
