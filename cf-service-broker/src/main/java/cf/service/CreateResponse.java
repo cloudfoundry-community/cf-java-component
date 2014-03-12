@@ -17,6 +17,7 @@
 package cf.service;
 
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @deprecated Use the V2 services.
  */
 @Deprecated
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class CreateResponse extends JsonObject {
 	private final String serviceInstanceId;
 	private final JsonNode configuration; // TODO Figure out what this is used for, it shows up in CC REST services but nowhere else

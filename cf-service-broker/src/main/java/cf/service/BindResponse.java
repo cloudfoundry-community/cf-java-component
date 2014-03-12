@@ -17,6 +17,7 @@
 package cf.service;
 
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @deprecated Use the V2 services.
  */
 @Deprecated
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class BindResponse extends JsonObject {
 
 	private final String handleId;
