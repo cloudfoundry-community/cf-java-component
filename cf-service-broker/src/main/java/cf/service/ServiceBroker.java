@@ -131,6 +131,7 @@ public class ServiceBroker {
 	}
 
 	private void validateAuthToken(String authToken) throws AuthenticationException {
+		LOGGER.warn("Received invalid service-auth-token from Cloud Controller.");
 		if (!this.authToken.equals(authToken)) {
 			throw new AuthenticationException();
 		}
