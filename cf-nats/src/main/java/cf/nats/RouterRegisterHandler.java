@@ -88,6 +88,7 @@ public class RouterRegisterHandler implements AutoCloseable {
 
 	@Override
 	public void close() {
+		routerRegisterPublication.remove();
 		cfNats.publish(new RouterUnregister(routerRegister));
 		subscription.close();
 	}
