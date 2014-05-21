@@ -16,8 +16,10 @@
  */
 package cf.spring.config;
 
-import cf.spring.YamlDocument;
-import cf.spring.YamlPropertySource;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -25,12 +27,15 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
+import cf.spring.YamlDocument;
+import cf.spring.YamlPropertySource;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
 public class YamlPropertyContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(YamlPropertyContextInitializer.class);
 
 	private final String name;
 	private final String locationProperty;
@@ -54,6 +59,7 @@ public class YamlPropertyContextInitializer implements ApplicationContextInitial
 			final ConfigurableEnvironment environment = applicationContext.getEnvironment();
 			final Resource resource = applicationContext.getResource(environment.getProperty(locationProperty, locationDefault));
 			final YamlDocument yamlDocument;
+			LOGGER.info("Loading config from: {}", resource);
 			yamlDocument = YamlDocument.load(resource);
 			final MutablePropertySources propertySources = environment.getPropertySources();
 			final PropertySource propertySource = new YamlPropertySource(name, yamlDocument);

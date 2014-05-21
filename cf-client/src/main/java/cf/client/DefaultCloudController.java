@@ -16,12 +16,16 @@
  */
 package cf.client;
 
-import cf.client.model.ApplicationInstance;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -36,6 +40,7 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
@@ -43,16 +48,10 @@ import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
 
-import java.io.IOException;
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -198,6 +197,16 @@ public class DefaultCloudController implements CloudController {
 				queryAttribute,
 				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public ServiceInstance getServiceInstance(Token token, UUID instanceGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SERVICE_INSTANCES +"/"+ instanceGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), ServiceInstance.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
