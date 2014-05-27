@@ -42,11 +42,13 @@ import org.slf4j.LoggerFactory;
 
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
+import cf.client.model.Organization;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
+import cf.client.model.Space;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +69,8 @@ public class DefaultCloudController implements CloudController {
 	private static final String V2_SERVICE_BINDINGS = "/v2/service_bindings";
 	private static final String V2_SERVICE_INSTANCES = "/v2/service_instances";
 	private static final String V2_SERVICE_PLANS = "/v2/service_plans";
+	private static final String V2_SPACES = "/v2/spaces";
+	private static final String V2_ORGANIZATIONS = "/v2/organizations";
 
 	private final HttpClient httpClient;
 	private final URI target;
@@ -204,6 +208,27 @@ public class DefaultCloudController implements CloudController {
 		JsonNode jsonNode = fetchResource(token, V2_SERVICE_INSTANCES +"/"+ instanceGuid.toString());
 		try {
 			return mapper.readValue(jsonNode.get("entity").traverse(), ServiceInstance.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
+	@Override
+	public Space getSpace(Token token, UUID spaceGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SPACES +"/"+ spaceGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Space.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Organization getOrganization(Token token, UUID organizationGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_ORGANIZATIONS +"/"+ organizationGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Organization.class);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

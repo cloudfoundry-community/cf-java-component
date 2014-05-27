@@ -18,11 +18,12 @@ package cf.nats.message;
 
 import static junit.framework.Assert.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import java.io.IOException;
+
 import org.testng.annotations.Test;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -101,5 +102,34 @@ public class Demarshalling {
 		assertEquals(Integer.valueOf(22173), routerRegister.getPort());
 		assertEquals("0-02ab79376f8a42fe82503ec2a258c345", routerRegister.getDea());
 		assertEquals("hello.mikeheath.cloudfoundry.me", routerRegister.getUris().get(0));
+	}
+	
+	@Test
+	public void deaHeartbeat() throws Exception {
+		final ObjectReader reader = mapper.reader(DeaHeartbeat.class);
+		final String deaHeartbeatMessage = "{\"droplets\":[{\"cc_partition\":\"default\",\"droplet\":\"060e10ec-3c2c-461e-890b-e630e86163ff\",\"version\":\"90dfa9bd-3406-44c0-b1b6-bfdeccac4777\",\"instance\":\"37468705e1794e17be17a31f19c9fe99\",\"index\":0,\"state\":\"RUNNING\",\"state_timestamp\":1401124825.6917121},{\"cc_partition\":\"default\",\"droplet\":\"9887245b-7af0-4b63-b0bb-d0f2baf6c34d\",\"version\":\"18de2fb1-2f47-4910-b391-2c985f0a9bf9\",\"instance\":\"7e823ec1080e4bc284a669398f045dd9\",\"index\":0,\"state\":\"CRASHED\",\"state_timestamp\":1401124844.5487561}],\"dea\":\"0-7b8ba7d0e9f9411188b223dc462bb330\"}";
+		final DeaHeartbeat deaHeartbeat = reader.readValue(deaHeartbeatMessage);
+		assertNotNull(deaHeartbeat);
+		assertEquals("0-7b8ba7d0e9f9411188b223dc462bb330", deaHeartbeat.getDea());
+		assertEquals(2, deaHeartbeat.getDroplets().length);
+		assertEquals("060e10ec-3c2c-461e-890b-e630e86163ff", deaHeartbeat.getDroplets()[0].getDroplet());
+		assertEquals("37468705e1794e17be17a31f19c9fe99", deaHeartbeat.getDroplets()[0].getInstance());
+		assertEquals(0, deaHeartbeat.getDroplets()[0].getIndex().intValue());
+		assertEquals(DeaHeartbeat.Droplet.RUNNING, deaHeartbeat.getDroplets()[0].getState());
+		assertEquals("9887245b-7af0-4b63-b0bb-d0f2baf6c34d", deaHeartbeat.getDroplets()[1].getDroplet());
+	}
+
+	@Test
+	public void deaStart() throws Exception {
+		final ObjectReader reader = mapper.reader(DeaStart.class);
+		final String deaStartMessage = "{\"droplet\":\"060e10ec-3c2c-461e-890b-e630e86163ff\",\"name\":\"cf-app\",\"services\":[{\"credentials\":{\"name\":\"Dude\"},\"options\":{},\"label\":\"servicemanager-service-0.1\",\"name\":\"sm\"}],\"vcap_application\":{\"name\":\"cf-app\",\"space_name\":\"test\",\"space_id\":\"b327c22e-879c-4a10-80dc-3b72173bbdfd\"},\"index\":1}";
+		final DeaStart deaStart = reader.readValue(deaStartMessage);
+		assertNotNull(deaStart);
+		assertEquals("060e10ec-3c2c-461e-890b-e630e86163ff", deaStart.getDroplet());
+		assertEquals(1, deaStart.getServices().length);
+		assertEquals("sm", deaStart.getServices()[0].getName());
+		assertNotNull(deaStart.getServices()[0].getCredentials());
+		assertEquals("test", deaStart.getVcapApplication().getSpaceName());
+		assertEquals(1, deaStart.getIndex().intValue());
 	}
 }

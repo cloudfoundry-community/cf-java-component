@@ -21,11 +21,13 @@ import java.util.UUID;
 
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
+import cf.client.model.Organization;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
+import cf.client.model.Space;
 
 /**
  * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
@@ -137,6 +139,24 @@ public interface CloudController {
 	 * @return the service with the specified guid.
 	 */
 	ServiceInstance getServiceInstance(Token token, UUID instanceGuid);
+
+	/**
+	 * Returns the space.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param space guid.
+	 * @return the space for the given guid
+	 */
+	Space getSpace(Token token, UUID spaceGuid);
+
+	/**
+	 * Returns the space.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param space guid.
+	 * @return the space for the given guid
+	 */
+	Organization getOrganization(Token token, UUID organizationGuid);
 
 	
 	/**
