@@ -196,6 +196,14 @@ public interface CloudController {
 	RestCollection<ServiceBinding> getServiceBindings(Token token, ServiceBindingQueryAttribute queryAttribute, String queryValue);
 
 	/**
+	 * Returns a service binding.
+	 * @param token
+	 * @param serviceBindingGuid
+	 * @return
+	 */
+	ServiceBinding getServiceBinding(Token token, UUID serviceBindingGuid);
+
+	/**
 	 * Returns all the service auth tokens.
 	 *
 	 * @param token the token used to authenticate the request.

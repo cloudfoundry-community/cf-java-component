@@ -23,11 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks the method that should be invoked when the service broker receives a bind request. Methods annotated with
+ * Marks the method that should be invoked when the service broker receives a deprovision request. Methods annotated with
  * {@code @Deprovision} must take a single argument of type {@link cf.spring.servicebroker.DeprovisionRequest} and
  * have a return type of {@code void}.
  *
- * <p>If the specified service instance cannot be found, the method annotated with {@code @Unbind} should throw a
+ * <p>If the specified service instance cannot be found, the method annotated with {@code @Deprovision} should throw a
  * {@link cf.spring.servicebroker.MissingResourceException}.</p>
  *
  * @author Mike Heath <elcapo@gmail.com>

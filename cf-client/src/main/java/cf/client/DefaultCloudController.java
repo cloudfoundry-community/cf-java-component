@@ -265,6 +265,16 @@ public class DefaultCloudController implements CloudController {
 				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
+	
+	@Override
+	public ServiceBinding getServiceBinding(Token token, UUID serviceBindingGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SERVICE_BINDINGS +"/"+ serviceBindingGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), ServiceBinding.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private void validateResponse(HttpResponse response, int... expectedStatusCodes) {
 		final StatusLine statusLine = response.getStatusLine();
