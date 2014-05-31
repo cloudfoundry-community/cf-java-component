@@ -18,12 +18,12 @@ package cf.nats.message;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import cf.common.JsonObject;
 import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Listens for staging messages.  Useful when you want to apply certain changes to an application only when it re-stages/restarts with service binding changes.
@@ -38,6 +38,7 @@ public class StagingStart extends JsonObject implements MessageBody<Void> {
 	private final String uploadUri;
 	private final String buildpackCacheDownloadUri;
 	private final String buildpackCacheUploadUri;
+	private final DeaStart startMessage;
 	private final Map<String, Object> properties;
 
 	@JsonCreator
@@ -48,6 +49,7 @@ public class StagingStart extends JsonObject implements MessageBody<Void> {
 			@JsonProperty("upload_uri") String uploadUri,
 			@JsonProperty("buildpack_cache_download_uri") String buildpackCacheDownloadUri,
 			@JsonProperty("buildpack_cache_upload_uri") String buildpackCacheUploadUri,
+			@JsonProperty("start_message") DeaStart startMessage,
 			@JsonProperty("properties") Map<String, Object> properties) {
 		this.appId = appId;
 		this.taskId = taskId;
@@ -55,6 +57,7 @@ public class StagingStart extends JsonObject implements MessageBody<Void> {
 		this.uploadUri = uploadUri;
 		this.buildpackCacheDownloadUri = buildpackCacheDownloadUri;
 		this.buildpackCacheUploadUri = buildpackCacheUploadUri;
+		this.startMessage = startMessage;
 		this.properties = properties;
 	}
 
@@ -80,6 +83,10 @@ public class StagingStart extends JsonObject implements MessageBody<Void> {
 
 	public String getBuildpackCacheUploadUri() {
 		return buildpackCacheUploadUri;
+	}
+	
+	public DeaStart getStartMessage() {
+		return startMessage;
 	}
 	
 	public Map<String, Object> getProperties() {
