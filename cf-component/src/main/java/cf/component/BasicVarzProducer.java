@@ -26,7 +26,7 @@ public class BasicVarzProducer implements VarzProducer {
 	}
 
 	@Override
-	public Map<String, JsonNode> produceVarz() {
+	public Map<String, ?> produceVarz() {
 		synchronized (this) {
 			try {
 				final ProcessUtils.ProcessStats processStats = ProcessUtils.getProcessStats();
