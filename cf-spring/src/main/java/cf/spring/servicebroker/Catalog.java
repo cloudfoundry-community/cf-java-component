@@ -109,16 +109,19 @@ public class Catalog extends JsonObject {
 		private final String id;
 		private final String name;
 		private final String description;
+		private final boolean free;
 		private final Map<String, Object> metadata;
 
 		public Plan(
 				@JsonProperty("id") String id,
 				@JsonProperty("name") String name,
 				@JsonProperty("description") String description,
+				@JsonProperty("free") boolean free,
 				@JsonProperty("metadata") Map<String, Object> metadata) {
 			this.id = id;
 			this.name = name;
 			this.description = description;
+			this.free = free;
 			this.metadata = metadata;
 		}
 
@@ -132,6 +135,10 @@ public class Catalog extends JsonObject {
 
 		public String getDescription() {
 			return description;
+		}
+
+		public boolean isFree() {
+			return free;
 		}
 
 		public Map<String, Object> getMetadata() {

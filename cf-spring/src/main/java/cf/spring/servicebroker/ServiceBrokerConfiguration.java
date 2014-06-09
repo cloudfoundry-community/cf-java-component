@@ -219,8 +219,9 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 						final String planId = evaluate(servicePlan.id());
 						final String planName = evaluate(servicePlan.name());
 						final String planDescription = evaluate(servicePlan.description());
+						final boolean free = Boolean.valueOf(evaluate(servicePlan.free()));
 						final Map<String, Object> planMetadata = buildMetadata(servicePlan.metadata());
-						plans.add(new Catalog.Plan(planId, planName, planDescription, planMetadata));
+						plans.add(new Catalog.Plan(planId, planName, planDescription, free, planMetadata));
 					}
 
 					services.add(new Catalog.CatalogService(id, name, description, bindable, tags, metadata, requires, plans));

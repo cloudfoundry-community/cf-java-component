@@ -45,6 +45,13 @@ public @interface ServicePlan {
 	String description();
 
 	/**
+	 * llows the plan to be limited by the non_basic_services_allowed field in a Cloud Foundry Quota. See
+	 * http://docs.cloudfoundry.org/running/managing-cf/quota-plans.html.
+	 * @return
+	 */
+	String free() default "true";
+
+	/**
 	 * Metadata associated with this service plan.
 	 */
 	Metadata[] metadata() default {};

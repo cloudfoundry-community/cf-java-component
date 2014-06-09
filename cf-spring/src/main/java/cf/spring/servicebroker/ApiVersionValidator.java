@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,7 +36,11 @@ public class ApiVersionValidator {
 
 	public static final String API_VERSION_HEADER = "X-Broker-Api-Version";
 
-	private static final Set<String> VERSIONS = Collections.singleton("2.1");
+	private static final Set<String> VERSIONS = new HashSet<>();
+
+	static {
+		Collections.addAll(VERSIONS, "2.1", "2.2");
+	}
 
 	public static void validateApiVersion(HttpServletRequest request) {
 		final String version = request.getHeader(API_VERSION_HEADER);
