@@ -21,10 +21,12 @@ import cf.component.VarzAggregator;
 import cf.component.VarzProducer;
 import cf.component.util.DateTimeUtils;
 import cf.nats.CfNats;
+import cf.nats.DefaultCfNats;
 import cf.nats.Publication;
 import cf.nats.PublicationHandler;
 import cf.nats.message.ComponentAnnounce;
 import cf.nats.message.ComponentDiscover;
+import nats.client.Nats;
 import nats.client.Subscription;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -57,7 +59,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CfComponentConfiguration implements InitializingBean, DisposableBean, ImportAware, BeanFactoryAware {
 
 	@Autowired
-	private CfNats nats;
+	private Nats nats;
+	@Autowired(required = false)
+	private CfNats cfNats;
 
 	private BeanExpressionResolver expressionResolver;
 	private BeanExpressionContext expressionContext;
@@ -101,13 +105,16 @@ public class CfComponentConfiguration implements InitializingBean, DisposableBea
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		componentDiscoverSubscription = nats.subscribe(ComponentDiscover.class, new PublicationHandler<ComponentDiscover, ComponentAnnounce>() {
+		if (cfNats == null) {
+			cfNats = new DefaultCfNats(nats);
+		}
+		componentDiscoverSubscription = cfNats.subscribe(ComponentDiscover.class, new PublicationHandler<ComponentDiscover, ComponentAnnounce>() {
 			@Override
 			public void onMessage(Publication<ComponentDiscover, ComponentAnnounce> publication) {
 				publication.reply(buildComponentAnnounceMessage());
 			}
 		});
-		nats.publish(buildComponentAnnounceMessage());
+		cfNats.publish(buildComponentAnnounceMessage());
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import nats.client.MockNats;
+import nats.client.Nats;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -55,8 +56,13 @@ public class CfComponentTest {
 		final Queue<ComponentAnnounce> componentAnnouncements = new LinkedList<>();
 
 		@Bean
+		Nats mockNats() {
+			return new MockNats();
+		}
+
+		@Bean
 		CfNats nats() {
-			final DefaultCfNats nats = new DefaultCfNats(new MockNats());
+			final DefaultCfNats nats = new DefaultCfNats(mockNats());
 			nats.subscribe(ComponentAnnounce.class, new PublicationHandler<ComponentAnnounce, Void>() {
 				@Override
 				public void onMessage(Publication<ComponentAnnounce, Void> publication) {
