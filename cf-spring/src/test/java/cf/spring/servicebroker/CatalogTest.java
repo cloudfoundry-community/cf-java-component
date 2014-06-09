@@ -237,6 +237,8 @@ public class CatalogTest extends AbstractServiceBrokerTest {
 			assertEquals(plan.get("name").asText(), PLAN_NAME);
 			assertTrue(plan.has("description"));
 			assertEquals(plan.get("description").asText(), PLAN_DESCRIPTION);
+			assertTrue(plan.has("free"));
+			assertTrue(plan.get("free").asBoolean());
 		}
 	}
 
