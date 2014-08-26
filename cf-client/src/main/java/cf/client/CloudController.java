@@ -16,6 +16,7 @@
  */
 package cf.client;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,6 +45,12 @@ public interface CloudController {
 	 * @return information about the cloud controller this interface is associated with.
 	 */
 	Info getInfo();
+	
+	/**
+	 * Returns the URI this cloud controller is associated with.
+	 * @return
+	 */
+	URI getTarget();
 
 	/**
 	 * Returns a UAA object for the UAA used by this cloud controller.

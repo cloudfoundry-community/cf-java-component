@@ -94,6 +94,11 @@ public class DefaultCloudController implements CloudController {
 	public DefaultCloudController(HttpClient httpClient, String uri) {
 		this(httpClient, URI.create(uri));
 	}
+	
+	@Override
+	public URI getTarget() {
+		return target;
+	}
 
 	@Override
 	public Info getInfo() {
