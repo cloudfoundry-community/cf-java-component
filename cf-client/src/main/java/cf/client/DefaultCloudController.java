@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
+import cf.client.model.SecurityGroup;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServiceBinding;
@@ -227,6 +228,17 @@ public class DefaultCloudController implements CloudController {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid) {
+		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES+"/"+spaceGuid.toString()+"/security_groups",
+				SecurityGroup.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 
 	@Override

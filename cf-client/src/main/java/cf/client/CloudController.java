@@ -23,6 +23,7 @@ import java.util.UUID;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
+import cf.client.model.SecurityGroup;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
 import cf.client.model.ServiceBinding;
@@ -155,6 +156,15 @@ public interface CloudController {
 	 * @return the space for the given guid
 	 */
 	Space getSpace(Token token, UUID spaceGuid);
+
+	/**
+	 * Get Security Groups for a space 
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param spaceGuid The space to get the security groups from
+	 * @return all the security groups for a space.
+	 */
+	RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid);
 
 	/**
 	 * Returns the space.
