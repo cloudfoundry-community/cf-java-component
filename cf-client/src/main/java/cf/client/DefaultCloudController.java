@@ -40,6 +40,7 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
@@ -135,6 +136,16 @@ public class DefaultCloudController implements CloudController {
 			}
 		}
 		return instances;
+	}
+	
+	@Override
+	public Application getApplication(Token token, UUID applicationGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_APPS +"/"+ applicationGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Application.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override

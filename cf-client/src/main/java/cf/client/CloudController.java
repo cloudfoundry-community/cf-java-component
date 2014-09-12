@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
+import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
@@ -61,6 +62,14 @@ public interface CloudController {
 	Uaa getUaa();
 
 	Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid);
+	
+	/**
+	 * Get an application
+	 * @param token
+	 * @param applicationGuid
+	 * @return
+	 */
+	Application getApplication(Token token, UUID applicationGuid);
 
 	/**
 	 * Creates a new service type.
