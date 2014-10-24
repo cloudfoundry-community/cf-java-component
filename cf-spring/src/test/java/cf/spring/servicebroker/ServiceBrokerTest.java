@@ -173,7 +173,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
 				.build();
 		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
-		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 201);
 		assertEquals(provisionCounter.get(), 1);
 
 		final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
@@ -192,7 +192,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
 				.build();
 		final CloseableHttpResponse bindResponse = client.execute(bindRequest);
-		assertEquals(bindResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
 		assertEquals(bindCounter.get(), 1);
 		final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
 		assertTrue(bindResponseJson.has("credentials"));

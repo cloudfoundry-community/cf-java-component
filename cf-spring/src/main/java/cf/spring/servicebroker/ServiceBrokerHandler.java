@@ -88,6 +88,7 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							provisionBody.getOrganizationGuid(),
 							provisionBody.getSpaceGuid());
 					final Object provisionResponse = invokeMethod(serviceId, methods.getProvision(), provisionRequest);
+					response.setStatus(HttpServletResponse.SC_CREATED);
 					mapper.writeValue(response.getOutputStream(), provisionResponse);
 				} else {
 					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
@@ -103,6 +104,7 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							bindBody.applicationGuid,
 							bindBody.getPlanId());
 					final Object bindResponse = invokeMethod(serviceId, methods.getBind(), bindRequest);
+					response.setStatus(HttpServletResponse.SC_CREATED);
 					mapper.writeValue(response.getOutputStream(), bindResponse);
 				}
 			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
@@ -130,6 +132,9 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 			} else {
 				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			}
+		} catch (ConflictException e) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			response.getWriter().write("{}");
 		} catch (ServiceBrokerException e) {
 			LOGGER.warn("An error occurred processing a service broker request", e);
 			response.setStatus(e.getHttpResponseCode());
