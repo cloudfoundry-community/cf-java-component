@@ -16,26 +16,16 @@
  */
 package cf.spring.servicebroker;
 
-import org.springframework.stereotype.Component;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Classes annotated with this method are marked as being service brokers.
+ * Provider of {@link CatalogAccessor}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Sebastien Gerard
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-@Component
-public @interface ServiceBroker {
-	/**
-	 * The services managed by this service broker.
-	 */
-	Service[] value() default {};
+public interface CatalogAccessorProvider {
+
+    /**
+     * Returns the accessor accessor to use.
+     */
+    CatalogAccessor getCatalogAccessor();
+
 }

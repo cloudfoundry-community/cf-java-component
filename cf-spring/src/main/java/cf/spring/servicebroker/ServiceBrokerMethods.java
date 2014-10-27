@@ -16,9 +16,10 @@
  */
 package cf.spring.servicebroker;
 
+import static cf.spring.servicebroker.AccessorUtils.*;
+
 import org.springframework.beans.factory.BeanCreationException;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -90,7 +91,8 @@ class ServiceBrokerMethods {
 			throw new BeanCreationException("Bindable service brokers must have a method with @" + Bind.class.getName());
 		}
 		if (!bindable && bindMethod != null) {
-			throw new BeanCreationException("Service broker on class " + bindMethod.getDeclaringClass().getName() + " is NOT bindable but has a method annotated with @" + Bind.class.getName());
+			throw new BeanCreationException("Service broker on class " + bindMethod.getDeclaringClass().getName()
+				  + " is NOT bindable but has a method annotated with @" + Bind.class.getName());
 		}
 		if (bindMethod == null) {
 			return;
@@ -104,30 +106,11 @@ class ServiceBrokerMethods {
 			return;
 		}
 		if (!bindable) {
-			throw new BeanCreationException("Service broker on class " + unbindMethod.getDeclaringClass().getName() + " is NOT bindable but has a method annotated with @" + Unbind.class.getName());
+			throw new BeanCreationException("Service broker on class " + unbindMethod.getDeclaringClass().getName()
+				  + " is NOT bindable but has a method annotated with @" + Unbind.class.getName());
 		}
 		validateReturnType(unbindMethod, Unbind.class, void.class);
 		validateArgument(unbindMethod, Bind.class, UnbindRequest.class);
 	}
-
-	private void validateArgument(Method method, Class<? extends Annotation> annotationType, Class<?> expectedParameterType) {
-		if (method.getParameterTypes().length != 1 || !method.getParameterTypes()[0].equals(expectedParameterType)) {
-			throw new BeanCreationException(String.format(
-					"Method %s with @%s MUST take a single argument of type %s",
-					method,
-					annotationType.getName(),
-					expectedParameterType.getName()
-			));
-		}
-	}
-
-	private void validateReturnType(Method method, Class<? extends Annotation>annotationType, Class<?> expectedReturnType) {
-		if (!method.getReturnType().equals(expectedReturnType)) {
-			throw new BeanCreationException("Method " + method.getName() + " annotated with @"
-					+ annotationType.getName() + " must have a return type of "
-					+ expectedReturnType.getName());
-		}
-	}
-
 
 }
