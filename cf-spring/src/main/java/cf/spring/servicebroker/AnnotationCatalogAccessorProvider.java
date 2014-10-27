@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 
@@ -36,10 +37,11 @@ import cf.spring.servicebroker.Catalog.CatalogService;
  * @see Service
  * @see ServicePlan
  */
-public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalogAccessorProvider {
+public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalogAccessorProvider implements InitializingBean {
 
     private final BeanExpressionResolver expressionResolver;
     private final BeanExpressionContext expressionContext;
+    private CatalogAccessor catalogAccessor;
 
     public AnnotationCatalogAccessorProvider(BeanExpressionResolver expressionResolver,
                                              BeanExpressionContext expressionContext) {
@@ -49,6 +51,10 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
 
     @Override
     public CatalogAccessor getCatalogAccessor() {
+        return catalogAccessor;
+    }
+
+    private CatalogAccessor initializeAccessor() {
         final List<BrokerServiceAccessor> serviceAccessors = new ArrayList<>();
 
         final String[] serviceBrokers = context.getBeanNamesForAnnotation(ServiceBroker.class);
@@ -114,5 +120,10 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
 
     private String evaluate(String expression) {
         return (String) expressionResolver.evaluate(expression, expressionContext);
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        this.catalogAccessor = initializeAccessor();
     }
 }

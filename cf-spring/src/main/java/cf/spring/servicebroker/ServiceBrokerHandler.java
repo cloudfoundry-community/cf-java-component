@@ -49,11 +49,11 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	private final HttpBasicAuthenticator authenticator;
-	private final CatalogAccessor catalogAccessor;
+	private final CatalogAccessorProvider catalogAccessorProvider;
 
-	public ServiceBrokerHandler(HttpBasicAuthenticator authenticator, CatalogAccessor catalogAccessor) {
+	public ServiceBrokerHandler(HttpBasicAuthenticator authenticator, CatalogAccessorProvider catalogAccessorProvider) {
 		this.authenticator = authenticator;
-		this.catalogAccessor = catalogAccessor;
+		this.catalogAccessorProvider = catalogAccessorProvider;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 				if (bindingId == null) {
 					final ProvisionBody provisionBody = mapper.readValue(request.getInputStream(), ProvisionBody.class);
 					final String serviceId = provisionBody.getServiceId();
-					final BrokerServiceAccessor accessor = catalogAccessor.getServiceAccessor(serviceId);
+					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
 					final ProvisionRequest provisionRequest = new ProvisionRequest(
 							UUID.fromString(instanceId),
 							provisionBody.getPlanId(),
@@ -85,7 +85,7 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 				} else {
 					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
 					final String serviceId = bindBody.getServiceId();
-					final BrokerServiceAccessor accessor = catalogAccessor.getServiceAccessor(serviceId);
+					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
 
 					final BindRequest bindRequest = new BindRequest(
 							UUID.fromString(instanceId),
@@ -98,7 +98,7 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
 				final String serviceId = request.getParameter(SERVICE_ID_PARAM);
 				final String planId = request.getParameter(PLAN_ID_PARAM);
-				final BrokerServiceAccessor accessor = catalogAccessor.getServiceAccessor(serviceId);
+				final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
 				try {
 					if (bindingId == null) {
 						// Deprovision
@@ -127,6 +127,10 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			mapper.writeValue(response.getOutputStream(), new ErrorBody(e.getMessage()));
 		}
+	}
+
+	private BrokerServiceAccessor getServiceAccessor(String serviceId) {
+		return catalogAccessorProvider.getCatalogAccessor().getServiceAccessor(serviceId);
 	}
 
 	static class ProvisionBody extends JsonObject {

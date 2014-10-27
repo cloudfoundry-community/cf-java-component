@@ -101,7 +101,7 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 	}
 
 	@Bean ServiceBrokerHandler serviceBrokerHandler() {
-		return new ServiceBrokerHandler(serviceBrokerAuthenticator(), catalogProvider().getCatalogAccessor());
+		return new ServiceBrokerHandler(serviceBrokerAuthenticator(), catalogProvider());
 	}
 
     @Bean
