@@ -19,6 +19,7 @@ package cf.spring.servicebroker;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -34,7 +35,8 @@ public final class AccessorUtils {
     }
 
     /**
-     * Finds a method annotated with the specified annotation.
+     * Finds a method annotated with the specified annotation. This method can
+     * be defined in the specified class, or one of its parents.
      *
      * @return the matching method, or <tt>null</tt> if any
      */
@@ -50,7 +52,12 @@ public final class AccessorUtils {
                 annotatedMethod = method;
             }
         }
-        return annotatedMethod;
+
+        if((annotatedMethod != null) || clazz.equals(Object.class)){
+            return annotatedMethod;
+        } else {
+            return findMethodWithAnnotation(clazz.getSuperclass(), annotationType);
+        }
     }
 
     /**
@@ -82,13 +89,13 @@ public final class AccessorUtils {
      * argument of the expected type.
      */
     public static void validateArgument(Method method, Class<? extends Annotation> annotationType,
-                                  Class<?> expectedParameterType) {
+                                        Class<?> expectedParameterType) {
         if (method.getParameterTypes().length != 1 || !method.getParameterTypes()[0].equals(expectedParameterType)) {
             throw new BeanCreationException(String.format(
-                    "Method %s with @%s MUST take a single argument of type %s",
-                    method,
-                    annotationType.getName(),
-                    expectedParameterType.getName()
+                  "Method %s with @%s MUST take a single argument of type %s",
+                  method,
+                  annotationType.getName(),
+                  expectedParameterType.getName()
             ));
         }
     }
