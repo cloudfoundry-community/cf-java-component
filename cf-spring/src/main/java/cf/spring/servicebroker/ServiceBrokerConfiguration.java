@@ -17,6 +17,7 @@
 package cf.spring.servicebroker;
 
 import cf.spring.HttpBasicAuthenticator;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -26,26 +27,19 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.Proxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
 import javax.inject.Provider;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,9 +53,7 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 	private ApplicationContext context;
 	private BeanExpressionResolver expressionResolver;
 	private BeanExpressionContext expressionContext;
-
 	private HttpBasicAuthenticator authenticator;
-	private CatalogBuilder catalogBuilder;
 
 	private Map<String, HttpRequestHandler> urlMap = new HashMap<>();
 
@@ -80,8 +72,7 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 	}
 
 	private String evaluate(String expression) {
-		final Object value = expressionResolver.evaluate(expression, expressionContext);
-		return value == null ? null : value.toString();
+		return (String) expressionResolver.evaluate(expression, expressionContext);
 	}
 
 	@Bean HttpBasicAuthenticator serviceBrokerAuthenticator() {
@@ -97,7 +88,7 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 
 	@Bean @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	Catalog serviceBrokerCatalog() {
-		return catalogBuilder.build();
+		return catalogProvider().getCatalogAccessor().createCatalog();
 	}
 
 	@Bean HttpRequestHandler catalogHandler() {
@@ -110,61 +101,28 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 	}
 
 	@Bean ServiceBrokerHandler serviceBrokerHandler() {
-		return new ServiceBrokerHandler(context, serviceBrokerAuthenticator());
+		return new ServiceBrokerHandler(serviceBrokerAuthenticator(), catalogProvider());
+	}
+
+    @Bean
+	CatalogAccessorProvider catalogProvider(){
+        return new CompositeCatalogAccessorProvider(context.getBeansOfType(CatalogAccessorProvider.class).values());
+    }
+
+    @Bean
+	CatalogAccessorProvider annotationCatalogProvider(){
+        return new AnnotationCatalogAccessorProvider(expressionResolver, expressionContext);
+    }
+
+	@Bean
+	CatalogAccessorProvider dynamicCatalogProvider(){
+		return new DynamicCatalogAccessorProvider();
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		catalogBuilder = new CatalogBuilder();
-		final String[] serviceBrokers = context.getBeanNamesForAnnotation(ServiceBroker.class);
-		for (String serviceBrokerName : serviceBrokers) {
-			Class<?> clazz = context.getType(serviceBrokerName);
-			while (Proxy.isProxyClass(clazz) || Enhancer.isEnhanced(clazz)) {
-				clazz = clazz.getSuperclass();
-			}
-
-			final ServiceBroker serviceBroker = clazz.getAnnotation(ServiceBroker.class);
-			catalogBuilder.add(serviceBroker);
-
-			for (Service service : serviceBroker.value()) {
-				final String serviceId = evaluate(service.id());
-				final boolean bindable = Boolean.valueOf(evaluate(service.bindable()));
-				registerServiceBrokerMethods(serviceId, serviceBrokerName, clazz, bindable);
-			}
-		}
-
 		urlMap.put(Constants.CATALOG_URI, catalogHandler());
 		urlMap.put("/v2/service_instances/**", serviceBrokerHandler());
-	}
-
-	private void registerServiceBrokerMethods(String serviceId, String serviceBrokerName, Class<?> clazz, boolean bindable) {
-		final Method provisionMethod = findMethodWithAnnotation(clazz, Provision.class);
-		final Method deprovisionMethod = findMethodWithAnnotation(clazz, Deprovision.class);
-		final Method bindMethod = findMethodWithAnnotation(clazz, Bind.class);
-		final Method unbindMethod = findMethodWithAnnotation(clazz, Unbind.class);
-
-		serviceBrokerHandler().registerBroker(serviceId, new ServiceBrokerMethods(
-				serviceBrokerName,
-				bindable,
-				provisionMethod,
-				deprovisionMethod,
-				bindMethod,
-				unbindMethod));
-	}
-
-	private <T extends Annotation> Method findMethodWithAnnotation(Class<?> clazz, Class<T> annotationType) {
-		Method annotatedMethod = null;
-		for (Method method : clazz.getDeclaredMethods()) {
-			T annotation = AnnotationUtils.findAnnotation(method, annotationType);
-			if (annotation != null ) {
-				if (annotatedMethod != null) {
-					throw new BeanCreationException("Only ONE method with @" + annotationType.getName()
-							+ " is allowed on " + clazz.getName() + ".");
-				}
-				annotatedMethod = method;
-			}
-		}
-		return annotatedMethod;
 	}
 
 	@Override
@@ -176,75 +134,17 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		if (beanFactory instanceof ConfigurableBeanFactory) {
 			final ConfigurableBeanFactory cbf = (ConfigurableBeanFactory) beanFactory;
-			expressionResolver = cbf.getBeanExpressionResolver();
+			expressionResolver = new BeanExpressionResolver() {
+				@Override
+				public Object evaluate(String expression, BeanExpressionContext beanExpressionContext) throws BeansException {
+					final Object value = cbf.getBeanExpressionResolver().evaluate(expression, expressionContext);
+
+					return value == null ? null : value.toString();
+				}
+			};
 			expressionContext = new BeanExpressionContext(cbf, cbf.getRegisteredScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE));
 		} else {
 			throw new BeanCreationException(getClass().getName() + " can only be used with a " + ConfigurableBeanFactory.class.getName());
-		}
-	}
-
-	public class CatalogBuilder {
-
-		private final List<ServiceBroker> serviceBrokers = new ArrayList<>();
-
-		public CatalogBuilder add(ServiceBroker serviceBroker) {
-			serviceBrokers.add(serviceBroker);
-
-			return this;
-		}
-
-		public Catalog build() {
-			List<Catalog.CatalogService> services = new ArrayList<>();
-			for (ServiceBroker serviceBroker : serviceBrokers) {
-				for (Service service : serviceBroker.value()) {
-					final String id = evaluate(service.id());
-					final String name = evaluate(service.name());
-					final String description = evaluate(service.description());
-					final boolean bindable = Boolean.valueOf(evaluate(service.bindable()));
-
-					final List<String> tags = new ArrayList<>();
-					for (String tag : service.tags()) {
-						tags.add(evaluate(tag));
-					}
-
-					final Map<String, Object> metadata = buildMetadata(service.metadata());
-
-					final List<String> requires = new ArrayList<>();
-					for (Permission permission : service.requires()) {
-						requires.add(permission.toString());
-					}
-
-					final List<Catalog.Plan> plans = new ArrayList<>();
-					for (ServicePlan servicePlan : service.plans()) {
-						final String planId = evaluate(servicePlan.id());
-						final String planName = evaluate(servicePlan.name());
-						final String planDescription = evaluate(servicePlan.description());
-						final boolean free = Boolean.valueOf(evaluate(servicePlan.free()));
-						final Map<String, Object> planMetadata = buildMetadata(servicePlan.metadata());
-						plans.add(new Catalog.Plan(planId, planName, planDescription, free, planMetadata));
-					}
-
-					services.add(new Catalog.CatalogService(id, name, description, bindable, tags, metadata, requires, plans));
-				}
-			}
-			return new Catalog(services);
-		}
-
-		private Map<String, Object> buildMetadata(Metadata[] metadata) {
-			final Map<String, Object> metadataObject = new HashMap<>();
-			for (Metadata metadatum : metadata) {
-				final List<Object> values = new ArrayList<>();
-				for (String value : metadatum.value()) {
-					values.add(expressionResolver.evaluate(value, expressionContext));
-				}
-				final String key = evaluate(metadatum.field());
-				if (values.size() == 1) {
-					metadataObject.put(key, values.get(0));
-				} else {
-					metadataObject.put(key, values);
-				}
-			}
-			return metadataObject;
 		}
 	}
 

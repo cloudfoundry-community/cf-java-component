@@ -16,26 +16,20 @@
  */
 package cf.spring.servicebroker;
 
-import org.springframework.stereotype.Component;
-
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Classes annotated with this method are marked as being service brokers.
+ * Annotation to place on a method of a {@link ServiceBroker} that
+ * returns a {@link Catalog}. In this case, the {@link Catalog} is not
+ * static and could not be defined by annotations, see {@link Service} and
+ * {@link ServicePlan}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Sebastien Gerard
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-@Component
-public @interface ServiceBroker {
-	/**
-	 * The services managed by this service broker.
-	 */
-	Service[] value() default {};
+@Target(ElementType.METHOD)
+public @interface DynamicCatalog {
 }

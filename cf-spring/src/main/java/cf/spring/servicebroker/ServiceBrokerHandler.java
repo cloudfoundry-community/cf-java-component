@@ -22,17 +22,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.HttpRequestHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,14 +48,12 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	private final ApplicationContext context;
 	private final HttpBasicAuthenticator authenticator;
+	private final CatalogAccessorProvider catalogAccessorProvider;
 
-	private final Map<String, ServiceBrokerMethods> brokerMethods = new HashMap<>();
-
-	public ServiceBrokerHandler(ApplicationContext context, HttpBasicAuthenticator authenticator) {
-		this.context = context;
+	public ServiceBrokerHandler(HttpBasicAuthenticator authenticator, CatalogAccessorProvider catalogAccessorProvider) {
 		this.authenticator = authenticator;
+		this.catalogAccessorProvider = catalogAccessorProvider;
 	}
 
 	@Override
@@ -81,47 +74,42 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 				if (bindingId == null) {
 					final ProvisionBody provisionBody = mapper.readValue(request.getInputStream(), ProvisionBody.class);
 					final String serviceId = provisionBody.getServiceId();
-					final ServiceBrokerMethods methods = lookupServiceBroker(serviceId);
+					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
 					final ProvisionRequest provisionRequest = new ProvisionRequest(
 							UUID.fromString(instanceId),
 							provisionBody.getPlanId(),
 							provisionBody.getOrganizationGuid(),
 							provisionBody.getSpaceGuid());
-					final Object provisionResponse = invokeMethod(serviceId, methods.getProvision(), provisionRequest);
+					final Object provisionResponse = accessor.provision(provisionRequest);
 					mapper.writeValue(response.getOutputStream(), provisionResponse);
 				} else {
 					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
 					final String serviceId = bindBody.getServiceId();
-					final ServiceBrokerMethods methods = lookupServiceBroker(serviceId);
-					final Method bind = methods.getBind();
-					if (bind == null) {
-						throw new NotFoundException("The service broker with id " + serviceId + " is not bindable.");
-					}
+					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+
 					final BindRequest bindRequest = new BindRequest(
 							UUID.fromString(instanceId),
 							UUID.fromString(bindingId),
 							bindBody.applicationGuid,
 							bindBody.getPlanId());
-					final Object bindResponse = invokeMethod(serviceId, methods.getBind(), bindRequest);
+					final Object bindResponse = accessor.bind(bindRequest);
 					mapper.writeValue(response.getOutputStream(), bindResponse);
 				}
 			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
 				final String serviceId = request.getParameter(SERVICE_ID_PARAM);
 				final String planId = request.getParameter(PLAN_ID_PARAM);
-				final ServiceBrokerMethods methods = lookupServiceBroker(serviceId);
+				final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
 				try {
 					if (bindingId == null) {
 						// Deprovision
-						if (methods.getDeprovision() != null) {
-							final DeprovisionRequest deprovisionRequest = new DeprovisionRequest(UUID.fromString(instanceId), planId);
-							invokeMethod(serviceId, methods.getDeprovision(), deprovisionRequest);
-						}
+						final DeprovisionRequest deprovisionRequest
+							  = new DeprovisionRequest(UUID.fromString(instanceId), planId);
+						accessor.deprovision(deprovisionRequest);
 					} else {
 						// Unbind
-						if (methods.getUnbind() != null) {
-							final UnbindRequest unbindRequest = new UnbindRequest(UUID.fromString(bindingId), UUID.fromString(instanceId), planId);
-							invokeMethod(serviceId, methods.getUnbind(), unbindRequest);
-						}
+						final UnbindRequest unbindRequest
+							  = new UnbindRequest(UUID.fromString(bindingId), UUID.fromString(instanceId), planId);
+						accessor.unbind(unbindRequest);
 					}
 				} catch (MissingResourceException e) {
 					response.setStatus(HttpServletResponse.SC_GONE);
@@ -141,26 +129,8 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private ServiceBrokerMethods lookupServiceBroker(String serviceId) {
-		final ServiceBrokerMethods methods = brokerMethods.get(serviceId);
-		if (methods == null) {
-			throw new NotFoundException("Could not find service broker with service_id " + serviceId);
-		}
-		return methods;
-	}
-
-	private Object invokeMethod(String serviceId, Method method, Object... args) throws Throwable {
-		final ServiceBrokerMethods methods = lookupServiceBroker(serviceId);
-		final Object serviceBrokerBean = context.getBean(methods.getBeanName());
-		try {
-			return method.invoke(serviceBrokerBean, args);
-		} catch (InvocationTargetException e) {
-			throw e.getTargetException();
-		}
-	}
-
-	void registerBroker(String serviceId, ServiceBrokerMethods methods) {
-		brokerMethods.put(serviceId, methods);
+	private BrokerServiceAccessor getServiceAccessor(String serviceId) {
+		return catalogAccessorProvider.getCatalogAccessor().getServiceAccessor(serviceId);
 	}
 
 	static class ProvisionBody extends JsonObject {

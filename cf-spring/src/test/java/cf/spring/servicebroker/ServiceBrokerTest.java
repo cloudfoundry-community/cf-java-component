@@ -16,6 +16,9 @@
  */
 package cf.spring.servicebroker;
 
+import cf.spring.servicebroker.Catalog.CatalogService;
+import cf.spring.servicebroker.Catalog.Plan;
+import cf.spring.servicebroker.ServiceBrokerHandler.ProvisionBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -32,6 +35,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,7 +57,8 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 
 	private static final String DASHBOARD_URL = "http:/some.url/yourservice/" + SERVICE_INSTANCE_GUID;
 
-	private static final String BROKER_ID = "some-broker-id-1";
+	private static final String BROKER_ID_STATIC = "some-broker-id-1";
+	private static final String BROKER_ID_DYNAMIC = "some-broker-id-2";
 	private static final String PLAN_ID = "plan-id-2";
 
 	private static final String SOME_USERNAME = "some-username";
@@ -80,10 +86,22 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@EnableAutoConfiguration
 	@EnableServiceBroker(username = USERNAME, password = PASSWORD)
 	@ServiceBroker(
-			@Service(id = BROKER_ID, name="test-broker", description = "This is for testing", plans = {
+			@Service(id = BROKER_ID_STATIC, name="test-broker", description = "This is for testing", plans = {
 					@ServicePlan(id = PLAN_ID, name = "test-plan", description = "Some test plan for testing.")
 	}))
 	static class ServiceBrokerConfiguration {
+
+		@DynamicCatalog
+		public Catalog getDynamicCatalog(){
+			final Plan plan = new Plan(PLAN_ID, "test-plan", "Some test plan for testing.", true,
+				  Collections.<String, Object>emptyMap());
+
+			final CatalogService service = new CatalogService(BROKER_ID_DYNAMIC, "test-broker-dynamic",
+				  "Dynamic service", true, Collections.<String>emptyList(), Collections.<String,
+				  Object>emptyMap(), Collections.<String>emptyList(),  Collections.singletonList(plan));
+
+			return new Catalog(Collections.singletonList(service));
+		}
 
 		@Provision
 		public ProvisionResponse provision(ProvisionRequest request) {
@@ -163,22 +181,19 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	final String bindingUri = "http://localhost:8080/v2/service_instances/" + SERVICE_INSTANCE_GUID + "/service_bindings/" + BINDING_GUID;
 
 	@Test
-	public void provision() throws Exception {
-		final AtomicInteger provisionCounter = context.getBean("provisionCounter", AtomicInteger.class);
-		assertEquals(provisionCounter.get(), 0);
-		// Do provision
-		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, ORG_GUID, SPACE_GUID);
-		final HttpUriRequest provisionRequest = RequestBuilder.put()
-				.setUri(instanceUri)
-				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
-				.build();
-		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
-		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 200);
-		assertEquals(provisionCounter.get(), 1);
+	public void provisionStaticService() throws Exception {
+		final ServiceBrokerHandler.ProvisionBody provisionBody
+			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_STATIC, PLAN_ID, ORG_GUID, SPACE_GUID);
 
-		final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
-		assertTrue(provisionResponseJson.has("dashboard_url"));
-		assertEquals(provisionResponseJson.get("dashboard_url").asText(), DASHBOARD_URL);
+		doProvisionTest(provisionBody);
+	}
+
+	@Test
+	public void provisionDynamicService() throws Exception {
+		final ServiceBrokerHandler.ProvisionBody provisionBody
+			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_DYNAMIC, PLAN_ID, ORG_GUID, SPACE_GUID);
+
+		doProvisionTest(provisionBody);
 	}
 
 	@Test
@@ -186,7 +201,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
 		assertEquals(bindCounter.get(), 0);
 		// Do bind
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, APPLICATION_GUID);
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID);
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
@@ -209,7 +224,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		assertEquals(unbindCounter.get(), 0);
 
 		final HttpUriRequest unbindRequest = RequestBuilder.delete()
-				.setUri(bindingUri + "?service_id=" + BROKER_ID + "&" + "plan_id=" + PLAN_ID)
+				.setUri(bindingUri + "?service_id=" + BROKER_ID_STATIC + "&" + "plan_id=" + PLAN_ID)
 				.build();
 		final CloseableHttpResponse unbindResponse = client.execute(unbindRequest);
 		assertEquals(unbindResponse.getStatusLine().getStatusCode(), 200);
@@ -224,7 +239,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 
 		// Do deprovision
 		final HttpUriRequest deprovisionRequest = RequestBuilder.delete()
-				.setUri(instanceUri + "?service_id=" + BROKER_ID + "&" + "plan_id=" + PLAN_ID)
+				.setUri(instanceUri + "?service_id=" + BROKER_ID_STATIC + "&" + "plan_id=" + PLAN_ID)
 				.build();
 		final CloseableHttpResponse deprovisionResponse = client.execute(deprovisionRequest);
 		assertEquals(deprovisionResponse.getStatusLine().getStatusCode(), 200);
@@ -242,5 +257,23 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 404);
 		final JsonNode errorJson = mapper.readTree(provisionResponse.getEntity().getContent());
 		assertTrue(errorJson.has("description"));
+	}
+
+	private void doProvisionTest(ProvisionBody provisionBody) throws IOException {
+		final AtomicInteger provisionCounter = context.getBean("provisionCounter", AtomicInteger.class);
+		provisionCounter.set(0);
+
+		// Do provision
+		final HttpUriRequest provisionRequest = RequestBuilder.put()
+			  .setUri(instanceUri)
+			  .setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
+			  .build();
+		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
+		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 200);
+		assertEquals(provisionCounter.get(), 1);
+
+		final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
+		assertTrue(provisionResponseJson.has("dashboard_url"));
+		assertEquals(provisionResponseJson.get("dashboard_url").asText(), DASHBOARD_URL);
 	}
 }
