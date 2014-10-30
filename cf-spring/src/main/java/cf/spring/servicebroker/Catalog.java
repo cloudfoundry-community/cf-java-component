@@ -51,16 +51,18 @@ public class Catalog extends JsonObject {
 		private final Map<String, Object> metadata;
 		private final List<String> requires;
 		private final List<Plan> plans;
+		private final ServiceDashboardClient dashboardClient;
 
 		public CatalogService(
-				@JsonProperty("id") String id,
-				@JsonProperty("name") String name,
-				@JsonProperty("description") String description,
-				@JsonProperty("bindable") boolean bindable,
-				@JsonProperty("tags") List<String> tags,
-				@JsonProperty("metadata") Map<String, Object> metadata,
-				@JsonProperty("requires") List<String> requires,
-				@JsonProperty("plans") List<Plan> plans) {
+			  @JsonProperty("id") String id,
+			  @JsonProperty("name") String name,
+			  @JsonProperty("description") String description,
+			  @JsonProperty("bindable") boolean bindable,
+			  @JsonProperty("tags") List<String> tags,
+			  @JsonProperty("metadata") Map<String, Object> metadata,
+			  @JsonProperty("requires") List<String> requires,
+			  @JsonProperty("plans") List<Plan> plans,
+			  @JsonProperty("dashboard_client") ServiceDashboardClient dashboardClient) {
 			this.id = id;
 			this.name = name;
 			this.description = description;
@@ -69,6 +71,7 @@ public class Catalog extends JsonObject {
 			this.metadata = metadata;
 			this.requires = requires;
 			this.plans = plans;
+			this.dashboardClient = dashboardClient;
 		}
 
 		public String getId() {
@@ -102,6 +105,10 @@ public class Catalog extends JsonObject {
 		@JsonInclude(JsonInclude.Include.ALWAYS)
 		public List<Plan> getPlans() {
 			return plans;
+		}
+
+		public ServiceDashboardClient getDashboardClient() {
+			return dashboardClient;
 		}
 	}
 
@@ -143,6 +150,33 @@ public class Catalog extends JsonObject {
 
 		public Map<String, Object> getMetadata() {
 			return metadata;
+		}
+	}
+
+	public static class ServiceDashboardClient extends JsonObject {
+        private final String id;
+        private final String secret;
+        private final String redirectUri;
+
+		public ServiceDashboardClient(
+			  @JsonProperty("id") String id,
+			  @JsonProperty("secret") String secret,
+			  @JsonProperty("redirect_uri") String redirectUri) {
+			this.id = id;
+			this.secret = secret;
+			this.redirectUri = redirectUri;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getSecret() {
+			return secret;
+		}
+
+		public String getRedirectUri() {
+			return redirectUri;
 		}
 	}
 

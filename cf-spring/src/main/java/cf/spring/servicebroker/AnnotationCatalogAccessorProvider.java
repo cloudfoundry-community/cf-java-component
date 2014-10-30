@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 
 import cf.spring.servicebroker.Catalog.CatalogService;
+import cf.spring.servicebroker.Catalog.ServiceDashboardClient;
 
 /**
  * Extension of {@link AbstractAnnotationCatalogAccessorProvider} building
@@ -74,6 +75,8 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
                     tags.add(evaluate(tag));
                 }
 
+                final ServiceDashboardClient dashboardClient = buildDashboardClient(service.dashboardClient());
+
                 final Map<String, Object> metadata = buildMetadata(service.metadata());
 
                 final List<String> requires = new ArrayList<>();
@@ -92,13 +95,20 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
                 }
 
                 final CatalogService catalogService
-                      = new CatalogService(id, name, description, bindable, tags, metadata, requires, plans);
+                      = new CatalogService(id, name, description, bindable, tags, metadata, requires, plans,
+                      dashboardClient);
 
                 serviceAccessors.add(getMethodAccessor(serviceBrokerName, catalogService));
             }
         }
 
         return new CatalogAccessor(serviceAccessors);
+    }
+
+    private ServiceDashboardClient buildDashboardClient(DashboardClient dashboardClient) {
+        return isFilled(dashboardClient)
+              ? new ServiceDashboardClient(dashboardClient.id(), dashboardClient.secret(), dashboardClient.redirectUri())
+              : null;
     }
 
     private Map<String, Object> buildMetadata(Metadata[] metadata) {
@@ -120,6 +130,21 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
 
     private String evaluate(String expression) {
         return (String) expressionResolver.evaluate(expression, expressionContext);
+    }
+
+    private boolean isFilled(DashboardClient dashboardClient) {
+        final String id = dashboardClient.id();
+        final String secret = dashboardClient.secret();
+        final String redirectUri = dashboardClient.redirectUri();
+
+        if (id.isEmpty() && secret.isEmpty() && redirectUri.isEmpty()) {
+            return false;
+        } else if (!id.isEmpty() && !secret.isEmpty() && !redirectUri.isEmpty()) {
+            return true;
+        } else {
+            throw new IllegalArgumentException("If an argument of the " + DashboardClient.class.getSimpleName()
+                  + " is not null, all arguments must be specified.");
+        }
     }
 
     @Override

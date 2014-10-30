@@ -28,13 +28,14 @@ import org.testng.annotations.Test;
 
 import cf.spring.servicebroker.Catalog.CatalogService;
 import cf.spring.servicebroker.Catalog.Plan;
+import cf.spring.servicebroker.Catalog.ServiceDashboardClient;
 
 /**
  * @author Sebastien Gerard
  */
 public class AnnotationCatalogAccessorProviderTest extends AbstractServiceBrokerTest {
 
-    private static final String BROKER_ID = "some-broker-id-1";
+    private static final String SERVICE_ID = "some-broker-id-1";
     private static final String SERVICE_NAME = "test-broker";
     private static final String SERVICE_DESCRIPTION = "This is for testing";
 
@@ -42,13 +43,27 @@ public class AnnotationCatalogAccessorProviderTest extends AbstractServiceBroker
     private static final String PLAN_NAME = "test-plan";
     private static final String PLAN_DESCRIPTION = "Some test plan for testing.";
 
+    private static final String SERVICE_ID_2 = "some-broker-id-2";
+    private static final String SERVICE_NAME_2 = "test-broker-2";
+
+    private static final String DASHBOARD_CLIENT_ID = "dashboard-client-id";
+    private static final String DASHBOARD_SECRET = "dashboard-secret";
+    private static final String DASHBOARD_URI = "http://localhost/dashboard";
+
     @Configuration
     @EnableAutoConfiguration
     @EnableServiceBroker(username = USERNAME, password = PASSWORD)
-    @ServiceBroker(
-          @Service(id = BROKER_ID, name = SERVICE_NAME, description = SERVICE_DESCRIPTION, plans = {
-                @ServicePlan(id = PLAN_ID, name = PLAN_NAME, description = PLAN_DESCRIPTION)
-          }))
+    @ServiceBroker({
+          @Service(id = SERVICE_ID, name = SERVICE_NAME, description = SERVICE_DESCRIPTION,
+                plans = {
+                      @ServicePlan(id = PLAN_ID, name = PLAN_NAME, description = PLAN_DESCRIPTION)
+                }
+          ),
+          @Service(id = SERVICE_ID_2, name = SERVICE_NAME_2, description = SERVICE_DESCRIPTION,
+                plans = {},
+                dashboardClient = @DashboardClient(id = DASHBOARD_CLIENT_ID, secret = DASHBOARD_SECRET,
+                      redirectUri = DASHBOARD_URI))
+    })
     static class ServiceBrokerConfiguration {
 
         @Provision
@@ -86,18 +101,27 @@ public class AnnotationCatalogAccessorProviderTest extends AbstractServiceBroker
 
     @Test
     public void catalog() {
-        final BrokerServiceAccessor serviceAccessor = getProvider().getCatalogAccessor().getServiceAccessor(BROKER_ID);
+        final CatalogAccessor catalogAccessor = getProvider().getCatalogAccessor();
+        final BrokerServiceAccessor serviceAccessor = catalogAccessor.getServiceAccessor(SERVICE_ID);
         final CatalogService serviceDescription = serviceAccessor.getServiceDescription();
 
-        assertEquals(BROKER_ID, serviceDescription.getId());
+        assertEquals(SERVICE_ID, serviceDescription.getId());
         assertEquals(SERVICE_NAME, serviceDescription.getName());
         assertEquals(SERVICE_DESCRIPTION, serviceDescription.getDescription());
         assertEquals(1, serviceDescription.getPlans().size());
+        assertNull(serviceDescription.getDashboardClient());
 
         final Plan plan = serviceDescription.getPlans().get(0);
         assertEquals(PLAN_ID, plan.getId());
         assertEquals(PLAN_NAME, plan.getName());
         assertEquals(PLAN_DESCRIPTION, plan.getDescription());
+
+        final ServiceDashboardClient dashboardClient
+              = catalogAccessor.getServiceAccessor(SERVICE_ID_2).getServiceDescription().getDashboardClient();
+        assertNotNull(dashboardClient);
+        assertEquals(DASHBOARD_CLIENT_ID, dashboardClient.getId());
+        assertEquals(DASHBOARD_SECRET, dashboardClient.getSecret());
+        assertEquals(DASHBOARD_URI, dashboardClient.getRedirectUri());
     }
 
     @Test(expectedExceptions = NotFoundException.class)
