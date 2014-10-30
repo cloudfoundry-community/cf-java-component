@@ -51,6 +51,8 @@ public class Catalog extends JsonObject {
 		private final Map<String, Object> metadata;
 		private final List<String> requires;
 		private final List<Plan> plans;
+
+		@JsonProperty("dashboard_client")
 		private final ServiceDashboardClient dashboardClient;
 
 		public CatalogService(
@@ -156,6 +158,8 @@ public class Catalog extends JsonObject {
 	public static class ServiceDashboardClient extends JsonObject {
         private final String id;
         private final String secret;
+
+		@JsonProperty("redirect_uri")
         private final String redirectUri;
 
 		public ServiceDashboardClient(

@@ -129,6 +129,19 @@ public class AnnotationCatalogAccessorProviderTest extends AbstractServiceBroker
         getProvider().getCatalogAccessor().getServiceAccessor("1234");
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void mixNullNotNullDashboardFields(){
+        @ServiceBroker(
+              @Service(id = SERVICE_ID, name = SERVICE_NAME, description = SERVICE_DESCRIPTION, plans = {},
+                    dashboardClient = @DashboardClient(secret = "secret"))
+        )
+        class WrongBroker {
+
+        }
+
+        getProvider().buildCatalogService(WrongBroker.class.getAnnotation(ServiceBroker.class).value()[0]);
+    }
+
     private AnnotationCatalogAccessorProvider getProvider() {
         return context.getBean(AnnotationCatalogAccessorProvider.class);
     }

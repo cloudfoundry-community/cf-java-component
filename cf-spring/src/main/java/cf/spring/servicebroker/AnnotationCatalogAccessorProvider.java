@@ -55,7 +55,7 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
         return catalogAccessor;
     }
 
-    private CatalogAccessor initializeAccessor() {
+    protected CatalogAccessor initializeAccessor() {
         final List<BrokerServiceAccessor> serviceAccessors = new ArrayList<>();
 
         final String[] serviceBrokers = context.getBeanNamesForAnnotation(ServiceBroker.class);
@@ -65,44 +65,46 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
             final ServiceBroker serviceBroker = clazz.getAnnotation(ServiceBroker.class);
 
             for (Service service : serviceBroker.value()) {
-                final String id = evaluate(service.id());
-                final String name = evaluate(service.name());
-                final String description = evaluate(service.description());
-                final boolean bindable = Boolean.valueOf(evaluate(service.bindable()));
-
-                final List<String> tags = new ArrayList<>();
-                for (String tag : service.tags()) {
-                    tags.add(evaluate(tag));
-                }
-
-                final ServiceDashboardClient dashboardClient = buildDashboardClient(service.dashboardClient());
-
-                final Map<String, Object> metadata = buildMetadata(service.metadata());
-
-                final List<String> requires = new ArrayList<>();
-                for (Permission permission : service.requires()) {
-                    requires.add(permission.toString());
-                }
-
-                final List<Catalog.Plan> plans = new ArrayList<>();
-                for (ServicePlan servicePlan : service.plans()) {
-                    final String planId = evaluate(servicePlan.id());
-                    final String planName = evaluate(servicePlan.name());
-                    final String planDescription = evaluate(servicePlan.description());
-                    final boolean free = Boolean.valueOf(evaluate(servicePlan.free()));
-                    final Map<String, Object> planMetadata = buildMetadata(servicePlan.metadata());
-                    plans.add(new Catalog.Plan(planId, planName, planDescription, free, planMetadata));
-                }
-
-                final CatalogService catalogService
-                      = new CatalogService(id, name, description, bindable, tags, metadata, requires, plans,
-                      dashboardClient);
+                final CatalogService catalogService = buildCatalogService(service);
 
                 serviceAccessors.add(getMethodAccessor(serviceBrokerName, catalogService));
             }
         }
 
         return new CatalogAccessor(serviceAccessors);
+    }
+
+    protected CatalogService buildCatalogService(Service service) {
+        final String id = evaluate(service.id());
+        final String name = evaluate(service.name());
+        final String description = evaluate(service.description());
+        final boolean bindable = Boolean.valueOf(evaluate(service.bindable()));
+
+        final List<String> tags = new ArrayList<>();
+        for (String tag : service.tags()) {
+            tags.add(evaluate(tag));
+        }
+
+        final Catalog.ServiceDashboardClient dashboardClient = buildDashboardClient(service.dashboardClient());
+
+        final Map<String, Object> metadata = buildMetadata(service.metadata());
+
+        final List<String> requires = new ArrayList<>();
+        for (Permission permission : service.requires()) {
+            requires.add(permission.toString());
+        }
+
+        final List<Catalog.Plan> plans = new ArrayList<>();
+        for (ServicePlan servicePlan : service.plans()) {
+            final String planId = evaluate(servicePlan.id());
+            final String planName = evaluate(servicePlan.name());
+            final String planDescription = evaluate(servicePlan.description());
+            final boolean free = Boolean.valueOf(evaluate(servicePlan.free()));
+            final Map<String, Object> planMetadata = buildMetadata(servicePlan.metadata());
+            plans.add(new Catalog.Plan(planId, planName, planDescription, free, planMetadata));
+        }
+
+        return new CatalogService(id, name, description, bindable, tags, metadata, requires, plans, dashboardClient);
     }
 
     private ServiceDashboardClient buildDashboardClient(DashboardClient dashboardClient) {
