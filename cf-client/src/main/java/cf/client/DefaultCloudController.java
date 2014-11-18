@@ -55,6 +55,7 @@ import cf.client.model.Space;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -240,15 +241,13 @@ public class DefaultCloudController implements CloudController {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid) {
-		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(
-				token,
-				V2_SPACES+"/"+spaceGuid.toString()+"/security_groups",
-				SecurityGroup.class,
-				null,
-				null);
+		//Hack until this issue is fixed: https://www.pivotaltracker.com/story/show/82055042
+		JsonNode node = fetchResource(token, V2_SPACES+"/"+spaceGuid.toString()+"?inline-relations-depth=1");
+		JsonNode entity = node.get("entity");
+		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(SecurityGroup.class, (ArrayNode)entity.get("security_groups"));
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 
@@ -480,7 +479,7 @@ public class DefaultCloudController implements CloudController {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	private class ResultIterator<T> implements Iterator<Resource<T>> {
 
 		private ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
@@ -510,13 +509,24 @@ public class DefaultCloudController implements CloudController {
 
 			size = jsonNode.get("total_results").asInt();
 
+			final JsonNode nextUrlNode = jsonNode.get("next_url");
+			nextUri = nextUrlNode.isNull() ? null : nextUrlNode.asText();
+
+			parseResources((ArrayNode)jsonNode.get("resources"));
+		}
+
+		private ResultIterator(Class<T> type, ArrayNode jsonNode) {
+			this.type = type;
+
+			this.token = null;
+
+			this.size = jsonNode.size();
+
 			parseResources(jsonNode);
 		}
 
-		private void parseResources(JsonNode jsonNode) {
-			final JsonNode nextUrlNode = jsonNode.get("next_url");
-			nextUri = nextUrlNode.isNull() ? null : nextUrlNode.asText();
-			final Iterator<JsonNode> resourceNodeIterator = jsonNode.get("resources").elements();
+		private void parseResources(ArrayNode resourcesJsonNode) {
+			final Iterator<JsonNode> resourceNodeIterator = resourcesJsonNode.elements();
 			final ArrayList<Resource<T>> resources = new ArrayList<>();
 			while (resourceNodeIterator.hasNext()) {
 				final JsonNode node = resourceNodeIterator.next();
@@ -552,7 +562,9 @@ public class DefaultCloudController implements CloudController {
 				return false;
 			}
 			final JsonNode jsonNode = fetchResource(token, nextUri);
-			parseResources(jsonNode);
+			final JsonNode nextUrlNode = jsonNode.get("next_url");
+			nextUri = nextUrlNode.isNull() ? null : nextUrlNode.asText();
+			parseResources((ArrayNode)jsonNode.get("resources"));
 			return true;
 		}
 
