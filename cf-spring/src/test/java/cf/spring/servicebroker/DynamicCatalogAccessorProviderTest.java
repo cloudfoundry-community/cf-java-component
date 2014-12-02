@@ -16,7 +16,7 @@
  */
 package cf.spring.servicebroker;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 import java.util.Collections;
 
@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 
 import cf.spring.servicebroker.Catalog.CatalogService;
 import cf.spring.servicebroker.Catalog.Plan;
+import cf.spring.servicebroker.Catalog.ServiceDashboardClient;
 
 /**
  * @author Sebastien Gerard
@@ -44,6 +45,10 @@ public class DynamicCatalogAccessorProviderTest extends AbstractServiceBrokerTes
     private static final String PLAN_NAME = "test-plan";
     private static final String PLAN_DESCRIPTION = "Some test plan for testing.";
 
+    private static final String DASHBOARD_CLIENT_ID = "dashboard-client-id";
+    private static final String DASHBOARD_SECRET = "dashboard-secret";
+    private static final String DASHBOARD_URI = "http://localhost/dashboard";
+
     @Configuration
     @EnableAutoConfiguration
     @EnableServiceBroker(username = USERNAME, password = PASSWORD)
@@ -57,7 +62,9 @@ public class DynamicCatalogAccessorProviderTest extends AbstractServiceBrokerTes
 
             final CatalogService service = new CatalogService(BROKER_ID, SERVICE_NAME,
                   SERVICE_DESCRIPTION, true, Collections.<String>emptyList(), Collections.<String,
-                  Object>emptyMap(), Collections.<String>emptyList(),  Collections.singletonList(plan));
+                  Object>emptyMap(),
+                  Collections.<String>emptyList(),  Collections.singletonList(plan),
+                  new ServiceDashboardClient(DASHBOARD_CLIENT_ID, DASHBOARD_SECRET, DASHBOARD_URI));
 
             return new Catalog(Collections.singletonList(service));
         }
@@ -109,6 +116,12 @@ public class DynamicCatalogAccessorProviderTest extends AbstractServiceBrokerTes
         assertEquals(PLAN_ID, plan.getId());
         assertEquals(PLAN_NAME, plan.getName());
         assertEquals(PLAN_DESCRIPTION, plan.getDescription());
+
+        final ServiceDashboardClient dashboardClient = serviceDescription.getDashboardClient();
+        assertNotNull(dashboardClient);
+        assertEquals(DASHBOARD_CLIENT_ID, dashboardClient.getId());
+        assertEquals(DASHBOARD_SECRET, dashboardClient.getSecret());
+        assertEquals(DASHBOARD_URI, dashboardClient.getRedirectUri());
     }
 
     @Test(expectedExceptions = NotFoundException.class)
