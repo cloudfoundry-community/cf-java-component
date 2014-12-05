@@ -81,7 +81,9 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							provisionBody.getOrganizationGuid(),
 							provisionBody.getSpaceGuid());
 					final ProvisionResponse provisionResponse = accessor.provision(provisionRequest);
-					response.setStatus(HttpServletResponse.SC_CREATED);
+					if (provisionResponse.isCreated()) {
+						response.setStatus(HttpServletResponse.SC_CREATED);
+					}
 					mapper.writeValue(response.getOutputStream(), provisionResponse);
 				} else {
 					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
@@ -94,7 +96,9 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							bindBody.applicationGuid,
 							bindBody.getPlanId());
 					final BindResponse bindResponse = accessor.bind(bindRequest);
-					response.setStatus(HttpServletResponse.SC_CREATED);
+					if (bindResponse.isCreated()) {
+						response.setStatus(HttpServletResponse.SC_CREATED);
+					}
 					mapper.writeValue(response.getOutputStream(), bindResponse);
 				}
 			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
