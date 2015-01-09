@@ -72,6 +72,15 @@ public interface CloudController {
 	Application getApplication(Token token, UUID applicationGuid);
 
 	/**
+	 * Update an application.
+	 * 
+	 * @param token
+	 * @param applicationGuid
+	 * @param application
+	 * @return
+	 */
+	Application updateApplication(Token token, UUID applicationGuid, Application application);
+	/**
 	 * Creates a new service type.
 	 *
 	 * @param token the token used to authenticate the request.

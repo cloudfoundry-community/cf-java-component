@@ -150,6 +150,16 @@ public class DefaultCloudController implements CloudController {
 	}
 	
 	@Override
+	public Application updateApplication(Token token, UUID applicationGuid, Application application) {
+		JsonNode jsonNode = putJsonToUri(token, application, V2_APPS, applicationGuid);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), Application.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
 	public UUID createService(Token token, Service service) {
 		try {
 			final String requestString = mapper.writeValueAsString(service);
