@@ -98,7 +98,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 
 			final CatalogService service = new CatalogService(BROKER_ID_DYNAMIC, "test-broker-dynamic",
 				  "Dynamic service", true, Collections.<String>emptyList(), Collections.<String,
-				  Object>emptyMap(), Collections.<String>emptyList(),  Collections.singletonList(plan));
+				  Object>emptyMap(), Collections.<String>emptyList(),  Collections.singletonList(plan), null);
 
 			return new Catalog(Collections.singletonList(service));
 		}

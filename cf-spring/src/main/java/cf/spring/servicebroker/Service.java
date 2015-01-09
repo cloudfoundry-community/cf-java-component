@@ -66,6 +66,12 @@ public @interface Service {
 	Permission[] requires() default {};
 
 	/**
+	 * The credentials used by the dashboard to authenticate the current user
+	 * on the UAA.
+	 */
+	DashboardClient dashboardClient() default @DashboardClient;
+
+	/**
 	 * Metadata associated with this service.
 	 */
 	Metadata[] metadata() default {};

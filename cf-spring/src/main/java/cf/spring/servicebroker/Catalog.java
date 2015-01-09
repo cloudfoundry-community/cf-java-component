@@ -16,12 +16,12 @@
  */
 package cf.spring.servicebroker;
 
+import java.util.List;
+import java.util.Map;
+
 import cf.common.JsonObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Maps to the JSON produced by "/v2/catalog" - http://docs.cloudfoundry.org/services/api.html.
@@ -43,24 +43,32 @@ public class Catalog extends JsonObject {
 	}
 
 	public static class CatalogService extends JsonObject {
-		private final String id;
-		private final String name;
-		private final String description;
-		private final boolean bindable;
-		private final List<String> tags;
-		private final Map<String, Object> metadata;
-		private final List<String> requires;
-		private final List<Plan> plans;
+
+		private String id;
+		private String name;
+		private String description;
+		private boolean bindable;
+		private List<String> tags;
+		private Map<String, Object> metadata;
+		private List<String> requires;
+		private List<Plan> plans;
+
+		@JsonProperty("dashboard_client")
+		private ServiceDashboardClient dashboardClient;
+
+		public CatalogService() {
+		}
 
 		public CatalogService(
-				@JsonProperty("id") String id,
-				@JsonProperty("name") String name,
-				@JsonProperty("description") String description,
-				@JsonProperty("bindable") boolean bindable,
-				@JsonProperty("tags") List<String> tags,
-				@JsonProperty("metadata") Map<String, Object> metadata,
-				@JsonProperty("requires") List<String> requires,
-				@JsonProperty("plans") List<Plan> plans) {
+			  @JsonProperty("id") String id,
+			  @JsonProperty("name") String name,
+			  @JsonProperty("description") String description,
+			  @JsonProperty("bindable") boolean bindable,
+			  @JsonProperty("tags") List<String> tags,
+			  @JsonProperty("metadata") Map<String, Object> metadata,
+			  @JsonProperty("requires") List<String> requires,
+			  @JsonProperty("plans") List<Plan> plans,
+			  @JsonProperty("dashboard_client") ServiceDashboardClient dashboardClient) {
 			this.id = id;
 			this.name = name;
 			this.description = description;
@@ -69,6 +77,7 @@ public class Catalog extends JsonObject {
 			this.metadata = metadata;
 			this.requires = requires;
 			this.plans = plans;
+			this.dashboardClient = dashboardClient;
 		}
 
 		public String getId() {
@@ -103,14 +112,59 @@ public class Catalog extends JsonObject {
 		public List<Plan> getPlans() {
 			return plans;
 		}
+
+		public ServiceDashboardClient getDashboardClient() {
+			return dashboardClient;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public void setBindable(boolean bindable) {
+			this.bindable = bindable;
+		}
+
+		public void setTags(List<String> tags) {
+			this.tags = tags;
+		}
+
+		public void setMetadata(Map<String, Object> metadata) {
+			this.metadata = metadata;
+		}
+
+		public void setRequires(List<String> requires) {
+			this.requires = requires;
+		}
+
+		public void setPlans(List<Plan> plans) {
+			this.plans = plans;
+		}
+
+		public void setDashboardClient(ServiceDashboardClient dashboardClient) {
+			this.dashboardClient = dashboardClient;
+		}
 	}
 
 	public static class Plan extends JsonObject {
-		private final String id;
-		private final String name;
-		private final String description;
-		private final boolean free;
-		private final Map<String, Object> metadata;
+		private String id;
+
+		private String name;
+
+		private String description;
+		private boolean free;
+		private Map<String, Object> metadata;
+
+		public Plan() {
+		}
 
 		public Plan(
 				@JsonProperty("id") String id,
@@ -143,6 +197,71 @@ public class Catalog extends JsonObject {
 
 		public Map<String, Object> getMetadata() {
 			return metadata;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public void setFree(boolean free) {
+			this.free = free;
+		}
+
+		public void setMetadata(Map<String, Object> metadata) {
+			this.metadata = metadata;
+		}
+	}
+
+	public static class ServiceDashboardClient extends JsonObject {
+		private String id;
+
+		private String secret;
+		@JsonProperty("redirect_uri")
+		private String redirectUri;
+
+		public ServiceDashboardClient() {
+
+		}
+
+		public ServiceDashboardClient(
+			  @JsonProperty("id") String id,
+			  @JsonProperty("secret") String secret,
+			  @JsonProperty("redirect_uri") String redirectUri) {
+			this.id = id;
+			this.secret = secret;
+			this.redirectUri = redirectUri;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getSecret() {
+			return secret;
+		}
+
+		public String getRedirectUri() {
+			return redirectUri;
+		}
+
+		public void setRedirectUri(String redirectUri) {
+			this.redirectUri = redirectUri;
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		public void setId(String id) {
+			this.id = id;
 		}
 	}
 
