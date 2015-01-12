@@ -17,6 +17,7 @@
 package cf.spring.servicebroker;
 
 import cf.common.JsonObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -30,8 +31,10 @@ public class BindResponse extends JsonObject {
 	private final Object credentials;
 	private final String syslogDrainUrl;
 
+	private final boolean created;
+
 	/**
-	 * Creates a bind response.
+	 * Creates a bind response with the provided credentials.
 	 *
 	 * @param credentials credentials sent to the Cloud Controller. This must be a Jackson serializable JSON object.
 	 */
@@ -40,14 +43,28 @@ public class BindResponse extends JsonObject {
 	}
 
 	/**
-	 * Creates a bind response.
+	 * Creates a bind response with the provided credentials and syslog drain URL.
 	 *
 	 * @param credentials credentials sent to the Cloud Controller. This must be a Jackson serializable JSON object.
 	 * @param syslogDrainUrl this should be a URL to a syslog endpoint.
 	 */
 	public BindResponse(Object credentials, String syslogDrainUrl) {
+		this(credentials, syslogDrainUrl, true);
+	}
+
+	/**
+	 * Creates a bind response with the provided credentials and syslog drain URL and indicates to the Cloud Controller
+	 * if the binding is an existing binding.
+	 *
+	 * @param credentials credentials sent to the Cloud Controller. This must be a Jackson serializable JSON object.
+	 * @param syslogDrainUrl this should be a URL to a syslog endpoint.
+	 * @param created indicates to the Cloud Controller if the binding was created or {@code false} if the binding
+	 *                already existed. This has no functional impact on binding a service.
+	 */
+	public BindResponse(Object credentials, String syslogDrainUrl, boolean created) {
 		this.credentials = credentials;
 		this.syslogDrainUrl = syslogDrainUrl;
+		this.created = created;
 	}
 
 	/**
@@ -63,5 +80,16 @@ public class BindResponse extends JsonObject {
 	@JsonProperty("syslog_drain_url")
 	public String getSyslogDrainUrl() {
 		return syslogDrainUrl;
+	}
+
+	/**
+	 * Returns {@code true} if the binding was created, {@code false} if the binding already exists. This has no
+	 * functional impact on binding a service.
+	 *
+	 * @return {@code true} if the binding was created, {@code false} if the binding already exists.
+	 */
+	@JsonIgnore
+	public boolean isCreated() {
+		return created;
 	}
 }

@@ -18,6 +18,7 @@ package cf.spring.servicebroker;
 
 import cf.common.JsonObject;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -30,20 +31,64 @@ public class ProvisionResponse extends JsonObject {
 	public static final String DASHBOARD_URL_PROPERTY = "dashboard_url";
 
 	private final String dashboardUrl;
+	private final boolean created;
 
+	/**
+	 * Creates a provision response without any parameters to the Cloud Controller.
+	 */
 	public ProvisionResponse() {
 		this(null);
 	}
 
+	/**
+	 * Creates a provision response and indicates to the Cloud Controller of the service was created or if it already
+	 * existed. This has no functional impact on provisioning a service.
+	 *
+	 * @param created {@code true} if the service was provisioned, {@code false} if the service is previously
+	 *                provisioned.
+	 */
+	public ProvisionResponse(boolean created) {
+		this(null, created);
+	}
+
+	/**
+	 * Creates a provision response with the provided dashboard URL.
+	 *
+	 * @param dashboardUrl a dashboard URL to be stored by the Cloud Controller.
+	 */
 	@JsonCreator
 	public ProvisionResponse(
 			@JsonProperty(DASHBOARD_URL_PROPERTY) String dashboardUrl
 	) {
+		this(dashboardUrl, true);
+	}
+
+	/**
+	 * Creates a privision response with the provided dashboard URL and indicates to the Cloud Controller of the
+	 * service was created or if it already existed. This has no functional impact on provisioning a service.
+	 *
+	 * @param dashboardUrl a dashboard URL to be stored by the Cloud Controller.
+	 * @param created {@code true} if the service was provisioned, {@code false} if the service is previously
+	 *                provisioned.
+	 */
+	public ProvisionResponse(String dashboardUrl, boolean created) {
 		this.dashboardUrl = dashboardUrl;
+		this.created = created;
 	}
 
 	@JsonProperty(DASHBOARD_URL_PROPERTY)
 	public String getDashboardUrl() {
 		return dashboardUrl;
+	}
+
+	/**
+	 * Returns {@code true} if the service was provisioned, or {@code false} if the service already existed. This has
+	 * no functional impact on provisioning a service.
+	 *
+	 * @return {@code true} if the service was provisioned, or {@code false} if the service already existed.
+	 */
+	@JsonIgnore
+	public boolean isCreated() {
+		return created;
 	}
 }
