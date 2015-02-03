@@ -1,6 +1,5 @@
 package cf.spring;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -33,7 +32,7 @@ public class ClientTokenProviderFactoryBean implements FactoryBean<TokenProvider
 
 	private Token fetchToken() {
 		synchronized (this) {
-			if (token == null || token.getExpiration().after(new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)))) {
+			if (token == null || token.getExpiration().getTime() - TimeUnit.MINUTES.toMillis(10) < System.currentTimeMillis()) {
 				final Uaa uaa = cloudController.getUaa();
 				token = uaa.getClientToken(client, clientSecret);
 			}
