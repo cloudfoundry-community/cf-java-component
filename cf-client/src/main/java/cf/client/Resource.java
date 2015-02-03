@@ -25,14 +25,14 @@ import java.util.UUID;
 */
 public class Resource<T> {
 	private final T entity;
-	private final UUID guid;
+	private final String guidString;
 	private final URI uri;
 	private final Date created;
 	private final Date updated;
 
-	public Resource(T entity, UUID guid, URI uri, Date created, Date updated) {
+	public Resource(T entity, String guidString, URI uri, Date created, Date updated) {
 		this.entity = entity;
-		this.guid = guid;
+		this.guidString = guidString;
 		this.uri = uri;
 		this.created = created;
 		this.updated = updated;
@@ -43,7 +43,11 @@ public class Resource<T> {
 	}
 
 	public UUID getGuid() {
-		return guid;
+		return UUID.fromString(guidString);
+	}
+	
+	public String getGuidString() {
+		return guidString;
 	}
 
 	public URI getUri() {

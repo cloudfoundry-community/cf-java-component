@@ -44,6 +44,8 @@ import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
+import cf.client.model.PrivateDomain;
+import cf.client.model.Route;
 import cf.client.model.SecurityGroup;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
@@ -51,6 +53,7 @@ import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
 import cf.client.model.Space;
+import cf.client.model.User;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +70,8 @@ public class DefaultCloudController implements CloudController {
 
 	private static final String APP_INSTANCES = "/instances";
 	private static final String V2_APPS = "/v2/apps";
+	private static final String V2_PRIVATE_DOMAINS = "/v2/private_domains";
+	private static final String V2_ROUTES = "/v2/routes";
 	private static final String V2_SERVICES = "/v2/services";
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
 	private static final String V2_SERVICE_BINDINGS = "/v2/service_bindings";
@@ -251,6 +256,17 @@ public class DefaultCloudController implements CloudController {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	@Override
+	public RestCollection<User> getManagersInSpace(Token token, UUID spaceGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES+"/"+spaceGuid.toString()+"/managers",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
 
 	@Override
 	public RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid) {
@@ -402,6 +418,50 @@ public class DefaultCloudController implements CloudController {
 	public void deleteServiceInstance(Token token, UUID instanceGuid) {
 		deleteUri(token, V2_SERVICE_INSTANCES + "/" + instanceGuid);
 	}
+	
+	@Override
+	public RestCollection<PrivateDomain> getPrivateDomains(Token token) {
+		final ResultIterator<PrivateDomain> iterator = new ResultIterator<>(
+				token,
+				V2_PRIVATE_DOMAINS,
+				PrivateDomain.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<Route> getRoutes(Token token) {
+		final ResultIterator<Route> iterator = new ResultIterator<>(
+				token,
+				V2_ROUTES,
+				Route.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public RestCollection<Application> getAppsForRoute(Token token, UUID routeGuid) {
+		final ResultIterator<Application> iterator = new ResultIterator<>(
+				token,
+				V2_ROUTES+"/"+routeGuid+"/apps",
+				Application.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public RestCollection<Route> getRoutes(Token token, RouteQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<Route> iterator = new ResultIterator<>(
+				token,
+				V2_ROUTES,
+				Route.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
 
 	private UUID postJsonToUri(Token token, Object json, String uri) {
 		try {
@@ -541,7 +601,7 @@ public class DefaultCloudController implements CloudController {
 			while (resourceNodeIterator.hasNext()) {
 				final JsonNode node = resourceNodeIterator.next();
 				final JsonNode metadata = node.get("metadata");
-				final UUID guid = UUID.fromString(metadata.get("guid").asText());
+				final String guid = metadata.get("guid").asText();
 				final URI uri = URI.create(metadata.get("url").asText());
 				Date created;
 				try {

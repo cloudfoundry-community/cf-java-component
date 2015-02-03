@@ -16,8 +16,11 @@
  */
 package cf.client;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Arrays;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -31,10 +34,8 @@ import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Arrays;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -91,6 +92,37 @@ public class DefaultUaa implements Uaa {
 	}
 
 	@Override
+	public Token getUserToken(String client, String username, String password) {
+		try {
+			final HttpPost post = new HttpPost(uaa.resolve(OAUTH_TOKEN_URI));
+
+			post.setHeader(ACCEPT_JSON);
+
+			post.setHeader(createClientCredentialsHeader(client, ""));
+
+			// TODO Do we need to make the grant type configurable?
+			final BasicNameValuePair grantTypePair = new BasicNameValuePair("grant_type", "password");
+			final BasicNameValuePair usernamePair = new BasicNameValuePair("username", username);
+			final BasicNameValuePair passwordPair = new BasicNameValuePair("password", password);
+			final BasicNameValuePair scopePair = new BasicNameValuePair("scope", "");
+			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(grantTypePair, usernamePair, passwordPair, scopePair)));
+
+			final HttpResponse response = httpClient.execute(post);
+			try {
+				validateResponse(response);
+				final HttpEntity entity = response.getEntity();
+				final InputStream content = entity.getContent();
+				return Token.parseJson(content);
+			} finally {
+				HttpClientUtils.closeQuietly(response);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	@Override
 	public TokenContents checkToken(String client, String clientSecret, Token token) {
 		try {
 			final URI checkTokenUri = uaa.resolve(CHECK_TOKEN);
@@ -119,6 +151,11 @@ public class DefaultUaa implements Uaa {
 
 	private Header createClientCredentialsHeader(String client, String clientSecret) {
 		final String encoding = Base64.encodeBase64String((client + ":" + clientSecret).getBytes());
+		return new BasicHeader("Authorization", "Basic " + encoding);
+	}
+
+	private Header createClientHeader(String client) {
+		final String encoding = Base64.encodeBase64String((client).getBytes());
 		return new BasicHeader("Authorization", "Basic " + encoding);
 	}
 

@@ -14,15 +14,34 @@
  *   limitations under the License.
  *
  */
-package cf.client;
+package cf.client.model;
+
+import java.util.UUID;
+
+import cf.common.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface Uaa {
-	Token getUserToken(String client, String username, String password);
-	
-	Token getClientToken(String client, String clientSecret);
+public class PrivateDomain extends JsonObject {
 
-	TokenContents checkToken(String client, String clientSecret, Token token);
+	private final String name;
+	private final UUID owningOrganizationGuid;
+
+	public PrivateDomain(
+			@JsonProperty("name") String name,
+			@JsonProperty("owning_organization_guid") UUID owningOrganizationGuid) {
+		this.name = name;
+		this.owningOrganizationGuid = owningOrganizationGuid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public UUID getOwningOrganizationGuid() {
+		return owningOrganizationGuid;
+	}
 }

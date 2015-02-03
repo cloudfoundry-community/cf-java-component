@@ -24,6 +24,8 @@ import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
 import cf.client.model.Info;
 import cf.client.model.Organization;
+import cf.client.model.PrivateDomain;
+import cf.client.model.Route;
 import cf.client.model.SecurityGroup;
 import cf.client.model.Service;
 import cf.client.model.ServiceAuthToken;
@@ -31,6 +33,7 @@ import cf.client.model.ServiceBinding;
 import cf.client.model.ServiceInstance;
 import cf.client.model.ServicePlan;
 import cf.client.model.Space;
+import cf.client.model.User;
 
 /**
  * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
@@ -174,6 +177,15 @@ public interface CloudController {
 	 * @return the space for the given guid
 	 */
 	Space getSpace(Token token, UUID spaceGuid);
+	
+	/**
+	 * Returns the managers of a space.
+	 *
+	 * @param token 
+	 * @param spaceGuid
+	 * @return
+	 */
+	RestCollection<User> getManagersInSpace(Token token, UUID spaceGuid);
 
 	/**
 	 * Get Security Groups for a space 
@@ -281,6 +293,37 @@ public interface CloudController {
 	 * @param instanceGuid the guid of service instance to delete.
 	 */
 	void deleteServiceInstance(Token token, UUID instanceGuid);
+	
+	/**
+	 * Get all of the private Domains.
+	 * @param token
+	 * @return all the private domains this user can see
+	 */
+	RestCollection<PrivateDomain> getPrivateDomains(Token token);
+
+	/**
+	 * Get all of the routes this user can see.
+	 * @param token
+	 * @return 
+	 */
+	RestCollection<Route> getRoutes(Token token);
+
+	/**
+	 * Get all the applications for a given route.
+	 * @param token
+	 * @param routeGuid
+	 * @return
+	 */
+	RestCollection<Application> getAppsForRoute(Token token, UUID routeGuid);
+
+	/**
+	 * Find routes with query attributes.
+	 * @param token
+	 * @param queryAttribute
+	 * @param queryValue
+	 * @return
+	 */
+	RestCollection<Route> getRoutes(Token token, RouteQueryAttribute queryAttribute, String queryValue);
 
 	public interface QueryAttribute {}
 
@@ -349,5 +392,21 @@ public interface CloudController {
 			}
 		}
 	}
+	
+	public enum RouteQueryAttribute implements QueryAttribute {
+		DOMAIN_GUID {
+			@Override
+			public String toString() {
+				return "domain_guid";
+			}
+		},
+		SPACE_GUID {
+			@Override
+			public String toString() {
+				return "space_guid";
+			}
+		}
+	}
+
 
 }

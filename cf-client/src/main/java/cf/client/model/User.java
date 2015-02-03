@@ -14,15 +14,32 @@
  *   limitations under the License.
  *
  */
-package cf.client;
+package cf.client.model;
+
+import cf.common.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface Uaa {
-	Token getUserToken(String client, String username, String password);
-	
-	Token getClientToken(String client, String clientSecret);
+public class User extends JsonObject {
 
-	TokenContents checkToken(String client, String clientSecret, Token token);
+	private final Boolean admin;
+	private final Boolean active;
+
+	public User(
+			@JsonProperty("admin") Boolean admin,
+			@JsonProperty("active") Boolean active) {
+		this.admin = admin;
+		this.active = active;
+	}
+
+	public Boolean getAdmin() {
+		return admin;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
 }

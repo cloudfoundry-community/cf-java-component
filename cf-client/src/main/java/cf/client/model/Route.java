@@ -14,15 +14,41 @@
  *   limitations under the License.
  *
  */
-package cf.client;
+package cf.client.model;
+
+import java.util.UUID;
+
+import cf.common.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
  */
-public interface Uaa {
-	Token getUserToken(String client, String username, String password);
-	
-	Token getClientToken(String client, String clientSecret);
+public class Route extends JsonObject {
 
-	TokenContents checkToken(String client, String clientSecret, Token token);
+	private final String host;
+	private final UUID domainGuid;
+	private final UUID spaceGuid;
+
+	public Route(
+			@JsonProperty("host") String host,
+			@JsonProperty("domain_guid") UUID domainGuid,
+			@JsonProperty("space_guid") UUID spaceGuid) {
+		this.host = host;
+		this.domainGuid = domainGuid;
+		this.spaceGuid = spaceGuid;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public UUID getDomainGuid() {
+		return domainGuid;
+	}
+	
+	public UUID getSpaceGuid() {
+		return spaceGuid;
+	}
 }
