@@ -30,6 +30,7 @@ import nats.client.Request;
 import nats.client.Subscription;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +129,14 @@ public class DefaultCfNats implements CfNats {
 					public void onMessage(final Message message) {
 						final String body = message.getBody();
 						try {
-							final T cfMessage = reader == null ? type.newInstance() : reader.<T>readValue(body);
+							final T cfMessage;
+							if (reader == null) {
+								final Constructor<T> defaultConstructor = type.getConstructor();
+								defaultConstructor.setAccessible(true);
+								cfMessage = defaultConstructor.newInstance();
+							} else {
+								cfMessage = reader.<T>readValue(body);
+							}
 							handler.onMessage(new Publication<T, R>() {
 								@Override
 								public Message getNatsMessage() {
