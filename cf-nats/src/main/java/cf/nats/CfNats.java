@@ -43,6 +43,13 @@ import java.util.concurrent.TimeUnit;
 public interface CfNats {
 
 	/**
+	 * Indicates if the underlying NATS client is connected to a NATS server.
+	 *
+	 * @return {@code true} if the client is connected, {@code false} otherwise.
+	 */
+	boolean isConnected();
+
+	/**
 	 * Publishes a Cloud Foundry message over NATS.
 	 *
 	 * @param message the message to be published.

@@ -54,6 +54,11 @@ public class DefaultCfNats implements CfNats {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return nats.isConnected();
+	}
+
+	@Override
 	public void publish(MessageBody message) {
 		final String subject = getPublishSubject(message);
 		final String encoding = encode(message);
