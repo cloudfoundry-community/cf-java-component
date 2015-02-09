@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012 Intellectual Reserve, Inc.  All rights reserved.
+ *   Copyright (c) 2012,2015 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package cf.nats.message;
 
 import cf.nats.NatsSubject;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -26,24 +27,36 @@ import java.util.Map;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.unregister")
-public class RouterUnregister extends RouterRegister {
-	public RouterUnregister(
-			@JsonProperty("host") String host,
-			@JsonProperty("port") Integer port,
-			@JsonProperty("app") String app,
-			@JsonProperty("dea") String dea,
-			@JsonProperty("uris") List<String> uris,
-			@JsonProperty("tags") Map<String, String> tags) {
-		super(host, port, app, dea, uris, tags);
-	}
+public class RouterUnregister extends AbstractRouterRegister {
 
-	public RouterUnregister(RouterRegister routerRegister) {
-		this(
+	public static RouterUnregister toRouterUnregister(AbstractRouterRegister routerRegister) {
+		return  new RouterUnregister(
 				routerRegister.getHost(),
 				routerRegister.getPort(),
-				routerRegister.getApp(),
-				routerRegister.getDea(),
 				routerRegister.getUris(),
-				routerRegister.getTags());
+				routerRegister.getApp(),
+				routerRegister.getPrivateInstanceId(),
+				routerRegister.getIndex(),
+				routerRegister.getDea(),
+				routerRegister.getTags()
+		);
 	}
+
+	public RouterUnregister(String host, int port, String... uris) {
+		super(host, port, uris);
+	}
+
+	@JsonCreator
+	public RouterUnregister(
+			@JsonProperty(JSON_HOST_ATTRIBUTE) String host,
+			@JsonProperty(JSON_PORT_ATTRIBUTE) int port,
+			@JsonProperty(JSON_URIS_ATTRIBUTE) List<String> uris,
+			@JsonProperty(JSON_APP_ATTRIBUTE) String app,
+			@JsonProperty(JSON_PRIVATE_INSTANCE_ID_ATTRIBUTE) String privateInstanceId,
+			@JsonProperty(JSON_INDEX_ATTRIBUTE) Integer index,
+			@JsonProperty(JSON_DEA_ATTRIBUTE) String dea,
+			@JsonProperty(JSON_TAGS_ATTRIBUTE) Map<String, String> tags) {
+		super(host, port, uris, app, index, privateInstanceId, dea, tags);
+	}
+
 }

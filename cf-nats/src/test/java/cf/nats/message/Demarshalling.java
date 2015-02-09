@@ -76,7 +76,7 @@ public class Demarshalling {
 		final RouterRegister routerRegister = reader.readValue(routerRegisterMessage);
 		assertNotNull(routerRegister);
 		assertEquals("127.0.0.1", routerRegister.getHost());
-		assertEquals(Integer.valueOf(9022), routerRegister.getPort());
+		assertEquals(9022, routerRegister.getPort());
 		assertEquals("api.mikeheath.cloudfoundry.me", routerRegister.getUris().get(0));
 	}
 
@@ -87,7 +87,7 @@ public class Demarshalling {
 		final RouterRegister routerRegister = reader.readValue(routerRegisterMessage);
 		assertNotNull(routerRegister);
 		assertEquals("127.0.0.1", routerRegister.getHost());
-		assertEquals(Integer.valueOf(8100), routerRegister.getPort());
+		assertEquals(8100, routerRegister.getPort());
 		assertEquals("uaa.mikeheath.cloudfoundry.me", routerRegister.getUris().get(0));
 		assertEquals("login.mikeheath.cloudfoundry.me", routerRegister.getUris().get(1));
 	}
@@ -99,7 +99,7 @@ public class Demarshalling {
 		final RouterRegister routerRegister = reader.readValue(routerRegisterMessage);
 		assertNotNull(routerRegister);
 		assertEquals("127.0.0.1", routerRegister.getHost());
-		assertEquals(Integer.valueOf(22173), routerRegister.getPort());
+		assertEquals(22173, routerRegister.getPort());
 		assertEquals("0-02ab79376f8a42fe82503ec2a258c345", routerRegister.getDea());
 		assertEquals("hello.mikeheath.cloudfoundry.me", routerRegister.getUris().get(0));
 	}

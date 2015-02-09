@@ -45,7 +45,7 @@ public class RouterRegisterHandler implements AutoCloseable {
 	}
 
 	public RouterRegisterHandler(CfNats cfNats, String host, Integer port, List<String> uris, Map<String,String> tags) {
-		this(cfNats, new RouterRegister(host, port, null, null, uris, tags));
+		this(cfNats, new RouterRegister(host, port, uris, null, null, null, null, tags));
 	}
 
 	public RouterRegisterHandler(final CfNats cfNats, final RouterRegister routerRegister) {
@@ -89,7 +89,7 @@ public class RouterRegisterHandler implements AutoCloseable {
 	@Override
 	public void close() {
 		routerRegisterPublication.remove();
-		cfNats.publish(new RouterUnregister(routerRegister));
+		cfNats.publish(RouterUnregister.toRouterUnregister(routerRegister));
 		subscription.close();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2012 Intellectual Reserve, Inc.  All rights reserved.
+ *   Copyright (c) 2012,2015 Intellectual Reserve, Inc.  All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,16 +16,10 @@
  */
 package cf.nats.message;
 
-import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import cf.common.JsonObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,55 +29,22 @@ import java.util.Map;
  * @author Mike Heath <elcapo@gmail.com>
  */
 @NatsSubject("router.register")
-public class RouterRegister extends JsonObject implements MessageBody<Void> {
-	private final String host;
-	private final Integer port;
-	private final String app;
-	private final String dea;
-	private final List<String> uris;
-	private final Map<String, String> tags;
-
+public class RouterRegister extends AbstractRouterRegister {
 	public RouterRegister(String host, int port, String... uris) {
-		this(host, port, null, null, Arrays.asList(uris), null);
+		super(host, port, uris);
 	}
 
 	@JsonCreator
 	public RouterRegister(
-			@JsonProperty("host") String host,
-			@JsonProperty("port") Integer port,
-			@JsonProperty("app") String app,
-			@JsonProperty("dea") String dea,
-			@JsonProperty("uris") List<String> uris,
-			@JsonProperty("tags") Map<String, String> tags) {
-		this.host = host;
-		this.port = port;
-		this.app = app;
-		this.dea = dea;
-		this.uris = Collections.unmodifiableList(new ArrayList<>(uris));
-		this.tags = tags == null ? null : Collections.unmodifiableMap(new HashMap<>(tags));
+			@JsonProperty(JSON_HOST_ATTRIBUTE) String host,
+			@JsonProperty(JSON_PORT_ATTRIBUTE) int port,
+			@JsonProperty(JSON_URIS_ATTRIBUTE) List<String> uris,
+			@JsonProperty(JSON_APP_ATTRIBUTE) String app,
+			@JsonProperty(JSON_PRIVATE_INSTANCE_ID_ATTRIBUTE) String privateInstanceId,
+			@JsonProperty(JSON_INDEX_ATTRIBUTE) Integer index,
+			@JsonProperty(JSON_DEA_ATTRIBUTE) String dea,
+			@JsonProperty(JSON_TAGS_ATTRIBUTE) Map<String, String> tags) {
+		super(host, port, uris, app, index, privateInstanceId, dea, tags);
 	}
 
-	public String getApp() {
-		return app;
-	}
-
-	public String getDea() {
-		return dea;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public Map<String, String> getTags() {
-		return tags;
-	}
-
-	public List<String> getUris() {
-		return uris;
-	}
 }
