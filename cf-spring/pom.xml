@@ -23,6 +23,11 @@
 
 		<dependency>
 			<groupId>com.github.cloudfoundry-community</groupId>
+			<artifactId>nats-client-spring</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.cloudfoundry-community</groupId>
 			<artifactId>cf-client</artifactId>
 		</dependency>
 
