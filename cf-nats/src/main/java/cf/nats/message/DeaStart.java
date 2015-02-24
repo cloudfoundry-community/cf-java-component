@@ -22,6 +22,7 @@ import cf.nats.NatsSubject;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Listens for staging messages.  Useful when you want to apply certain changes to an application only when it re-stages/restarts with service binding changes.
@@ -51,12 +52,12 @@ public class DeaStart extends JsonObject implements MessageBody<Void> {
 	public static class Service extends JsonObject {
 		private final String label;
 		private final String name;
-		private final JsonObject credentials;
+		private final JsonNode credentials;
 		
 		public Service(
 				@JsonProperty("label") String label,
 				@JsonProperty("name") String name,
-				@JsonProperty("credentials") JsonObject credentials) {
+				@JsonProperty("credentials") JsonNode credentials) {
 			this.label = label;
 			this.name = name;
 			this.credentials = credentials;
@@ -68,7 +69,7 @@ public class DeaStart extends JsonObject implements MessageBody<Void> {
 		public String getName() {
 			return name;
 		}
-		public JsonObject getCredentials() {
+		public JsonNode getCredentials() {
 			return credentials;
 		}
 	}
