@@ -159,7 +159,7 @@ public class DefaultCfNats implements CfNats {
 								}
 							});
 						} catch (Exception e) {
-							throw new NatsException(e);
+							throw new NatsException(String.format("Error marshaling object of type %s with body %s", type.getName(), body), e);
 						}
 					}
 				};
