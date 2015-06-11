@@ -39,7 +39,7 @@ public class ApiVersionValidator {
 	private static final Set<String> VERSIONS = new HashSet<>();
 
 	static {
-		Collections.addAll(VERSIONS, "2.1", "2.2");
+		Collections.addAll(VERSIONS, "2.1", "2.2", "2.3", "2.4");
 	}
 
 	public static void validateApiVersion(HttpServletRequest request) {

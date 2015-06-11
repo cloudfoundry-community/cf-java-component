@@ -70,59 +70,68 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 			}
 			final String instanceId = matcher.group(1);
 			final String bindingId = matcher.group(3);
-			if ("put".equalsIgnoreCase(request.getMethod())) {
-				if (bindingId == null) {
-					final ProvisionBody provisionBody = mapper.readValue(request.getInputStream(), ProvisionBody.class);
-					final String serviceId = provisionBody.getServiceId();
-					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
-					final ProvisionRequest provisionRequest = new ProvisionRequest(
-							UUID.fromString(instanceId),
-							provisionBody.getPlanId(),
-							provisionBody.getOrganizationGuid(),
-							provisionBody.getSpaceGuid());
-					final ProvisionResponse provisionResponse = accessor.provision(provisionRequest);
-					if (provisionResponse.isCreated()) {
-						response.setStatus(HttpServletResponse.SC_CREATED);
-					}
-					mapper.writeValue(response.getOutputStream(), provisionResponse);
-				} else {
-					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
-					final String serviceId = bindBody.getServiceId();
-					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
-
-					final BindRequest bindRequest = new BindRequest(
-							UUID.fromString(instanceId),
-							UUID.fromString(bindingId),
-							bindBody.applicationGuid,
-							bindBody.getPlanId());
-					final BindResponse bindResponse = accessor.bind(bindRequest);
-					if (bindResponse.isCreated()) {
-						response.setStatus(HttpServletResponse.SC_CREATED);
-					}
-					mapper.writeValue(response.getOutputStream(), bindResponse);
-				}
-			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
-				final String serviceId = request.getParameter(SERVICE_ID_PARAM);
-				final String planId = request.getParameter(PLAN_ID_PARAM);
-				final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
-				try {
+			switch (request.getMethod()) {
+				case "PUT":
 					if (bindingId == null) {
-						// Deprovision
-						final DeprovisionRequest deprovisionRequest
-							  = new DeprovisionRequest(UUID.fromString(instanceId), planId);
-						accessor.deprovision(deprovisionRequest);
+						final ProvisionBody provisionBody = mapper.readValue(request.getInputStream(), ProvisionBody.class);
+						final String serviceId = provisionBody.getServiceId();
+						final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+						final ProvisionRequest provisionRequest = new ProvisionRequest(
+								UUID.fromString(instanceId),
+								provisionBody.getPlanId(),
+								provisionBody.getOrganizationGuid(),
+								provisionBody.getSpaceGuid());
+						final ProvisionResponse provisionResponse = accessor.provision(provisionRequest);
+						if (provisionResponse.isCreated()) {
+							response.setStatus(HttpServletResponse.SC_CREATED);
+						}
+						mapper.writeValue(response.getOutputStream(), provisionResponse);
 					} else {
-						// Unbind
-						final UnbindRequest unbindRequest
-							  = new UnbindRequest(UUID.fromString(bindingId), UUID.fromString(instanceId), planId);
-						accessor.unbind(unbindRequest);
+						final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
+						final String serviceId = bindBody.getServiceId();
+						final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+
+						final BindRequest bindRequest = new BindRequest(
+								UUID.fromString(instanceId),
+								UUID.fromString(bindingId),
+								bindBody.applicationGuid,
+								bindBody.getPlanId());
+						final BindResponse bindResponse = accessor.bind(bindRequest);
+						if (bindResponse.isCreated()) {
+							response.setStatus(HttpServletResponse.SC_CREATED);
+						}
+						mapper.writeValue(response.getOutputStream(), bindResponse);
 					}
-				} catch (MissingResourceException e) {
-					response.setStatus(HttpServletResponse.SC_GONE);
-				}
-				response.getWriter().write("{}");
-			} else {
-				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+					break;
+				case "DELETE":
+					final String serviceId = request.getParameter(SERVICE_ID_PARAM);
+					final String planId = request.getParameter(PLAN_ID_PARAM);
+					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+					try {
+						if (bindingId == null) {
+							// Deprovision
+							final DeprovisionRequest deprovisionRequest
+									= new DeprovisionRequest(UUID.fromString(instanceId), planId);
+							accessor.deprovision(deprovisionRequest);
+						} else {
+							// Unbind
+							final UnbindRequest unbindRequest
+									= new UnbindRequest(UUID.fromString(bindingId), UUID.fromString(instanceId), planId);
+							accessor.unbind(unbindRequest);
+						}
+					} catch (MissingResourceException e) {
+						response.setStatus(HttpServletResponse.SC_GONE);
+					}
+					response.getWriter().write("{}");
+					break;
+				case "PATCH":
+					if (bindingId != null) {
+						throw new NotFoundException("Resource not found");
+					}
+					
+					break;
+				default:
+					response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			}
 		} catch (ConflictException e) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
