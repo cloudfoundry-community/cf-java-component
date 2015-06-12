@@ -18,6 +18,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
@@ -68,7 +69,7 @@ public class ConflictTest extends AbstractServiceBrokerTest {
 
 	@Test
 	public void provisionConflict() throws Exception {
-		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, UUID.randomUUID(), UUID.randomUUID());
+		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, UUID.randomUUID(), UUID.randomUUID(), Collections.emptyMap());
 		final HttpUriRequest provisionRequest = RequestBuilder.put()
 				.setUri("http://localhost:8080/v2/service_instances/" + UUID.randomUUID())
 				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))

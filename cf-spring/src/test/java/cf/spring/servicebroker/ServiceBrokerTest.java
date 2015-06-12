@@ -37,6 +37,8 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,6 +56,16 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	private static final UUID SERVICE_INSTANCE_GUID = UUID.randomUUID();
 	private static final UUID APPLICATION_GUID = UUID.randomUUID();
 	private static final UUID BINDING_GUID = UUID.randomUUID();
+
+	private static final Map<String, Object> PARAMETERS;
+
+	private static final String PARAM_KEY = "user_provided_param";
+	private static final Object PARAM_VALUE = "finally";
+
+	static {
+		PARAMETERS = new HashMap<>();
+		PARAMETERS.put(PARAM_KEY, PARAM_VALUE);
+	}
 
 	private static final String DASHBOARD_URL = "http:/some.url/yourservice/" + SERVICE_INSTANCE_GUID;
 
@@ -109,6 +121,8 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			assertEquals(request.getPlanId(), PLAN_ID);
 			assertEquals(request.getOrganizationGuid(), ORG_GUID);
 			assertEquals(request.getSpaceGuid(), SPACE_GUID);
+			assertEquals(request.getParameters().size(), 1);
+			assertEquals(request.getParameters().get(PARAM_KEY), PARAM_VALUE);
 			provisionCounter().incrementAndGet();
 			return new ProvisionResponse(DASHBOARD_URL);
 		}
@@ -183,7 +197,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@Test
 	public void provisionStaticService() throws Exception {
 		final ServiceBrokerHandler.ProvisionBody provisionBody
-			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_STATIC, PLAN_ID, ORG_GUID, SPACE_GUID);
+			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_STATIC, PLAN_ID, ORG_GUID, SPACE_GUID, PARAMETERS);
 
 		doProvisionTest(provisionBody);
 	}
@@ -191,7 +205,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@Test
 	public void provisionDynamicService() throws Exception {
 		final ServiceBrokerHandler.ProvisionBody provisionBody
-			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_DYNAMIC, PLAN_ID, ORG_GUID, SPACE_GUID);
+			  = new ServiceBrokerHandler.ProvisionBody(BROKER_ID_DYNAMIC, PLAN_ID, ORG_GUID, SPACE_GUID, PARAMETERS);
 
 		doProvisionTest(provisionBody);
 	}
@@ -248,7 +262,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 
 	@Test
 	public void errorWhenCallingUnknownService() throws Exception {
-		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody("invalid-broker-id", PLAN_ID, ORG_GUID, SPACE_GUID);
+		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody("invalid-broker-id", PLAN_ID, ORG_GUID, SPACE_GUID, Collections.emptyMap());
 		final HttpUriRequest provisionRequest = RequestBuilder.put()
 				.setUri(instanceUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))

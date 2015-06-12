@@ -16,6 +16,7 @@
  */
 package cf.spring.servicebroker;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -29,12 +30,14 @@ public class ProvisionRequest {
 	private final String planId;
 	private final UUID organizationGuid;
 	private final UUID spaceGuid;
+	private final Map<String, Object> parameters;
 
-	public ProvisionRequest(UUID instanceGuid, String planId, UUID organizationGuid, UUID spaceGuid) {
+	public ProvisionRequest(UUID instanceGuid, String planId, UUID organizationGuid, UUID spaceGuid, Map<String, Object> parameters) {
 		this.instanceGuid = instanceGuid;
 		this.planId = planId;
 		this.organizationGuid = organizationGuid;
 		this.spaceGuid = spaceGuid;
+		this.parameters = parameters;
 	}
 
 	/**
@@ -64,4 +67,10 @@ public class ProvisionRequest {
 	public UUID getSpaceGuid() {
 		return spaceGuid;
 	}
+
+	public Map<String, Object> getParameters() {
+		return parameters;
+	}
+
+
 }
