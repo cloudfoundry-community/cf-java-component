@@ -17,7 +17,7 @@
 package cf.nats;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface PublicationHandler<T extends MessageBody<R>, R> {
 

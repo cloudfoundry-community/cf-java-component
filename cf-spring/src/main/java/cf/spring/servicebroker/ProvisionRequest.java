@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Contains the parameters received from the Cloud Controller during a service provision.
 
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ProvisionRequest {
 

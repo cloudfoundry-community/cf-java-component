@@ -37,7 +37,7 @@ import java.util.UUID;
 import static org.testng.AssertJUnit.*;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBrokerErrorHandlingTest extends AbstractServiceBrokerTest {
 

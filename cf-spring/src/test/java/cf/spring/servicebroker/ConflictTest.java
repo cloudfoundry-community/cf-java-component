@@ -24,7 +24,7 @@ import java.util.UUID;
 import static org.testng.Assert.assertEquals;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ConflictTest extends AbstractServiceBrokerTest {
 	public static final String BROKER_ID = "a-broker-that-always-has-conflicts";

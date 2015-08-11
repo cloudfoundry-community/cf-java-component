@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class UnexpectedResponseException extends RuntimeException {
 	public UnexpectedResponseException(HttpResponse response) {

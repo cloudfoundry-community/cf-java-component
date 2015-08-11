@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("router.unregister")
 public class RouterUnregister extends AbstractRouterRegister {

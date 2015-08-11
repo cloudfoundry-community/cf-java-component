@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 /**
  * Handles REST calls from the Cloud Controller and passes them to the appropriate service broker.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBrokerHandler implements HttpRequestHandler {
 

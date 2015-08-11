@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Maps to the JSON produced by "/v2/catalog" - http://docs.cloudfoundry.org/services/api.html.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class Catalog extends JsonObject {
 

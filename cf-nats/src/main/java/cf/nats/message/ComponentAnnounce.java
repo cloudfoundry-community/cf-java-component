@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("vcap.component.announce")
 public class ComponentAnnounce extends JsonObject implements MessageBody<Void> {

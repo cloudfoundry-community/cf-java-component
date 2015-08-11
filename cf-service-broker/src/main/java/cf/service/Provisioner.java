@@ -19,7 +19,7 @@ package cf.service;
 /**
  * Service providers must implement this interface.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

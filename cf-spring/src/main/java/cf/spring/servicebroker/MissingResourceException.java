@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Thrown during unbind or deprovision if the requests service or binding are not found.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class MissingResourceException extends ServiceBrokerException {
 

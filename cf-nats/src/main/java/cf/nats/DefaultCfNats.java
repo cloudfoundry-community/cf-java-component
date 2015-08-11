@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * The default implementation of {@code CfNats}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class DefaultCfNats implements CfNats {
 

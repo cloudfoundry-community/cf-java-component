@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * The response returned to the Cloud Controller after a successful bind. Methods annotated with {@code @Bind} must
  * return an instance of this type.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class BindResponse extends JsonObject {
 

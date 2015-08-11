@@ -53,7 +53,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Configuration
 public class CfComponentConfiguration implements InitializingBean, DisposableBean, ImportAware, BeanFactoryAware {

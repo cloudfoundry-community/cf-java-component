@@ -20,7 +20,7 @@ import java.util.AbstractCollection;
 import java.util.Iterator;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class RestCollection<T> extends AbstractCollection<Resource<T>> {
 

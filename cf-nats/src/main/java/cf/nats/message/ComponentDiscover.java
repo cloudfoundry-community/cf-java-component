@@ -22,7 +22,7 @@ import cf.nats.NatsSubject;
 /**
  * A request for components to announce themselves.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("vcap.component.discover")
 public class ComponentDiscover implements MessageBody<ComponentAnnounce> {

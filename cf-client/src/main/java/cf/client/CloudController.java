@@ -40,7 +40,7 @@ import cf.client.model.User;
  * purpose Cloud Foundry client. Rather, it fills some holes not addresses by the Cloud Foundry Java client namely
  * support for the service APIs.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface CloudController {
 

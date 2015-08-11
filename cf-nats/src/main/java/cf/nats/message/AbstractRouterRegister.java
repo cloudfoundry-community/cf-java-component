@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class AbstractRouterRegister extends JsonObject implements MessageBody<Void> {
 	static final String JSON_HOST_ATTRIBUTE = "host";

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * The response returned to the Cloud Controller after a service has been successfully provisioned.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ProvisionResponse extends JsonObject {
 

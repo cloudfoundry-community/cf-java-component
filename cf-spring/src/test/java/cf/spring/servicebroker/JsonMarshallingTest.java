@@ -25,7 +25,7 @@ import java.util.UUID;
 import static org.testng.Assert.*;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class JsonMarshallingTest {
 

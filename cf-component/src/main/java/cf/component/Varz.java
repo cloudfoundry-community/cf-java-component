@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class Varz {
 

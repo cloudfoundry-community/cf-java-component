@@ -34,7 +34,7 @@ import java.nio.charset.Charset;
 import static org.testng.Assert.assertEquals;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public abstract class AbstractServiceBrokerTest {
 

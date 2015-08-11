@@ -20,7 +20,7 @@ package cf.service;
  * Indicates that the broker was unable to find the requested resource and that an HTTP 404 response should be
  * returned.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

@@ -17,7 +17,7 @@
 package cf.service;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

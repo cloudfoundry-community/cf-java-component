@@ -21,7 +21,7 @@ import nats.client.Message;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface Publication<T extends MessageBody<R>, R> {
 

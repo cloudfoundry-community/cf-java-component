@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
  * Handles HTTP requests. Register instances of this class with {@link SimpleHttpServer} using
  * {@link SimpleHttpServer#addHandler(java.util.regex.Pattern, RequestHandler)} to handle a particular URI.
  *
-* @author Mike Heath <elcapo@gmail.com>
+* @author Mike Heath
 */
 public interface RequestHandler {
 

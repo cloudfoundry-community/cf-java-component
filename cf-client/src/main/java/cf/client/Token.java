@@ -33,7 +33,7 @@ import java.util.UUID;
  * Holds an Oauth2 token from UAA. This should not be used as a general purpose Oauth2 token. It only implements a few
  * specific use cases for interacting with the 'cf' client and simple interactions with UAA.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class Token {
 

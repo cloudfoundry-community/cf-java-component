@@ -28,7 +28,7 @@ import java.util.Set;
  * Validates that we know how to speak the version of the protocol being used by the Cloud Controller. Logs a warning
  * if an unknown version is being used.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ApiVersionValidator {
 

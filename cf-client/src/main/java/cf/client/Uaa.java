@@ -17,7 +17,7 @@
 package cf.client;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface Uaa {
 	Token getUserToken(String client, String username, String password);

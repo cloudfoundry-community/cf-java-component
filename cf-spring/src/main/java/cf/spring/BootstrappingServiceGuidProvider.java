@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class BootstrappingServiceGuidProvider implements FactoryBean<UUID> {
 

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Classes annotated with this method are marked as being service brokers.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

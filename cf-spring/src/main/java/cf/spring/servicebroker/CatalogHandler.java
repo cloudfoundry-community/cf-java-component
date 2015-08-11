@@ -30,7 +30,7 @@ import java.io.IOException;
  * Publishes the service catalog to "/v2/services". The catalog is built automatically using all the Spring beans
  * annotated with {@code @ServiceBroker}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 class CatalogHandler implements HttpRequestHandler {
 

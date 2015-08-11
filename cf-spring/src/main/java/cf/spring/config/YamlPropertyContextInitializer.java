@@ -31,7 +31,7 @@ import cf.spring.YamlDocument;
 import cf.spring.YamlPropertySource;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class YamlPropertyContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

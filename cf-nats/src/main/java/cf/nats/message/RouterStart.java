@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * See http://apidocs.cloudfoundry.com/router/publish-router-start.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("router.start")
 public class RouterStart extends JsonObject implements MessageBody<Void> {

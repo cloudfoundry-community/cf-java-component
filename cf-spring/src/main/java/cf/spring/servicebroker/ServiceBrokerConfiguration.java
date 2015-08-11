@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * Configures all the service brokers.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Configuration
 class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware, BeanFactoryAware, InitializingBean {

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Thrown when a requested resource cannot be found. This triggers an HTTP 404 response.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class NotFoundException extends ServiceBrokerException {
 
