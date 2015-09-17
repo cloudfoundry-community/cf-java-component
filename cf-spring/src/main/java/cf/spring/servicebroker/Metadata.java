@@ -20,7 +20,7 @@ package cf.spring.servicebroker;
  * Allows for setting metadata on the service. See http://docs.cloudfoundry.org/services/catalog-metadata.html for
  * more information on service metadata.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public @interface Metadata {
 

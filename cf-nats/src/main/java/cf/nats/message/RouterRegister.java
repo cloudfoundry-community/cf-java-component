@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * See http://apidocs.cloudfoundry.com/router/subscribe-router-register
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("router.register")
 public class RouterRegister extends AbstractRouterRegister {

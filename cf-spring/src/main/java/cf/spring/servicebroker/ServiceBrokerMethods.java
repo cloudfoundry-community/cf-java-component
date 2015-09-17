@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 /**
  * Hold information about a service broker.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 class ServiceBrokerMethods {
 

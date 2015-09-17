@@ -26,7 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class PidFile implements Closeable {
 

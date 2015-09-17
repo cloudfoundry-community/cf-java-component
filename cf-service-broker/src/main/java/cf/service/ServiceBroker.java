@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * done using Spring MVC or some other HTTP server technology. This class is intended to act as an intermediary between
  * a set of HTTP endpoints and a user provide implementation of {@link cf.service.Provisioner}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

@@ -19,7 +19,7 @@ package cf.service;
 /**
  * Root exception for all service broker exceptions.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

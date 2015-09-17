@@ -9,7 +9,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Map;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class BasicVarzProducer implements VarzProducer {
 

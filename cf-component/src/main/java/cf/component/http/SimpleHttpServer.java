@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
  * Provides a simple embeddable HTTP server for handling simple web service end-points and things like publishing
  * /varz and /healthz information and Cloud Controller REST calls to service gateways.
  *
- * @author "Mike Heath <elcapo@gmail.com>"
+ * @author "Mike Heath"
  */
 public class SimpleHttpServer implements Closeable {
 

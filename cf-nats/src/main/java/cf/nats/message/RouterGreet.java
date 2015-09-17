@@ -21,7 +21,7 @@ import cf.nats.MessageBody;
 import cf.nats.NatsSubject;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @NatsSubject("router.greet")
 public class RouterGreet extends JsonObject implements MessageBody<RouterStart> {

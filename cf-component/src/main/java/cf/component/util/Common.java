@@ -20,7 +20,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class Common {
 

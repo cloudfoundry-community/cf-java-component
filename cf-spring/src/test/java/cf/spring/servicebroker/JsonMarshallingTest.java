@@ -19,12 +19,13 @@ package cf.spring.servicebroker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.testng.Assert.*;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class JsonMarshallingTest {
 
@@ -51,7 +52,7 @@ public class JsonMarshallingTest {
 		final String planId = "some plan id";
 		final UUID organizationGuid = UUID.randomUUID();
 		final UUID spaceGuid = UUID.randomUUID();
-		final ServiceBrokerHandler.ProvisionBody request = new ServiceBrokerHandler.ProvisionBody(serviceId, planId, organizationGuid, spaceGuid);
+		final ServiceBrokerHandler.ProvisionBody request = new ServiceBrokerHandler.ProvisionBody(serviceId, planId, organizationGuid, spaceGuid, Collections.emptyMap());
 		final String json = mapper.writeValueAsString(request);
 		assertTrue(json.contains(serviceId));
 		assertTrue(json.contains(planId));

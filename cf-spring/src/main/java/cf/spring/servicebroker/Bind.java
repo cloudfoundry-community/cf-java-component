@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * {@code @Bind} must take a single argument of {@link cf.spring.servicebroker.BindRequest} and return an
  * instance of {@link cf.spring.servicebroker.BindResponse}.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -42,7 +42,7 @@ import cf.service.ServiceBrokerException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 public class ServiceBrokerHandler extends AbstractUrlHandlerMapping {

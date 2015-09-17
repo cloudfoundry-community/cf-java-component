@@ -13,7 +13,7 @@ import cf.client.Uaa;
  * Does a client authentication with UAA to get a valid token. The token should be used with the
  * {@link javax.inject.Provider} interface so that a fresh token gets fetched after the token expires.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ClientTokenProviderFactoryBean implements FactoryBean<TokenProvider> {
 

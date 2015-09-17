@@ -17,7 +17,7 @@
 package cf.component;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface VarzUpdater {
 

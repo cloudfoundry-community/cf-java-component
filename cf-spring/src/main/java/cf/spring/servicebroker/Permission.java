@@ -19,7 +19,7 @@ package cf.spring.servicebroker;
 /**
  * All the possible permissions a service broker may requests.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public enum Permission {
 	SYSLOG_DRAIN {

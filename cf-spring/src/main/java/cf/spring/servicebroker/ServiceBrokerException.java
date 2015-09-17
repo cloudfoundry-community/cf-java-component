@@ -20,7 +20,7 @@ package cf.spring.servicebroker;
  * Root exception that services brokers implementations may throw to send specific HTTP error codes back to the Cloud
  * Controller.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBrokerException extends RuntimeException {
 

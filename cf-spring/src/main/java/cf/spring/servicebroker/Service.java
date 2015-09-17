@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Describes the attributes of a service that get published in the /v2/catalog endpoint.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})

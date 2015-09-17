@@ -28,6 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +37,7 @@ import java.util.regex.Pattern;
 /**
  * Handles REST calls from the Cloud Controller and passes them to the appropriate service broker.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBrokerHandler implements HttpRequestHandler {
 
@@ -79,7 +81,8 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							UUID.fromString(instanceId),
 							provisionBody.getPlanId(),
 							provisionBody.getOrganizationGuid(),
-							provisionBody.getSpaceGuid());
+							provisionBody.getSpaceGuid(),
+							provisionBody.getParameters());
 					final ProvisionResponse provisionResponse = accessor.provision(provisionRequest);
 					if (provisionResponse.isCreated()) {
 						response.setStatus(HttpServletResponse.SC_CREATED);
@@ -148,22 +151,25 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 		public static final String PLAN_ID_FIELD = "plan_id";
 		public static final String ORGANIZATION_GUID_FIELD = "organization_guid";
 		public static final String SPACE_GUID_FIELD = "space_guid";
+		public static final String PARAMETERS = "parameters";
 
 		private final String serviceId;
 		private final String planId;
 		private final UUID organizationGuid;
 		private final UUID spaceGuid;
+		private final Map<String, Object> parameters;
 
 		public ProvisionBody(
 				@JsonProperty(SERVICE_ID_FIELD) String serviceId,
 				@JsonProperty(PLAN_ID_FIELD) String planId,
 				@JsonProperty(ORGANIZATION_GUID_FIELD) UUID organizationGuid,
-				@JsonProperty(SPACE_GUID_FIELD) UUID spaceGuid
-		) {
+				@JsonProperty(SPACE_GUID_FIELD) UUID spaceGuid,
+				@JsonProperty(PARAMETERS) Map<String, Object> parameters) {
 			this.serviceId = serviceId;
 			this.planId = planId;
 			this.organizationGuid = organizationGuid;
 			this.spaceGuid = spaceGuid;
+			this.parameters = parameters == null ? Collections.emptyMap() : parameters;
 		}
 
 		@JsonProperty(SERVICE_ID_FIELD)
@@ -184,6 +190,11 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 		@JsonProperty(SPACE_GUID_FIELD)
 		public UUID getSpaceGuid() {
 			return spaceGuid;
+		}
+
+		@JsonProperty(PARAMETERS)
+		public Map<String, Object> getParameters() {
+			return parameters;
 		}
 	}
 

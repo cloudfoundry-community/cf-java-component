@@ -21,7 +21,7 @@ import cf.common.JsonObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class Organization extends JsonObject {
 

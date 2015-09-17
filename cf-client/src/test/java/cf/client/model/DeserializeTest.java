@@ -10,7 +10,7 @@ import static org.testng.Assert.*;
 /**
  * This test takes actual JSON from CF and ensure that it can be deserialized into the appropriate model object.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class DeserializeTest {
 

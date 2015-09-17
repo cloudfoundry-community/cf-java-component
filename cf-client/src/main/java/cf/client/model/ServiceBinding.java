@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBinding extends JsonObject {
 	private static final String APP_GUID = "app_guid";

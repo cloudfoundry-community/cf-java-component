@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceInstance extends JsonObject {
 

@@ -25,7 +25,7 @@ import cf.component.util.PidFile;
 import java.io.IOException;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class PidFileFactory implements FactoryBean<PidFile>, DisposableBean {
 

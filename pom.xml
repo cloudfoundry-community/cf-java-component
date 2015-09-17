@@ -11,7 +11,7 @@
 
 	<groupId>com.github.cloudfoundry-community</groupId>
 	<artifactId>cf-java-component</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.4</version>
 	<packaging>pom</packaging>
 
 	<name>Java Framework for Building Cloud Foundry Components</name>
@@ -53,6 +53,21 @@
 						<source>${jdk.version}</source>
 						<target>${jdk.version}</target>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+							<configuration>
+								<additionalparam>-Xdoclint:none</additionalparam>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>

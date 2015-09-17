@@ -19,7 +19,7 @@ package cf.service;
 /**
  * Indicates the request was malformed in some way.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  * @deprecated Use the V2 services.
  */
 @Deprecated

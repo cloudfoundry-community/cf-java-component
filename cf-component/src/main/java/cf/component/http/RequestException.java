@@ -21,7 +21,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 /**
  * Thrown when an error occurs processing a request.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class RequestException extends Exception {
 

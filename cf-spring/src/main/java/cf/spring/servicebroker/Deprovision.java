@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * <p>If the specified service instance cannot be found, the method annotated with {@code @Deprovision} should throw a
  * {@link cf.spring.servicebroker.MissingResourceException}.</p>
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

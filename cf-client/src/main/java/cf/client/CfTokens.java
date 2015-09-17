@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class CfTokens {
 	private static final Path VMC_PATH = Paths.get(System.getProperty("user.home"), ".cf");

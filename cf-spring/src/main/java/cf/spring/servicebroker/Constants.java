@@ -17,7 +17,7 @@
 package cf.spring.servicebroker;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 final class Constants {
 

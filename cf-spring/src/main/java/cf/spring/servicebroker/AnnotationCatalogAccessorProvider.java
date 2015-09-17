@@ -131,7 +131,7 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
     }
 
     private String evaluate(String expression) {
-        return (String) expressionResolver.evaluate(expression, expressionContext);
+        return expressionResolver.evaluate(expression, expressionContext).toString();
     }
 
     private boolean isFilled(DashboardClient dashboardClient) {

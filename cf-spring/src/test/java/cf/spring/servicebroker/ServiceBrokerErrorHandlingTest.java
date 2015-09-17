@@ -31,12 +31,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.testng.AssertJUnit.*;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class ServiceBrokerErrorHandlingTest extends AbstractServiceBrokerTest {
 
@@ -86,7 +87,7 @@ public class ServiceBrokerErrorHandlingTest extends AbstractServiceBrokerTest {
 
 	@Test
 	public void returnsErrorMessage() throws Exception {
-		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, UUID.randomUUID(), UUID.randomUUID());
+		final ServiceBrokerHandler.ProvisionBody provisionBody = new ServiceBrokerHandler.ProvisionBody(BROKER_ID, PLAN_ID, UUID.randomUUID(), UUID.randomUUID(), Collections.emptyMap());
 		final HttpUriRequest provisionRequest = RequestBuilder.put()
 				.setUri("http://localhost:8080/v2/service_instances/" + UUID.randomUUID())
 				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))

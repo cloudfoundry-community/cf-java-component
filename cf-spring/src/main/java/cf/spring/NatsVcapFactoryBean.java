@@ -32,7 +32,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class NatsVcapFactoryBean implements FactoryBean<CfNats>, InitializingBean {
 

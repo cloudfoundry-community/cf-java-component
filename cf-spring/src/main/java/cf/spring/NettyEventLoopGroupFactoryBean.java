@@ -6,7 +6,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public class NettyEventLoopGroupFactoryBean implements FactoryBean<EventLoopGroup>, DisposableBean {
 

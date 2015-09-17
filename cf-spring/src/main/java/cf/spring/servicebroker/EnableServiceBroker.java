@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * Enables support for Cloud Foundry v2 service brokers. Applying this annotation to a Spring config class will
  * automatically register a Spring MVC handler to publish service broker information to the Cloud Controller.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

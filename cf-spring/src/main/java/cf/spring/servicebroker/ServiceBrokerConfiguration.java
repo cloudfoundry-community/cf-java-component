@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * Configures all the service brokers.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 @Configuration
 class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware, BeanFactoryAware, InitializingBean {
@@ -139,7 +139,7 @@ class ServiceBrokerConfiguration implements ImportAware, ApplicationContextAware
 				public Object evaluate(String expression, BeanExpressionContext beanExpressionContext) throws BeansException {
 					final Object value = cbf.getBeanExpressionResolver().evaluate(expression, expressionContext);
 
-					return value == null ? null : value.toString();
+					return value == null ? null : value;
 				}
 			};
 			expressionContext = new BeanExpressionContext(cbf, cbf.getRegisteredScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE));

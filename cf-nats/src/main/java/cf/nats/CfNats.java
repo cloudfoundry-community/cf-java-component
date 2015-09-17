@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  *
  * which accomplishes the same thing but in a much less error prone manner.
  *
- * @author Mike Heath <elcapo@gmail.com>
+ * @author Mike Heath
  */
 public interface CfNats {
 
