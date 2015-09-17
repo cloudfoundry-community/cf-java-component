@@ -16,10 +16,11 @@
  */
 package cf.client.model;
 
-import cf.common.JsonObject;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.net.URI;
+
+import cf.common.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath <elcapo@gmail.com>
@@ -30,16 +31,22 @@ public class Info extends JsonObject {
 	private final Integer version;
 	private final URI authorizationEndpoint;
 	private final URI tokenEndpoint;
+	private final URI loggingEndpoint;
+	private final URI dopplerLoggingEndpoint;
 
 	public Info(
 			@JsonProperty("name") String name,
 			@JsonProperty("version") Integer version,
 			@JsonProperty("authorization_endpoint") URI authorizationEndpoint,
-			@JsonProperty("token_endpoint") URI tokenEndpoint) {
+			@JsonProperty("token_endpoint") URI tokenEndpoint,
+			@JsonProperty("doppler_logging_endpoint") URI dopplerLoggingEndpoint,
+			@JsonProperty("logging_endpoint") URI loggingEndpoint) {
 		this.name = name;
 		this.version = version;
 		this.authorizationEndpoint = authorizationEndpoint;
 		this.tokenEndpoint = tokenEndpoint;
+		this.dopplerLoggingEndpoint = dopplerLoggingEndpoint;
+		this.loggingEndpoint = loggingEndpoint;
 	}
 
 	public String getName() {
@@ -56,5 +63,13 @@ public class Info extends JsonObject {
 
 	public URI getTokenEndpoint() {
 		return tokenEndpoint;
+	}
+	
+	public URI getLoggingEndpoint() {
+		return loggingEndpoint;
+	}
+	
+	public URI getDopplerLoggingEndpoint() {
+		return dopplerLoggingEndpoint;
 	}
 }
