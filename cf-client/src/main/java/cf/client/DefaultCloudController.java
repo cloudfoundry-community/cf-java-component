@@ -186,17 +186,28 @@ public class DefaultCloudController implements CloudController {
 
 	@Override
 	public RestCollection<Service> getServices(Token token) {
-		return getServices(token ,null);
-	}
-
-	@Override
-	public RestCollection<Service> getServices(Token token, UUID servicePlanGuid) {
 		final ResultIterator<Service> iterator = new ResultIterator<>(
 				token,
 				V2_SERVICES,
 				Service.class,
-				servicePlanGuid == null ? null : ServiceQueryAttribute.SERVICE_PLAN_GUID,
-				servicePlanGuid == null ? null : servicePlanGuid.toString());
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<Service> getServices(Token token, UUID servicePlanGuid) {
+		return getServices(token, ServiceQueryAttribute.SERVICE_PLAN_GUID, servicePlanGuid.toString());
+	}
+
+	@Override
+	public RestCollection<Service> getServices(Token token, ServiceQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<Service> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICES,
+				Service.class,
+				queryAttribute,
+				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 	
@@ -328,6 +339,16 @@ public class DefaultCloudController implements CloudController {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	@Override
+	public void deleteServiceBinding(Token token, UUID serviceBindingGuid) {
+		deleteUri(token, V2_SERVICE_BINDINGS + "/" + serviceBindingGuid);
+	}
+	
+	@Override
+	public UUID createServiceBinding(Token token, UUID appGuid, UUID serviceInstanceGuid) {
+		return postJsonToUri(token, new ServiceBinding(appGuid, serviceInstanceGuid, null, null, null), V2_SERVICE_BINDINGS);
+	}
 
 	private void validateResponse(HttpResponse response, int... expectedStatusCodes) {
 		final StatusLine statusLine = response.getStatusLine();
@@ -393,11 +414,17 @@ public class DefaultCloudController implements CloudController {
 
 	@Override
 	public UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid) {
+		return createServiceInstance(token, name, planGuid, spaceGuid, mapper.createObjectNode());
+	}
+
+	@Override
+	public UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid, ObjectNode params) {
 		try {
 			final ObjectNode json = mapper.createObjectNode();
 			json.put("name", name);
 			json.put("service_plan_guid", planGuid.toString());
 			json.put("space_guid", spaceGuid.toString());
+			json.put("parameters", params);
 			final HttpPost post = new HttpPost(target.resolve(V2_SERVICE_INSTANCES));
 			post.addHeader(token.toAuthorizationHeader());
 			post.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
@@ -415,8 +442,23 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public ServiceInstance updateServiceInstance(Token token, UUID serviceInstanceGuid, ServiceInstance serviceInstance) {
+		JsonNode jsonNode = putJsonToUri(token, serviceInstance, V2_SERVICE_INSTANCES, serviceInstanceGuid);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), ServiceInstance.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public void deleteServiceInstance(Token token, UUID instanceGuid) {
 		deleteUri(token, V2_SERVICE_INSTANCES + "/" + instanceGuid);
+	}
+	
+	@Override
+	public void purgeServiceInstance(Token token, UUID instanceGuid) {
+		deleteUri(token, V2_SERVICE_INSTANCES + "/" + instanceGuid+"?purge=true");
 	}
 	
 	@Override

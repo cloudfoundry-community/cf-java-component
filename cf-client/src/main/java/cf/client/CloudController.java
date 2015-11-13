@@ -35,6 +35,8 @@ import cf.client.model.ServicePlan;
 import cf.client.model.Space;
 import cf.client.model.User;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
  * purpose Cloud Foundry client. Rather, it fills some holes not addresses by the Cloud Foundry Java client namely
@@ -108,6 +110,14 @@ public interface CloudController {
 	 * @return a collection of all the services using the specified service plan.
 	 */
 	RestCollection<Service> getServices(Token token, UUID servicePlanGuid);
+
+	/**
+	 * Returns all the services that match the given query.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return a collection of all the services using the specified service plan.
+	 */
+	RestCollection<Service> getServices(Token token, ServiceQueryAttribute queryAttribute, String queryValue);
 
 	/**
 	 * Returns the service.
@@ -251,6 +261,21 @@ public interface CloudController {
 	ServiceBinding getServiceBinding(Token token, UUID serviceBindingGuid);
 
 	/**
+	 * Delete a serviceBinding
+	 * @param token
+	 * @param serviceBindingGuid
+	 * @return
+	 */
+	void deleteServiceBinding(Token token, UUID serviceBindingGuid);
+
+	/**
+	 * Create a serviceBinding
+	 * @param token
+	 * @return
+	 */
+	UUID createServiceBinding(Token token, UUID appGuid, UUID serviceInstanceGuid);
+
+	/**
 	 * Returns all the service auth tokens.
 	 *
 	 * @param token the token used to authenticate the request.
@@ -287,13 +312,30 @@ public interface CloudController {
 	UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid);
 
 	/**
+	 *Creates a new service instance with params.
+	 *
+	 * @return
+	 */
+	UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid, ObjectNode params);
+
+	ServiceInstance updateServiceInstance(Token token, UUID serviceInstanceGuid, ServiceInstance serviceInstance);
+
+	/**
 	 * Deletes a service instances.
 	 *
 	 * @param token the token used to authenticate the request.
 	 * @param instanceGuid the guid of service instance to delete.
 	 */
 	void deleteServiceInstance(Token token, UUID instanceGuid);
-	
+
+	/**
+	 * Purge service instances.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param instanceGuid the guid of service instance to delete.
+	 */
+	void purgeServiceInstance(Token token, UUID instanceGuid);
+
 	/**
 	 * Get all of the private Domains.
 	 * @param token
@@ -332,6 +374,11 @@ public interface CloudController {
 			@Override
 			public String toString() {
 				return "service_plan_guid";
+			}
+		}, LABEL {
+			@Override
+			public String toString() {
+				return "label";
 			}
 		}
 	}
