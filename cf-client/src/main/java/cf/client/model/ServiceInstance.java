@@ -16,11 +16,12 @@
  */
 package cf.client.model;
 
+import java.util.UUID;
+
 import cf.common.JsonObject;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import java.util.UUID;
 
 /**
  * @author Mike Heath
@@ -53,6 +54,7 @@ public class ServiceInstance extends JsonObject {
 		return name;
 	}
 
+	@Deprecated
 	public JsonNode getCredentials() {
 		return credentials;
 	}
@@ -68,6 +70,7 @@ public class ServiceInstance extends JsonObject {
 	}
 
 	@JsonProperty(GATEWAY_DATA)
+	@Deprecated
 	public JsonNode getGatewayData() {
 		return gatewayData;
 	}

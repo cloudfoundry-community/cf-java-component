@@ -16,10 +16,11 @@
  */
 package cf.client.model;
 
-import cf.common.JsonObject;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.net.URI;
+
+import cf.common.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath
@@ -65,6 +66,7 @@ public class Service extends JsonObject {
 		return provider;
 	}
 
+	@Deprecated
 	public URI getUrl() {
 		return url;
 	}
