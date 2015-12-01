@@ -40,8 +40,10 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cf.client.model.AppUsageEvent;
 import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
+import cf.client.model.Event;
 import cf.client.model.Info;
 import cf.client.model.Organization;
 import cf.client.model.PrivateDomain;
@@ -79,6 +81,9 @@ public class DefaultCloudController implements CloudController {
 	private static final String V2_SERVICE_PLANS = "/v2/service_plans";
 	private static final String V2_SPACES = "/v2/spaces";
 	private static final String V2_ORGANIZATIONS = "/v2/organizations";
+	
+	private static final String V2_EVENTS = "/v2/events";
+	private static final String V2_APP_USAGE_EVENTS = "/v2/app_usage_events";
 
 	private final HttpClient httpClient;
 	private final URI target;
@@ -504,6 +509,55 @@ public class DefaultCloudController implements CloudController {
 				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
+	
+	//Events
+	
+	@Override
+	public RestCollection<Event> getEvents(Token token, String url) {
+		final ResultIterator<Event> iterator = new ResultIterator<>(
+				token,
+				url,
+				Event.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<Event> getEvents(Token token) {
+		final ResultIterator<Event> iterator = new ResultIterator<>(
+				token,
+				V2_EVENTS,
+				Event.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<AppUsageEvent> getAppUsageEvents(Token token,
+			String url) {
+		final ResultIterator<AppUsageEvent> iterator = new ResultIterator<>(
+				token,
+				url,
+				AppUsageEvent.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<AppUsageEvent> getAppUsageEvents(Token token) {
+		final ResultIterator<AppUsageEvent> iterator = new ResultIterator<>(
+				token,
+				V2_APP_USAGE_EVENTS,
+				AppUsageEvent.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	
 
 	private UUID postJsonToUri(Token token, Object json, String uri) {
 		try {

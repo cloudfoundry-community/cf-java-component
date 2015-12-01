@@ -20,8 +20,10 @@ import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
+import cf.client.model.AppUsageEvent;
 import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
+import cf.client.model.Event;
 import cf.client.model.Info;
 import cf.client.model.Organization;
 import cf.client.model.PrivateDomain;
@@ -92,6 +94,14 @@ public interface CloudController {
 	 * @param service the service to be created.
 	 * @return the guid of the newly created service.
 	 */
+	
+	RestCollection<Event> getEvents(Token token,String url);
+	RestCollection<Event> getEvents(Token token);
+	
+	RestCollection<AppUsageEvent> getAppUsageEvents(Token token,String url);
+	RestCollection<AppUsageEvent> getAppUsageEvents(Token token);
+	
+	
 	UUID createService(Token token, Service service);
 
 	/**
