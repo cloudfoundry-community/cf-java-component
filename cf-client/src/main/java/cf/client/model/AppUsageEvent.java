@@ -2,9 +2,11 @@ package cf.client.model;
 
 import java.util.UUID;
 
+import cf.common.JsonObject;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AppUsageEvent {
+public class AppUsageEvent extends JsonObject {
 
 	
 	private final String state;
@@ -17,6 +19,12 @@ public class AppUsageEvent {
 	private final UUID org_guid;
 	private final UUID buildpack_guid;
 	private final String buildpack_name;
+	
+	private final String package_state;
+	private final UUID parent_app_guid;
+	private final String parent_app_name;
+	private final String process_type;
+	
 
 	public AppUsageEvent(
 			
@@ -30,8 +38,13 @@ public class AppUsageEvent {
 			@JsonProperty("space_name") String space_name,
 			@JsonProperty("org_guid") UUID org_guid,
 			@JsonProperty("buildpack_guid") UUID buildpack_guid,
-			@JsonProperty("buildpack_name") String buildpack_name
+			@JsonProperty("buildpack_name") String buildpack_name,
 
+			
+			@JsonProperty("package_state") String package_state,
+			@JsonProperty("parent_app_guid") UUID parent_app_guid,
+			@JsonProperty("parent_app_name") String parent_app_name,
+			@JsonProperty("process_type") String process_type
 					
 			) {
 
@@ -48,7 +61,10 @@ public class AppUsageEvent {
 		this.buildpack_guid=buildpack_guid;
 		this.buildpack_name=buildpack_name;
 		
-		
+		this.package_state=package_state;
+		this.parent_app_guid=parent_app_guid;
+		this.parent_app_name=parent_app_name;
+		this.process_type=process_type;		
 
 	
 			
@@ -113,6 +129,42 @@ public class AppUsageEvent {
 
 	public String getBuildpack_name() {
 		return buildpack_name;
+	}
+
+
+
+
+
+
+	public String getPackage_state() {
+		return package_state;
+	}
+
+
+
+
+
+
+	public UUID getParent_app_guid() {
+		return parent_app_guid;
+	}
+
+
+
+
+
+
+	public String getParent_app_name() {
+		return parent_app_name;
+	}
+
+
+
+
+
+
+	public String getProcess_type() {
+		return process_type;
 	}
 
 

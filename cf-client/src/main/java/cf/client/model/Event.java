@@ -4,10 +4,12 @@ package cf.client.model;
 
 import java.util.UUID;
 
+import cf.common.JsonObject;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class Event {
+public class Event extends JsonObject{
 
 	private final String type;
 	private final String actor;

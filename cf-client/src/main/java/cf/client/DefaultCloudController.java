@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -700,18 +702,26 @@ public class DefaultCloudController implements CloudController {
 				final String guid = metadata.get("guid").asText();
 				final URI uri = URI.create(metadata.get("url").asText());
 				Date created;
-				try {
-					created = dateFormat.get().parse(metadata.get("created_at").asText());
-				} catch (ParseException e) {
+				try {					
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");					
+					ZonedDateTime dateTime = ZonedDateTime.parse(metadata.get("created_at").asText(), formatter);					
+					created = Date.from(dateTime.toInstant());
+					
+				} catch (Exception e) {
 					created = null;
 				}
 				Date updated;
-				final String updatedAt = metadata.get("updated_at").asText();
-				try {
-					updated = updatedAt == null ? null : dateFormat.get().parse(updatedAt);
-				} catch (ParseException e) {
-					updated = null;
+				if(metadata.get("updated_at")==null) {
+					updated=null;
+				}else {
+					final String updatedAt = metadata.get("updated_at").asText();
+					try {
+						updated = updatedAt == null ? null : dateFormat.get().parse(updatedAt);
+					} catch (ParseException e) {
+						updated = null;
+					}	
 				}
+				
 				final T entity;
 				try {
 					entity = mapper.readValue(node.get("entity").traverse(), type);
