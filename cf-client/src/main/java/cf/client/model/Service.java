@@ -62,6 +62,7 @@ public class Service extends JsonObject {
 		return label;
 	}
 
+	@Deprecated
 	public String getProvider() {
 		return provider;
 	}
@@ -75,10 +76,12 @@ public class Service extends JsonObject {
 		return description;
 	}
 
+	@Deprecated
 	public String getVersion() {
 		return version;
 	}
 
+	@Deprecated
 	@JsonProperty(INFO_URL)
 	public URI getInfoUrl() {
 		return infoUrl;
