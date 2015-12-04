@@ -16,19 +16,12 @@
  */
 package cf.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-
+import cf.client.model.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -42,28 +35,13 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cf.client.model.AppUsageEvent;
-import cf.client.model.Application;
-import cf.client.model.ApplicationInstance;
-import cf.client.model.Event;
-import cf.client.model.Info;
-import cf.client.model.Organization;
-import cf.client.model.PrivateDomain;
-import cf.client.model.Route;
-import cf.client.model.SecurityGroup;
-import cf.client.model.Service;
-import cf.client.model.ServiceAuthToken;
-import cf.client.model.ServiceBinding;
-import cf.client.model.ServiceInstance;
-import cf.client.model.ServicePlan;
-import cf.client.model.Space;
-import cf.client.model.User;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Mike Heath
@@ -83,6 +61,7 @@ public class DefaultCloudController implements CloudController {
 	private static final String V2_SERVICE_PLANS = "/v2/service_plans";
 	private static final String V2_SPACES = "/v2/spaces";
 	private static final String V2_ORGANIZATIONS = "/v2/organizations";
+	private static final String V2_USER_PROVIDED_SERVICE_INSTANCES = "/v2/user_provided_service_instances";
 	
 	private static final String V2_EVENTS = "/v2/events";
 	private static final String V2_APP_USAGE_EVENTS = "/v2/app_usage_events";
@@ -449,6 +428,31 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public UUID createUserProvidedServiceInstance(Token token, String name, UUID spaceGuid, ObjectNode params) {
+		final ObjectNode json = mapper.createObjectNode();
+		json.put("name", name);
+		json.put("space_guid", spaceGuid.toString());
+		json.put("credentials", params);
+
+		final HttpPost post = new HttpPost(target.resolve(V2_USER_PROVIDED_SERVICE_INSTANCES));
+		post.addHeader(token.toAuthorizationHeader());
+
+		try {
+			post.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
+			final HttpResponse response = httpClient.execute(post);
+			try {
+				validateResponse(response, 201);
+				final JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
+				return UUID.fromString(jsonResponse.get("metadata").get("guid").asText());
+			} finally {
+				HttpClientUtils.closeQuietly(response);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public ServiceInstance updateServiceInstance(Token token, UUID serviceInstanceGuid, ServiceInstance serviceInstance) {
 		JsonNode jsonNode = putJsonToUri(token, serviceInstance, V2_SERVICE_INSTANCES, serviceInstanceGuid);
 		try {
@@ -702,7 +706,7 @@ public class DefaultCloudController implements CloudController {
 				final String guid = metadata.get("guid").asText();
 				final URI uri = URI.create(metadata.get("url").asText());
 				Date created;
-				try {					
+				try {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");					
 					ZonedDateTime dateTime = ZonedDateTime.parse(metadata.get("created_at").asText(), formatter);					
 					created = Date.from(dateTime.toInstant());
@@ -714,12 +718,12 @@ public class DefaultCloudController implements CloudController {
 				if(metadata.get("updated_at")==null) {
 					updated=null;
 				}else {
-					final String updatedAt = metadata.get("updated_at").asText();
-					try {
-						updated = updatedAt == null ? null : dateFormat.get().parse(updatedAt);
-					} catch (ParseException e) {
-						updated = null;
-					}	
+				final String updatedAt = metadata.get("updated_at").asText();
+				try {
+					updated = updatedAt == null ? null : dateFormat.get().parse(updatedAt);
+				} catch (ParseException e) {
+					updated = null;
+				}
 				}
 				
 				final T entity;
