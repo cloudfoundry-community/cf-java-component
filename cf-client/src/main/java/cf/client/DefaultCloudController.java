@@ -160,6 +160,17 @@ public class DefaultCloudController implements CloudController {
 	}
 	
 	@Override
+	public RestCollection<Application> getApplication(Token token, ApplicationQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<Application> iterator = new ResultIterator<>(
+				token,
+				V2_APPS,
+				Application.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
 	public Application updateApplication(Token token, UUID applicationGuid, Application application) {
 		JsonNode jsonNode = putJsonToUri(token, application, V2_APPS, applicationGuid);
 		try {
@@ -274,10 +285,89 @@ public class DefaultCloudController implements CloudController {
 	}
 	
 	@Override
+	public RestCollection<Space> getSpace(Token token, SpaceQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<Space> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES,
+				Space.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public RestCollection<Space> getSpaces(Token token) {
+		final ResultIterator<Space> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES,
+				Space.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);				
+
+	}	
+	
+	@Override
+	public RestCollection<User> getManagersInOrg(Token token, UUID orgGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_ORGANIZATIONS +"/"+orgGuid.toString()+"/managers",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	
+	@Override
+	public RestCollection<User> getAuditorsInOrg(Token token, UUID orgGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_ORGANIZATIONS +"/"+orgGuid.toString()+"/auditors",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	
+	@Override
+	public RestCollection<User> getUsersInOrg(Token token, UUID orgGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_ORGANIZATIONS +"/"+orgGuid.toString()+"/users",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	
+	@Override
 	public RestCollection<User> getManagersInSpace(Token token, UUID spaceGuid) {
 		final ResultIterator<User> iterator = new ResultIterator<>(
 				token,
 				V2_SPACES+"/"+spaceGuid.toString()+"/managers",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	public RestCollection<User> getAuditorsInSpace(Token token, UUID spaceGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES+"/"+spaceGuid.toString()+"/auditors",
+				User.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	public RestCollection<User> getDevelopersInSpace(Token token, UUID spaceGuid) {
+		final ResultIterator<User> iterator = new ResultIterator<>(
+				token,
+				V2_SPACES+"/"+spaceGuid.toString()+"/developers",
 				User.class,
 				null,
 				null);
@@ -301,6 +391,18 @@ public class DefaultCloudController implements CloudController {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public RestCollection<Organization> getOrganizations(Token token) {
+		final ResultIterator<Organization> iterator = new ResultIterator<>(
+				token,
+				V2_ORGANIZATIONS,
+				Organization.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+		
 	}
 
 	@Override

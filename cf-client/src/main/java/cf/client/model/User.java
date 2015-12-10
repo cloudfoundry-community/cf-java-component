@@ -18,6 +18,8 @@ package cf.client.model;
 
 import cf.common.JsonObject;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -27,12 +29,18 @@ public class User extends JsonObject {
 
 	private final Boolean admin;
 	private final Boolean active;
+	private final UUID defaultSpaceGuid;
+	private final String username;
 
 	public User(
 			@JsonProperty("admin") Boolean admin,
-			@JsonProperty("active") Boolean active) {
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("default_space_guid") UUID defaultSpaceGuid,
+			@JsonProperty("username") String username) {
 		this.admin = admin;
 		this.active = active;
+		this.defaultSpaceGuid = defaultSpaceGuid;
+		this.username = username;
 	}
 
 	public Boolean getAdmin() {
@@ -41,5 +49,13 @@ public class User extends JsonObject {
 
 	public Boolean getActive() {
 		return active;
+	}
+	
+	public UUID getDefaultSpaceGuid() {
+		return defaultSpaceGuid;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 }

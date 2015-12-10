@@ -77,6 +77,9 @@ public interface CloudController {
 	 * @return
 	 */
 	Application getApplication(Token token, UUID applicationGuid);
+	
+	
+	RestCollection<Application> getApplication(Token token, ApplicationQueryAttribute queryAttribute, String queryValue);
 
 	/**
 	 * Update an application.
@@ -197,15 +200,83 @@ public interface CloudController {
 	 * @return the space for the given guid
 	 */
 	Space getSpace(Token token, UUID spaceGuid);
+
+	/**
+	 * Returns spaces that match the query.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param queryAttribute: the attribute to query on
+	 * @param queryValue: the expected value of the attribute
+	 * @return the space for the given guid
+	 */
+	RestCollection<Space> getSpace(Token token, SpaceQueryAttribute queryAttribute, String queryValue);
+	
+	/**
+	 * Returns spaces.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return all the spaces for the given org guid
+	 */	
+	RestCollection<Space> getSpaces(Token token);
+	
+	/**
+	 * Returns the managers of an organization.
+	 *
+	 * @param token 
+	 * @param orgGuid
+	 * @return managers
+	 */
+	RestCollection<User> getManagersInOrg(Token token, UUID orgGuid);
+	
+	
+	/**
+	 * Returns the auditors of an organization.
+	 *
+	 * @param token 
+	 * @param orgGuid
+	 * @return managers
+	 */
+	RestCollection<User> getAuditorsInOrg(Token token, UUID orgGuid);
+	
+	
+	/**
+	 * Returns the users in an organization.
+	 *
+	 * @param token 
+	 * @param orgGuid
+	 * @return users
+	 */
+	RestCollection<User> getUsersInOrg(Token token, UUID orgGuid);
+	
 	
 	/**
 	 * Returns the managers of a space.
 	 *
 	 * @param token 
 	 * @param spaceGuid
-	 * @return
+	 * @return managers
 	 */
 	RestCollection<User> getManagersInSpace(Token token, UUID spaceGuid);
+	
+	
+	/**
+	 * Returns the auditors of a space.
+	 *
+	 * @param token 
+	 * @param spaceGuid
+	 * @return auditors
+	 */
+	RestCollection<User> getAuditorsInSpace(Token token, UUID spaceGuid);
+	
+	
+	/**
+	 * Returns the developers of a space.
+	 *
+	 * @param token 
+	 * @param spaceGuid
+	 * @return developers
+	 */
+	RestCollection<User> getDevelopersInSpace(Token token, UUID spaceGuid);
 
 	/**
 	 * Get Security Groups for a space 
@@ -217,14 +288,21 @@ public interface CloudController {
 	RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid);
 
 	/**
-	 * Returns the space.
+	 * Returns the org.
 	 *
 	 * @param token the token used to authenticate the request.
-	 * @param space guid.
-	 * @return the space for the given guid
+	 * @param org guid.
+	 * @return the org for the given guid
 	 */
 	Organization getOrganization(Token token, UUID organizationGuid);
 
+	/**
+	 * Returns the org.
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @return the orgs,
+	 */
+	RestCollection<Organization> getOrganizations(Token token);
 	
 	/**
 	 * Returns all the service instances.
@@ -450,6 +528,55 @@ public interface CloudController {
 		}
 	}
 	
+	public enum SpaceQueryAttribute implements QueryAttribute {
+		NAME {
+			@Override
+			public String toString() {
+				return "name";
+			}
+		},
+		ORGANIZATION_GUID {
+			@Override
+			public String toString() {
+				return "organization_guid";
+			}
+		},
+		DEVELOPER_GUID {
+			@Override
+			public String toString() {
+				return "developer_guid";
+			}
+		},
+		APP_GUID {
+			@Override
+			public String toString() {
+				return "app_guid";
+			}
+		}
+		
+	}
+	
+	public enum ApplicationQueryAttribute implements QueryAttribute {
+		NAME {
+			@Override
+			public String toString() {
+				return "name";
+			}
+		},
+		SPACE_GUID {
+			@Override
+			public String toString() {
+				return "space_guid";
+			}
+		},
+		ORGANIZATION_GUID {
+			@Override
+			public String toString() {
+				return "organization_guid";
+			}
+		}		
+	}
+	
 	public enum RouteQueryAttribute implements QueryAttribute {
 		DOMAIN_GUID {
 			@Override
@@ -464,6 +591,10 @@ public interface CloudController {
 			}
 		}
 	}
+
+
+	
+
 
 
 }
