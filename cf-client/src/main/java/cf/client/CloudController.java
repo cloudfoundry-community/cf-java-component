@@ -16,28 +16,12 @@
  */
 package cf.client;
 
+import cf.client.model.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
-
-import cf.client.model.AppUsageEvent;
-import cf.client.model.Application;
-import cf.client.model.ApplicationInstance;
-import cf.client.model.Event;
-import cf.client.model.Info;
-import cf.client.model.Organization;
-import cf.client.model.PrivateDomain;
-import cf.client.model.Route;
-import cf.client.model.SecurityGroup;
-import cf.client.model.Service;
-import cf.client.model.ServiceAuthToken;
-import cf.client.model.ServiceBinding;
-import cf.client.model.ServiceInstance;
-import cf.client.model.ServicePlan;
-import cf.client.model.Space;
-import cf.client.model.User;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
@@ -405,6 +389,8 @@ public interface CloudController {
 	 * @return
 	 */
 	UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid, ObjectNode params);
+
+	UUID createUserProvidedServiceInstance(Token token, String name, UUID spaceGuid, ObjectNode params);
 
 	ServiceInstance updateServiceInstance(Token token, UUID serviceInstanceGuid, ServiceInstance serviceInstance);
 
