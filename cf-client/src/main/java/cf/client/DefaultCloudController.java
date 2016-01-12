@@ -53,6 +53,7 @@ public class DefaultCloudController implements CloudController {
 	private static final String APP_INSTANCES = "/instances";
 	private static final String V2_APPS = "/v2/apps";
 	private static final String V2_PRIVATE_DOMAINS = "/v2/private_domains";
+	private static final String V2_SHARED_DOMAINS = "/v2/shared_domains";
 	private static final String V2_ROUTES = "/v2/routes";
 	private static final String V2_SERVICES = "/v2/services";
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
@@ -148,6 +149,17 @@ public class DefaultCloudController implements CloudController {
 				Application.class,
 				queryAttribute,
 				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public RestCollection<Application> getApplications(Token token) {
+		final ResultIterator<Application> iterator = new ResultIterator<>(
+				token,
+				V2_APPS,
+				Application.class,
+				null,
+				null);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 	
@@ -586,6 +598,17 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public RestCollection<Domain> getSharedDomains(Token token) {
+		final ResultIterator<Domain> iterator = new ResultIterator<>(
+				token,
+				V2_SHARED_DOMAINS,
+				Domain.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
 	public RestCollection<Route> getRoutes(Token token) {
 		final ResultIterator<Route> iterator = new ResultIterator<>(
 				token,
@@ -617,7 +640,18 @@ public class DefaultCloudController implements CloudController {
 				queryValue);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
-	
+
+	@Override
+	public RestCollection<Route> getRoutesForApp(Token token, UUID appGuid) {
+		final ResultIterator<Route> iterator = new ResultIterator<>(
+				token,
+				V2_ROUTES+"/"+appGuid+"/routes",
+				Route.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
 	//Events
 	
 	@Override

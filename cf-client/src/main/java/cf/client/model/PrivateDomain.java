@@ -25,20 +25,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author Mike Heath
  */
-public class PrivateDomain extends JsonObject {
+public class PrivateDomain extends Domain {
 
-	private final String name;
 	private final UUID owningOrganizationGuid;
 
 	public PrivateDomain(
 			@JsonProperty("name") String name,
 			@JsonProperty("owning_organization_guid") UUID owningOrganizationGuid) {
-		this.name = name;
+		super(name);
 		this.owningOrganizationGuid = owningOrganizationGuid;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public UUID getOwningOrganizationGuid() {
