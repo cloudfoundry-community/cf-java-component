@@ -28,20 +28,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Route extends JsonObject {
 
 	private final String host;
+	private final String path;
 	private final UUID domainGuid;
 	private final UUID spaceGuid;
 
 	public Route(
 			@JsonProperty("host") String host,
+			@JsonProperty("path") String path,
 			@JsonProperty("domain_guid") UUID domainGuid,
 			@JsonProperty("space_guid") UUID spaceGuid) {
 		this.host = host;
+		this.path = path;
 		this.domainGuid = domainGuid;
 		this.spaceGuid = spaceGuid;
 	}
 
 	public String getHost() {
 		return host;
+	}
+	
+	public String getPath() {
+		return path;
 	}
 
 	public UUID getDomainGuid() {
