@@ -18,28 +18,23 @@ package cf.client.model;
 
 import java.util.UUID;
 
-import cf.common.JsonObject;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Mike Heath
  */
-public class SharedDomain extends JsonObject {
+public class SharedDomain extends Domain {
 
-	private final String name;
+	
 	private final UUID router_group_guid;
 
 	public SharedDomain(
 			@JsonProperty("name") String name,
 			@JsonProperty("router_group_guid") UUID router_group_guid) {
-		this.name = name;
+		super(name);
 		this.router_group_guid = router_group_guid;
 	}
 
-	public String getName() {
-		return name;
-	}
 
 	public UUID getRouter_group_guid() {
 		return router_group_guid;

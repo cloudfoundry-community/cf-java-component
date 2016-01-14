@@ -78,7 +78,14 @@ public interface CloudController {
 	 * @return
 	 */
 	Application getApplication(Token token, UUID applicationGuid);
-	
+
+	/**
+	 * Get all applications visible to the token.
+	 * @param token
+	 * @return
+	 */
+	RestCollection<Application> getApplications(Token token);
+
 	
 	RestCollection<Application> getApplication(Token token, ApplicationQueryAttribute queryAttribute, String queryValue);
 
@@ -435,6 +442,7 @@ public interface CloudController {
 	RestCollection<PrivateDomain> getPrivateDomains(Token token);
 
 	/**
+<<<<<<< HEAD
 	 * Get the private domain for a given GUID.
 	 * @param token
 	 * @param privateDomainGuid
@@ -442,12 +450,6 @@ public interface CloudController {
 	 */
 	PrivateDomain getPrivateDomain(Token token, UUID privateDomainGuid);
 	
-	/**
-	 * Get all of the private Domains.
-	 * @param token
-	 * @return all the private domains this user can see
-	 */
-	RestCollection<SharedDomain> getSharedDomains(Token token);
 	
 	/**
 	 * Get the shared domain for a given GUID.
@@ -457,6 +459,15 @@ public interface CloudController {
 	 */
 	SharedDomain getSharedDomain(Token token, UUID sharedDomainGuid);
 	
+
+    /**
+	 * Get all of the shared Domains.
+	 * @param token
+	 * @return all the private domains this user can see
+	 */
+	RestCollection<SharedDomain> getSharedDomains(Token token);
+
+
 	/**
 	 * Get all of the routes this user can see.
 	 * @param token
@@ -464,6 +475,15 @@ public interface CloudController {
 	 */
 	RestCollection<Route> getRoutes(Token token);
 
+	/**
+	 * Get all the routes for a given application.
+	 * @param token
+	 * @param appGuid
+	 * @return
+	 */
+	RestCollection<Route> getRoutesForApp(Token token, UUID appGuid);
+
+	
 	/**
 	 * Get all the applications for a given route.
 	 * @param token
