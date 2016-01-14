@@ -16,12 +16,29 @@
  */
 package cf.client;
 
-import cf.client.model.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
+
+import cf.client.model.AppUsageEvent;
+import cf.client.model.Application;
+import cf.client.model.ApplicationInstance;
+import cf.client.model.Event;
+import cf.client.model.Info;
+import cf.client.model.Organization;
+import cf.client.model.PrivateDomain;
+import cf.client.model.Route;
+import cf.client.model.SecurityGroup;
+import cf.client.model.Service;
+import cf.client.model.ServiceAuthToken;
+import cf.client.model.ServiceBinding;
+import cf.client.model.ServiceInstance;
+import cf.client.model.ServicePlan;
+import cf.client.model.SharedDomain;
+import cf.client.model.Space;
+import cf.client.model.User;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Provides methods for invoking REST end-points on the Cloud Controller. This is not an attempt to create a general
@@ -417,6 +434,29 @@ public interface CloudController {
 	 */
 	RestCollection<PrivateDomain> getPrivateDomains(Token token);
 
+	/**
+	 * Get the private domain for a given GUID.
+	 * @param token
+	 * @param privateDomainGuid
+	 * @return private domain for the given GUID
+	 */
+	PrivateDomain getPrivateDomain(Token token, UUID privateDomainGuid);
+	
+	/**
+	 * Get all of the private Domains.
+	 * @param token
+	 * @return all the private domains this user can see
+	 */
+	RestCollection<SharedDomain> getSharedDomains(Token token);
+	
+	/**
+	 * Get the shared domain for a given GUID.
+	 * @param token
+	 * @param sharedDomainGuid
+	 * @return shared domain for the given GUID
+	 */
+	SharedDomain getSharedDomain(Token token, UUID sharedDomainGuid);
+	
 	/**
 	 * Get all of the routes this user can see.
 	 * @param token

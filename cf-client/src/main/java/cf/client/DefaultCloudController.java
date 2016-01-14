@@ -16,12 +16,19 @@
  */
 package cf.client;
 
-import cf.client.model.*;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -35,13 +42,29 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import cf.client.model.AppUsageEvent;
+import cf.client.model.Application;
+import cf.client.model.ApplicationInstance;
+import cf.client.model.Event;
+import cf.client.model.Info;
+import cf.client.model.Organization;
+import cf.client.model.PrivateDomain;
+import cf.client.model.Route;
+import cf.client.model.SecurityGroup;
+import cf.client.model.Service;
+import cf.client.model.ServiceAuthToken;
+import cf.client.model.ServiceBinding;
+import cf.client.model.ServiceInstance;
+import cf.client.model.ServicePlan;
+import cf.client.model.SharedDomain;
+import cf.client.model.Space;
+import cf.client.model.User;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Mike Heath
@@ -53,6 +76,8 @@ public class DefaultCloudController implements CloudController {
 	private static final String APP_INSTANCES = "/instances";
 	private static final String V2_APPS = "/v2/apps";
 	private static final String V2_PRIVATE_DOMAINS = "/v2/private_domains";
+	private static final String V2_SHARED_DOMAINS = "/v2/shared_domains";
+	
 	private static final String V2_ROUTES = "/v2/routes";
 	private static final String V2_SERVICES = "/v2/services";
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
@@ -583,6 +608,37 @@ public class DefaultCloudController implements CloudController {
 				null,
 				null);
 		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public PrivateDomain getPrivateDomain(Token token, UUID privateDomainGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_PRIVATE_DOMAINS +"/"+ privateDomainGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), PrivateDomain.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
+	public RestCollection<SharedDomain> getSharedDomains(Token token) {
+		final ResultIterator<SharedDomain> iterator = new ResultIterator<>(
+				token,
+				V2_SHARED_DOMAINS,
+				SharedDomain.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
+	@Override
+	public SharedDomain getSharedDomain(Token token, UUID sharedDomainGuid) {
+		JsonNode jsonNode = fetchResource(token, V2_SHARED_DOMAINS +"/"+ sharedDomainGuid.toString());
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), SharedDomain.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
