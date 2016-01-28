@@ -23,6 +23,7 @@ import java.util.UUID;
 import cf.client.model.AppUsageEvent;
 import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
+import cf.client.model.ApplicationInstanceStats;
 import cf.client.model.Event;
 import cf.client.model.Info;
 import cf.client.model.Organization;
@@ -68,6 +69,8 @@ public interface CloudController {
 	 * @return a UAA object for the UAA used by this cloud controller.
 	 */
 	Uaa getUaa();
+	
+	Map<String, ApplicationInstanceStats> getApplicationInstanceStats(Token token, UUID applicationGuid); 
 
 	Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid);
 	
@@ -78,6 +81,8 @@ public interface CloudController {
 	 * @return
 	 */
 	Application getApplication(Token token, UUID applicationGuid);
+	
+
 
 	/**
 	 * Get all applications visible to the token.
@@ -106,6 +111,7 @@ public interface CloudController {
 	 * @return the guid of the newly created service.
 	 */
 	
+	RestCollection<Event> getEvents(Token token,EventQueryAttribute queryAttribute, String queryValue);
 	RestCollection<Event> getEvents(Token token,String url);
 	RestCollection<Event> getEvents(Token token);
 	
@@ -602,6 +608,29 @@ public interface CloudController {
 		
 	}
 	
+	public enum EventQueryAttribute implements QueryAttribute {
+		TIMESTAMP {
+			@Override
+			public String toString() {
+				return "timestamp";
+			}
+		},
+		TYPE {
+			@Override
+			public String toString() {
+				return "type";
+			}
+		},
+		ACTEE {
+			@Override
+			public String toString() {
+				return "actee";
+			}
+		}		
+	}
+	
+	
+	
 	public enum ApplicationQueryAttribute implements QueryAttribute {
 		NAME {
 			@Override
@@ -637,6 +666,8 @@ public interface CloudController {
 			}
 		}
 	}
+
+
 
 
 	

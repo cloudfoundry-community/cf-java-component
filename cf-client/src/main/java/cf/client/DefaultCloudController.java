@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import cf.client.model.AppUsageEvent;
 import cf.client.model.Application;
 import cf.client.model.ApplicationInstance;
+import cf.client.model.ApplicationInstanceStats;
 import cf.client.model.Event;
 import cf.client.model.Info;
 import cf.client.model.Organization;
@@ -140,7 +141,7 @@ public class DefaultCloudController implements CloudController {
 
 	@Override
 	public Map<String, ApplicationInstance> getApplicationInstances(Token token, UUID applicationGuid) {
-		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + APP_INSTANCES);
+		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + "/stats");
 		final Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
 		final Map<String, ApplicationInstance> instances = new HashMap<>();
 		while (fields.hasNext()) {
@@ -153,6 +154,27 @@ public class DefaultCloudController implements CloudController {
 		}
 		return instances;
 	}
+	
+	
+	@Override
+	public Map<String, ApplicationInstanceStats> getApplicationInstanceStats(Token token, UUID applicationGuid) {
+		final JsonNode jsonNode = fetchResource(token, V2_APPS + "/" + applicationGuid.toString() + "/stats");
+		final Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+		final Map<String, ApplicationInstanceStats> instanceStats = new HashMap<>();
+		while (fields.hasNext()) {
+			final Map.Entry<String, JsonNode> field = fields.next();
+			try {
+				instanceStats.put(field.getKey(), mapper.readValue(field.getValue().traverse(), ApplicationInstanceStats.class));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return instanceStats;
+	}
+	
+	
+
+	
 	
 	@Override
 	public Application getApplication(Token token, UUID applicationGuid) {
@@ -696,6 +718,18 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	//Events
+	
+	@Override
+	public RestCollection<Event> getEvents(Token token, EventQueryAttribute queryAttribute, String queryValue) {
+		final ResultIterator<Event> iterator = new ResultIterator<>(
+				token,
+				V2_EVENTS,
+				Event.class,
+				queryAttribute,
+				queryValue);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+	
 	
 	@Override
 	public RestCollection<Event> getEvents(Token token, String url) {
