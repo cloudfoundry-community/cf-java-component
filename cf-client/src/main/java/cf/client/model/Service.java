@@ -16,11 +16,18 @@
  */
 package cf.client.model;
 
+import java.io.IOException;
 import java.net.URI;
 
 import cf.common.JsonObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 /**
  * @author Mike Heath
@@ -29,6 +36,8 @@ public class Service extends JsonObject {
 
 	private static final String INFO_URL = "info_url";
 	private static final String UNIQUE_ID = "unique_id";
+	private static final ObjectMapper mapper = new ObjectMapper();
+
 	private final String label;
 	private final String provider;
 	private final URI url;
@@ -37,6 +46,7 @@ public class Service extends JsonObject {
 	private final URI infoUrl;
 	private final boolean active;
 	private final String uniqueId;
+	private JsonNode extra;
 
 
 	public Service(
@@ -47,7 +57,8 @@ public class Service extends JsonObject {
 			@JsonProperty("version") String version,
 			@JsonProperty(INFO_URL) URI infoUrl,
 			@JsonProperty("active") boolean active,
-			@JsonProperty(UNIQUE_ID) String uniqueId) {
+			@JsonProperty(UNIQUE_ID) String uniqueId,
+			@JsonProperty("extra") String extra) {
 		this.label = label;
 		this.provider = provider;
 		this.url = url;
@@ -56,6 +67,13 @@ public class Service extends JsonObject {
 		this.infoUrl = infoUrl;
 		this.active = active;
 		this.uniqueId = uniqueId;
+		if(extra != null) {
+			try {
+				this.extra = mapper.readValue(extra, JsonNode.class);
+			} catch(Exception e) {}
+		} else {
+			this.extra = null;
+		}
 	}
 
 	public String getLabel() {
@@ -94,5 +112,9 @@ public class Service extends JsonObject {
 	@JsonProperty(UNIQUE_ID)
 	public String getUniqueId() {
 		return uniqueId;
+	}
+	
+	public JsonNode getExtra() {
+		return extra;
 	}
 }

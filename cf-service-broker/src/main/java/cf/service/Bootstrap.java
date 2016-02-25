@@ -67,7 +67,7 @@ public class Bootstrap {
 		}
 
 		LOGGER.info("Registering service with Cloud Controller");
-		final Service service = new Service(label, provider, url, description, version, infoUrl, true, uniqueId);
+		final Service service = new Service(label, provider, url, description, version, infoUrl, true, uniqueId, null);
 		return cloudController.createService(clientToken, service);
 	}
 
