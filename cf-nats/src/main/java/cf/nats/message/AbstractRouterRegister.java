@@ -64,9 +64,6 @@ public class AbstractRouterRegister extends JsonObject implements MessageBody<Vo
 	public AbstractRouterRegister(String host, int port, List<String> uris, String app, Integer index, String privateInstanceId, String dea, Map<String, String> tags) {
 		Objects.requireNonNull(host, "Host is a required field");
 		Objects.requireNonNull(uris, "uris is a required field");
-		if (uris.size() == 0) {
-			throw new IllegalArgumentException("uris can NOT be empty");
-		}
 		this.host = host;
 		this.port = port;
 		this.uris = Collections.unmodifiableList(new ArrayList<>(uris));
