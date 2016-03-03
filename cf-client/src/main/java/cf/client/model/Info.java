@@ -37,10 +37,10 @@ public class Info extends JsonObject {
 	public Info(
 			@JsonProperty("name") String name,
 			@JsonProperty("version") Integer version,
-			@JsonProperty("authorization_endpoint") URI authorizationEndpoint,
-			@JsonProperty("token_endpoint") URI tokenEndpoint,
-			@JsonProperty("doppler_logging_endpoint") URI dopplerLoggingEndpoint,
-			@JsonProperty("logging_endpoint") URI loggingEndpoint) {
+			@JsonProperty(value="authorization_endpoint", required=true) URI authorizationEndpoint,
+			@JsonProperty(value="token_endpoint", required=true) URI tokenEndpoint,
+			@JsonProperty(value="doppler_logging_endpoint", required=true) URI dopplerLoggingEndpoint,
+			@JsonProperty(value="logging_endpoint", required=true) URI loggingEndpoint) {
 		this.name = name;
 		this.version = version;
 		this.authorizationEndpoint = authorizationEndpoint;
