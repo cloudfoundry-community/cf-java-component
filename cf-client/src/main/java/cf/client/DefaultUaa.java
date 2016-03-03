@@ -57,6 +57,9 @@ public class DefaultUaa implements Uaa {
 	}
 
 	public DefaultUaa(HttpClient httpClient, URI uaa) {
+		if(uaa == null) {
+			throw new IllegalArgumentException("Null uaa url is invalid.");
+		}
 		this.httpClient = httpClient;
 		this.uaa = uaa;
 
