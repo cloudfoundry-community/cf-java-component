@@ -832,7 +832,7 @@ public class DefaultCloudController implements CloudController {
 
 	private void fetchInfo() {
 		try {
-			final HttpGet get = new HttpGet(target.resolve("/info"));
+			final HttpGet get = new HttpGet(target.resolve("/v2/info"));
 			// TODO Standardize on error handling
 			// TODO Throw exception if non version 2 Cloud Controller
 			final HttpResponse response = httpClient.execute(get);
