@@ -18,7 +18,7 @@ public class DeserializeTest {
 
 	@Test
 	public void info() throws Exception {
-		final String infoString = "{\"name\":\"vcap\",\"build\":\"2222\",\"support\":\"http://support.cloudfoundry.com\",\"version\":2,\"description\":\"Cloud Foundry sponsored by Pivotal\",\"authorization_endpoint\":\"https://uaa.app2-dev.lds.org\",\"token_endpoint\":\"https://uaa.app2-dev.lds.org\",\"allow_debug\":true}";
+		final String infoString = "{\"name\":\"vcap\",\"build\":\"2222\",\"support\":\"http://support.cloudfoundry.com\",\"version\":2,\"description\":\"Cloud Foundry sponsored by Pivotal\",\"authorization_endpoint\":\"https://uaa.app2-dev.lds.org\",\"token_endpoint\":\"https://uaa.app2-dev.lds.org\",\"allow_debug\":true, \"logging_endpoint\": \"wss://loggregator.cf-dev.lds.org:443\", \"doppler_logging_endpoint\": \"wss://doppler.cf-dev.lds.org:443\"}";
 		final Info info = mapper.readValue(infoString, Info.class);
 		assertEquals(info.getAuthorizationEndpoint().toString(), "https://uaa.app2-dev.lds.org");
 		assertEquals(info.getName(), "vcap");
