@@ -16,7 +16,7 @@
  */
 package cf.nats.message;
 
-import static junit.framework.Assert.*;
+import static org.testng.Assert.*;
 
 import java.io.IOException;
 
