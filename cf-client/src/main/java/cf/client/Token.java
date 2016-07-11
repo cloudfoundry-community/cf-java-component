@@ -69,7 +69,7 @@ public class Token {
 			final String rawScopes = node.get("scope").asText();
 			final String[] splitScopes = rawScopes.split("\\s+");
 			final List<String> scopes = Collections.unmodifiableList(Arrays.asList(splitScopes));
-			final UUID jti = UUID.fromString(node.get("jti").asText());
+			final String jti = node.get("jti").asText();
 			return new Token(accessToken, type, expiration, scopes, jti);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -88,9 +88,9 @@ public class Token {
 	private final Type type;
 	private final Date expiration;
 	private final List<String> scopes;
-	private final UUID jti;
+	private final String jti;
 
-	private Token(String accessToken, Type type, Date expiration, List<String> scopes, UUID jti) {
+	private Token(String accessToken, Type type, Date expiration, List<String> scopes, String jti) {
 		this.accessToken = accessToken;
 		this.type = type;
 		this.expiration = expiration;
@@ -114,7 +114,7 @@ public class Token {
 		return scopes;
 	}
 
-	public UUID getJti() {
+	public String getJti() {
 		return jti;
 	}
 
