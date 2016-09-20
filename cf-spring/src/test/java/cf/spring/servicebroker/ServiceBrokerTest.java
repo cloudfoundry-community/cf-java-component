@@ -131,6 +131,8 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		public BindResponse bind(BindRequest request) {
 			assertEquals(request.getPlanId(), PLAN_ID);
 			assertEquals(request.getApplicationGuid(), APPLICATION_GUID);
+			assertEquals(request.getBoundResource().getType(), BindRequest.BindingType.APPLICATION);
+			assertEquals(request.getBoundResource().getResource(), APPLICATION_GUID.toString());
 			assertEquals(request.getBindingGuid(), BINDING_GUID);
 			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
 			bindCounter().incrementAndGet();
@@ -215,7 +217,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
 		assertEquals(bindCounter.get(), 0);
 		// Do bind
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID);
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(APPLICATION_GUID.toString(), null), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
