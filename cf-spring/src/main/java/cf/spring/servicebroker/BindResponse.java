@@ -30,6 +30,7 @@ public class BindResponse extends JsonObject {
 
 	private final Object credentials;
 	private final String syslogDrainUrl;
+	private final String routeServiceUrl;
 
 	private final boolean created;
 
@@ -62,9 +63,24 @@ public class BindResponse extends JsonObject {
 	 *                already existed. This has no functional impact on binding a service.
 	 */
 	public BindResponse(Object credentials, String syslogDrainUrl, boolean created) {
+		this(credentials, syslogDrainUrl, null, created);
+	}
+
+	/**
+	 * Creates a bind response with the provided credentials and syslog drain URL and indicates to the Cloud Controller
+	 * if the binding is an existing binding.
+	 *
+	 * @param credentials credentials sent to the Cloud Controller. This must be a Jackson serializable JSON object.
+	 * @param syslogDrainUrl this should be a URL to a syslog endpoint.
+	 * @param routeServiceUrl this should be an https URL to a route service proxy.
+	 * @param created indicates to the Cloud Controller if the binding was created or {@code false} if the binding
+	 *                already existed. This has no functional impact on binding a service.
+	 */
+	public BindResponse(Object credentials, String syslogDrainUrl, String routeServiceUrl, boolean created) {
 		this.credentials = credentials;
 		this.syslogDrainUrl = syslogDrainUrl;
 		this.created = created;
+		this.routeServiceUrl = routeServiceUrl;
 	}
 
 	/**
@@ -80,6 +96,14 @@ public class BindResponse extends JsonObject {
 	@JsonProperty("syslog_drain_url")
 	public String getSyslogDrainUrl() {
 		return syslogDrainUrl;
+	}
+
+	/**
+	 * The route service URL that requests should proxy through for a route service.
+	 */
+	@JsonProperty("route_service_url")
+	public String getRouteServiceUrl() {
+		return routeServiceUrl;
 	}
 
 	/**
