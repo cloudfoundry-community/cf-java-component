@@ -28,24 +28,35 @@ public class BindRequest {
 	private final UUID serviceInstanceGuid;
 	private final UUID bindingGuid;
 	private final UUID applicationGuid;
+	private final Binding binding;
 	private final String planId;
 
-	public BindRequest(UUID serviceInstanceGuid, UUID bindingGuid, UUID applicationGuid, String planId) {
+
+	public BindRequest(UUID serviceInstanceGuid, UUID bindingGuid, BindingType type, String boundResource, String planId) {
 		this.serviceInstanceGuid = serviceInstanceGuid;
 		this.bindingGuid = bindingGuid;
-		this.applicationGuid = applicationGuid;
+		if (type == BindingType.APPLICATION) {
+			this.applicationGuid = UUID.fromString(boundResource);
+		} else {
+			this.applicationGuid = null;
+		}
+		this.binding = new Binding(type, boundResource);
 		this.planId = planId;
 	}
 
 	/**
-	 * The GUID of the service being bound.
+	 * The GUID of the servic instance being bound.
 	 */
 	public UUID getServiceInstanceGuid() {
 		return serviceInstanceGuid;
 	}
 
+	public Binding getBoundResource() {
+		return binding;
+	}
+
 	/**
-	 * The binding GUID from the Cloud Controller.
+	 * The GUID from the Cloud Controller that identifies the bind
 	 */
 	public UUID getBindingGuid() {
 		return bindingGuid;
@@ -53,7 +64,10 @@ public class BindRequest {
 
 	/**
 	 * The GUID of the application being bound.
+	 *
+	 * @deprecated Use #getBinding() instead.
 	 */
+	@Deprecated
 	public UUID getApplicationGuid() {
 		return applicationGuid;
 	}
@@ -63,5 +77,28 @@ public class BindRequest {
 	 */
 	public String getPlanId() {
 		return planId;
+	}
+
+	public enum BindingType {
+		APPLICATION,
+		ROUTE
+	}
+
+	public class Binding {
+		private final BindingType type;
+		private final String resource;
+
+		private Binding(BindingType type, String resource) {
+			this.type = type;
+			this.resource = resource;
+		}
+
+		public BindingType getType() {
+			return type;
+		}
+
+		public String getResource() {
+			return resource;
+		}
 	}
 }

@@ -55,6 +55,8 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	private static final UUID SPACE_GUID = UUID.randomUUID();
 	private static final UUID SERVICE_INSTANCE_GUID = UUID.randomUUID();
 	private static final UUID APPLICATION_GUID = UUID.randomUUID();
+	private static final String ROUTE = "www.google.com";
+	private static final String ROUTE_SERVICE_URL = "https://someproxy.com";
 	private static final UUID BINDING_GUID = UUID.randomUUID();
 
 	private static final Map<String, Object> PARAMETERS;
@@ -100,7 +102,8 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@ServiceBroker(
 			@Service(id = BROKER_ID_STATIC, name="test-broker", description = "This is for testing", plans = {
 					@ServicePlan(id = PLAN_ID, name = "test-plan", description = "Some test plan for testing.")
-	}))
+			}, requires=Permission.ROUTE_FORWARDING
+	))
 	static class ServiceBrokerConfiguration {
 
 		@DynamicCatalog
@@ -130,11 +133,17 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		@Bind
 		public BindResponse bind(BindRequest request) {
 			assertEquals(request.getPlanId(), PLAN_ID);
-			assertEquals(request.getApplicationGuid(), APPLICATION_GUID);
+			if(request.getBoundResource().getType() == BindRequest.BindingType.APPLICATION) {
+				assertEquals(request.getApplicationGuid(), APPLICATION_GUID);
+				assertEquals(request.getBoundResource().getResource(), APPLICATION_GUID.toString());
+			}
+			if(request.getBoundResource().getType() == BindRequest.BindingType.ROUTE) {
+				assertEquals(request.getBoundResource().getResource(), ROUTE);
+			}
 			assertEquals(request.getBindingGuid(), BINDING_GUID);
 			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
 			bindCounter().incrementAndGet();
-			return new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD));
+			return new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), null, ROUTE_SERVICE_URL, true);
 		}
 
 		@Unbind
@@ -211,11 +220,11 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	}
 
 	@Test
-	public void bind() throws Exception {
+	public void bindApplication() throws Exception {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
 		assertEquals(bindCounter.get(), 0);
 		// Do bind
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID);
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(APPLICATION_GUID.toString(), null), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
@@ -230,6 +239,22 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final JsonNode credentials = bindResponseJson.get("credentials");
 		assertEquals(credentials.get("username").asText(), SOME_USERNAME);
 		assertEquals(credentials.get("password").asText(), SOME_PASSWORD);
+	}
+
+	@Test
+	public void bindRoute() throws Exception {
+		// Do bind
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, null, new ServiceBrokerHandler.BindResource(null, ROUTE), Collections.emptyMap());
+		final HttpUriRequest bindRequest = RequestBuilder.put()
+				.setUri(bindingUri)
+				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
+				.build();
+		final CloseableHttpResponse bindResponse = client.execute(bindRequest);
+		assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
+		final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
+		assertTrue(bindResponseJson.has("credentials"));
+		assertFalse(bindResponseJson.has("syslog_drain_url"));
+		assertEquals(bindResponseJson.get("route_service_url").asText(), ROUTE_SERVICE_URL);
 	}
 
 	@Test

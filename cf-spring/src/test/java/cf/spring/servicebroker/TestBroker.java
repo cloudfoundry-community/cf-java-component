@@ -48,7 +48,6 @@ public class TestBroker {
 
 	@Bind
 	public BindResponse bind(BindRequest request) {
-		System.out.println("Binding " + request.getServiceInstanceGuid() + " to " + request.getApplicationGuid());
 		Map<String, String> credentials = new HashMap<>();
 		credentials.put("secret", "This is your credentials. Be careful!");
 		return new BindResponse(credentials);

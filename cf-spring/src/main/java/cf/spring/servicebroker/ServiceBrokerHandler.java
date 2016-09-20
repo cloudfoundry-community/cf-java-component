@@ -92,11 +92,24 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 					final BindBody bindBody = mapper.readValue(request.getInputStream(), BindBody.class);
 					final String serviceId = bindBody.getServiceId();
 					final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+					final BindRequest.BindingType type;
+					final String boundResource;
+					if (bindBody.getBindResource().getAppGuid() != null) {
+						type = BindRequest.BindingType.APPLICATION;
+						boundResource = bindBody.getBindResource().getAppGuid();
+					} else if (bindBody.getBindResource().getRoute() != null) {
+						type = BindRequest.BindingType.ROUTE;
+						boundResource = bindBody.getBindResource().getRoute();
+					} else {
+						type = BindRequest.BindingType.APPLICATION;
+						boundResource = bindBody.getApplicationGuid().toString();
+					}
 
 					final BindRequest bindRequest = new BindRequest(
 							UUID.fromString(instanceId),
 							UUID.fromString(bindingId),
-							bindBody.applicationGuid,
+							type,
+							boundResource,
 							bindBody.getPlanId());
 					final BindResponse bindResponse = accessor.bind(bindRequest);
 					if (bindResponse.isCreated()) {
@@ -203,18 +216,26 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 		public static final String SERVICE_ID_FIELD = "service_id";
 		public static final String PLAN_ID = "plan_id";
 		public static final String APPLICATION_GUID = "app_guid";
+		public static final String BIND_RESOURCE = "bind_resource";
+		public static final String PARAMETERS = "parameters";
 
 		private final String serviceId;
 		private final String planId;
 		private final UUID applicationGuid;
+		private final BindResource bindResource;
+		private final Map<String, Object> parameters;
 
 		public BindBody(
 				@JsonProperty(SERVICE_ID_FIELD) String serviceId,
 				@JsonProperty(PLAN_ID) String planId,
-				@JsonProperty(APPLICATION_GUID) UUID applicationGuid) {
+				@JsonProperty(APPLICATION_GUID) UUID applicationGuid,
+				@JsonProperty(BIND_RESOURCE) BindResource bindResource,
+				@JsonProperty(PARAMETERS) Map<String, Object> parameters) {
 			this.serviceId = serviceId;
 			this.planId = planId;
 			this.applicationGuid = applicationGuid;
+			this.bindResource = bindResource;
+			this.parameters = parameters == null ? Collections.emptyMap() : parameters;
 		}
 
 		public String getServiceId() {
@@ -227,6 +248,37 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 
 		public UUID getApplicationGuid() {
 			return applicationGuid;
+		}
+
+		public BindResource getBindResource() {
+			return bindResource;
+		}
+
+		public Map<String, Object> getParameters() {
+			return parameters;
+		}
+	}
+
+	static class BindResource extends JsonObject {
+		public static final String APP_GUID = "app_guid";
+		public static final String ROUTE = "route";
+
+		private final String appGuid;
+		private final String route;
+
+		public BindResource(
+				@JsonProperty(APP_GUID) String appGuid,
+				@JsonProperty(ROUTE) String route) {
+			this.appGuid = appGuid;
+			this.route = route;
+		}
+
+		public String getAppGuid() {
+			return appGuid;
+		}
+
+		public String getRoute() {
+			return route;
 		}
 	}
 

@@ -102,7 +102,8 @@ public class ServiceBrokerErrorHandlingTest extends AbstractServiceBrokerTest {
 
 	@Test
 	public void handlesUnexpectedException() throws Exception {
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, UUID.randomUUID());
+		final UUID applicationGuid = UUID.randomUUID();
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, applicationGuid, new ServiceBrokerHandler.BindResource(applicationGuid.toString(), null), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri("http://localhost:8080/v2/service_instances/" + UUID.randomUUID() + "/service_bindings/" + UUID.randomUUID())
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))

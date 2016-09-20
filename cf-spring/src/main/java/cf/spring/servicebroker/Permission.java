@@ -27,5 +27,11 @@ public enum Permission {
 		public String toString() {
 			return "syslog_drain";
 		}
+	},
+	ROUTE_FORWARDING {
+		@Override
+		public String toString() {
+			return "route_forwarding";
+		}
 	}
 }
