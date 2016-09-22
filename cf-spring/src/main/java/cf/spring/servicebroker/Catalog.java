@@ -56,7 +56,23 @@ public class Catalog extends JsonObject {
 		@JsonProperty("dashboard_client")
 		private ServiceDashboardClient dashboardClient;
 
+		@JsonProperty("plan_updateable")
+		private Boolean planUpdatable;
+
 		public CatalogService() {
+		}
+
+		public CatalogService(
+				  String id,
+				  String name,
+				  String description,
+				  boolean bindable,
+				  List<String> tags,
+				  Map<String, Object> metadata,
+				  List<String> requires,
+				  List<Plan> plans,
+				  ServiceDashboardClient dashboardClient) {
+			this(id, name, description, bindable, tags, metadata, requires, plans, dashboardClient, false);
 		}
 
 		public CatalogService(
@@ -68,7 +84,8 @@ public class Catalog extends JsonObject {
 			  @JsonProperty("metadata") Map<String, Object> metadata,
 			  @JsonProperty("requires") List<String> requires,
 			  @JsonProperty("plans") List<Plan> plans,
-			  @JsonProperty("dashboard_client") ServiceDashboardClient dashboardClient) {
+			  @JsonProperty("dashboard_client") ServiceDashboardClient dashboardClient,
+			  @JsonProperty("plan_updateable") Boolean planUpdatable) {
 			this.id = id;
 			this.name = name;
 			this.description = description;
@@ -78,6 +95,7 @@ public class Catalog extends JsonObject {
 			this.requires = requires;
 			this.plans = plans;
 			this.dashboardClient = dashboardClient;
+			this.planUpdatable = planUpdatable;
 		}
 
 		public String getId() {
@@ -151,6 +169,14 @@ public class Catalog extends JsonObject {
 
 		public void setDashboardClient(ServiceDashboardClient dashboardClient) {
 			this.dashboardClient = dashboardClient;
+		}
+		
+		public Boolean getPlanUpdatable() {
+			return planUpdatable;
+		}
+		
+		public void setPlanUpdatable(Boolean planUpdatable) {
+			this.planUpdatable = planUpdatable;
 		}
 	}
 

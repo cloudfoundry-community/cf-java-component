@@ -31,18 +31,21 @@ class ServiceBrokerMethods {
 
 	private final String beanName;
 	private final Method provision;
+	private final Method update;
 	private final Method deprovision;
 	private final Method bind;
 	private final Method unbind;
 
-	ServiceBrokerMethods(String beanName, boolean bindable, Method provision, Method deprovision, Method bind, Method unbind) {
+	ServiceBrokerMethods(String beanName, boolean bindable, Method provision, Method update, Method deprovision, Method bind, Method unbind) {
 		this.beanName = beanName;
 		this.provision = provision;
+		this.update = update;
 		this.deprovision = deprovision;
 		this.bind = bind;
 		this.unbind = unbind;
 
 		validateProvisionMethod(provision);
+		validateUpdateMethod(update);
 		validateDeprovisionMethod(deprovision);
 		validateBindMethod(bind, bindable);
 		validateUnbindMethod(unbind, bindable);
@@ -54,6 +57,10 @@ class ServiceBrokerMethods {
 
 	public Method getProvision() {
 		return provision;
+	}
+
+	public Method getUpdate() {
+		return update;
 	}
 
 	public Method getDeprovision() {
@@ -76,6 +83,14 @@ class ServiceBrokerMethods {
 		validateReturnType(provisionMethod, Provision.class, ProvisionResponse.class);
 		validateArgument(provisionMethod, Provision.class, ProvisionRequest.class);
 
+	}
+
+	private void validateUpdateMethod(Method updateMethod) {
+		if (updateMethod == null) {
+			return;
+		}
+		validateReturnType(updateMethod, Update.class, void.class);
+		validateArgument(updateMethod, Update.class, UpdateRequest.class);
 	}
 
 	private void validateDeprovisionMethod(Method deprovisionMethod) {

@@ -117,6 +117,19 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 					}
 					mapper.writeValue(response.getOutputStream(), bindResponse);
 				}
+			} else if ("patch".equalsIgnoreCase(request.getMethod())) {
+				final UpdateBody updateBody = mapper.readValue(request.getInputStream(), UpdateBody.class);
+				final String serviceId = updateBody.getServiceId();
+				final BrokerServiceAccessor accessor = getServiceAccessor(serviceId);
+				try {
+					final UpdateRequest updateRequest
+						  = new UpdateRequest(UUID.fromString(instanceId), updateBody.getPlanId(), updateBody.getParameters(),
+								  new UpdateRequest.PreviousValues(updateBody.getPreviousValues().getServiceId(), updateBody.getPreviousValues().getPlanId(), updateBody.getPreviousValues().getOrganizationId(), updateBody.getPreviousValues().getSpaceId()));
+					accessor.update(updateRequest);
+				} catch (MissingResourceException e) {
+					response.setStatus(HttpServletResponse.SC_GONE);
+				}
+				response.getWriter().write("{}");
 			} else if ("delete".equalsIgnoreCase(request.getMethod())) {
 				final String serviceId = request.getParameter(SERVICE_ID_PARAM);
 				final String planId = request.getParameter(PLAN_ID_PARAM);
@@ -208,6 +221,94 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 		@JsonProperty(PARAMETERS)
 		public Map<String, Object> getParameters() {
 			return parameters;
+		}
+	}
+
+	static class UpdateBody extends JsonObject {
+
+		public static final String SERVICE_ID_FIELD = "service_id";
+		public static final String PLAN_ID_FIELD = "plan_id";
+		public static final String PARAMETERS = "parameters";
+		public static final String PREVIOUS_VALUES = "previous_values";
+
+		private final String serviceId;
+		private final String planId;
+		private final Map<String, Object> parameters;
+		private final PreviousValues previousValues;
+
+		public UpdateBody(
+				@JsonProperty(SERVICE_ID_FIELD) String serviceId,
+				@JsonProperty(PLAN_ID_FIELD) String planId,
+				@JsonProperty(PARAMETERS) Map<String, Object> parameters,
+				@JsonProperty(PREVIOUS_VALUES) PreviousValues previousValues) {
+			this.serviceId = serviceId;
+			this.planId = planId;
+			this.parameters = parameters == null ? Collections.emptyMap() : parameters;
+			this.previousValues = previousValues;
+		}
+
+		@JsonProperty(SERVICE_ID_FIELD)
+		public String getServiceId() {
+			return serviceId;
+		}
+
+		@JsonProperty(PLAN_ID_FIELD)
+		public String getPlanId() {
+			return planId;
+		}
+
+		@JsonProperty(PARAMETERS)
+		public Map<String, Object> getParameters() {
+			return parameters;
+		}
+
+		@JsonProperty(PREVIOUS_VALUES)
+		public PreviousValues getPreviousValues() {
+			return previousValues;
+		}
+
+		static class PreviousValues extends JsonObject {
+			public static final String SERVICE_ID_FIELD = "service_id";
+			public static final String PLAN_ID_FIELD = "plan_id";
+			public static final String ORGANIZATION_ID_FIELD = "organization_id";
+			public static final String SPACE_ID_FIELD = "space_id";
+
+			private final String serviceId;
+			private final String planId;
+			private final UUID organizationId;
+			private final UUID spaceId;
+
+
+			public PreviousValues(
+					@JsonProperty(SERVICE_ID_FIELD) String serviceId,
+					@JsonProperty(PLAN_ID_FIELD) String planId,
+					@JsonProperty(ORGANIZATION_ID_FIELD) UUID organizationId,
+					@JsonProperty(SPACE_ID_FIELD) UUID spaceId) {
+				this.serviceId = serviceId;
+				this.planId = planId;
+				this.organizationId = organizationId;
+				this.spaceId = spaceId;
+			}
+
+			@JsonProperty(SERVICE_ID_FIELD)
+			public String getServiceId() {
+				return serviceId;
+			}
+
+			@JsonProperty(PLAN_ID_FIELD)
+			public String getPlanId() {
+				return planId;
+			}
+			
+			@JsonProperty(ORGANIZATION_ID_FIELD)
+			public UUID getOrganizationId() {
+				return organizationId;
+			}
+
+			@JsonProperty(SPACE_ID_FIELD)
+			public UUID getSpaceId() {
+				return spaceId;
+			}
 		}
 	}
 

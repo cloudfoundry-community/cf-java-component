@@ -19,8 +19,11 @@ package cf.spring.servicebroker;
 import cf.spring.servicebroker.Catalog.CatalogService;
 import cf.spring.servicebroker.Catalog.Plan;
 import cf.spring.servicebroker.ServiceBrokerHandler.ProvisionBody;
+import cf.spring.servicebroker.ServiceBrokerHandler.UpdateBody;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
@@ -32,7 +35,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -72,8 +79,10 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	private static final String DASHBOARD_URL = "http:/some.url/yourservice/" + SERVICE_INSTANCE_GUID;
 
 	private static final String BROKER_ID_STATIC = "some-broker-id-1";
+	private static final String BROKER_ID_STATIC_OTHER = "some-broker-id-1-other";
 	private static final String BROKER_ID_DYNAMIC = "some-broker-id-2";
 	private static final String PLAN_ID = "plan-id-2";
+	private static final String PLAN_ID_OTHER = "plan-id-2-other";
 
 	private static final String SOME_USERNAME = "some-username";
 	private static final String SOME_PASSWORD = "some-password";
@@ -99,11 +108,14 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableServiceBroker(username = USERNAME, password = PASSWORD)
-	@ServiceBroker(
+	@ServiceBroker({
 			@Service(id = BROKER_ID_STATIC, name="test-broker", description = "This is for testing", plans = {
 					@ServicePlan(id = PLAN_ID, name = "test-plan", description = "Some test plan for testing.")
-			}, requires=Permission.ROUTE_FORWARDING
-	))
+			}, requires=Permission.ROUTE_FORWARDING),
+			@Service(id = BROKER_ID_STATIC_OTHER, name="test-broker-other", description = "This is for testing", plans = {
+					@ServicePlan(id = PLAN_ID_OTHER, name = "test-plan-other", description = "Some test plan for testing.")
+			})
+	})
 	static class ServiceBrokerConfiguration {
 
 		@DynamicCatalog
@@ -128,6 +140,18 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			assertEquals(request.getParameters().get(PARAM_KEY), PARAM_VALUE);
 			provisionCounter().incrementAndGet();
 			return new ProvisionResponse(DASHBOARD_URL);
+		}
+
+		@Update
+		public void update(UpdateRequest request) {
+			assertEquals(request.getPlanId(), PLAN_ID);
+			assertEquals(request.getParameters().size(), 1);
+			assertEquals(request.getParameters().get(PARAM_KEY), PARAM_VALUE);
+			assertEquals(request.getPreviousValues().getOrganizationId(), ORG_GUID);
+			assertEquals(request.getPreviousValues().getSpaceId(), SPACE_GUID);
+			assertEquals(request.getPreviousValues().getPlanId(), PLAN_ID_OTHER);
+			assertEquals(request.getPreviousValues().getServiceId(), BROKER_ID_STATIC_OTHER);
+			updateCounter().incrementAndGet();
 		}
 
 		@Bind
@@ -163,6 +187,11 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 
 		@Bean
 		AtomicInteger provisionCounter() {
+			return new AtomicInteger();
+		}
+
+		@Bean
+		AtomicInteger updateCounter() {
 			return new AtomicInteger();
 		}
 
@@ -220,41 +249,66 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	}
 
 	@Test
+	public void update() throws Exception {
+		final AtomicInteger updateCounter = context.getBean("updateCounter", AtomicInteger.class);
+		updateCounter.set(0);
+
+		// Do update
+		final ServiceBrokerHandler.UpdateBody updateBody
+		  = new ServiceBrokerHandler.UpdateBody(BROKER_ID_STATIC, PLAN_ID, PARAMETERS,
+				new ServiceBrokerHandler.UpdateBody.PreviousValues(BROKER_ID_STATIC_OTHER, PLAN_ID_OTHER, ORG_GUID, SPACE_GUID));
+
+		final HttpUriRequest updateRequest = RequestBuilder.create(HttpPatch.METHOD_NAME)
+			  .setUri(instanceUri)
+			  .setEntity(new StringEntity(mapper.writeValueAsString(updateBody), ContentType.APPLICATION_JSON))
+			  .build();
+		try (final CloseableHttpResponse updateResponse = client.execute(updateRequest)) {
+			assertEquals(updateResponse.getStatusLine().getStatusCode(), 200);
+			assertEquals(updateCounter.get(), 1);
+		}
+	}
+
+	@Test
 	public void bindApplication() throws Exception {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
-		assertEquals(bindCounter.get(), 0);
+		bindCounter.set(0);
 		// Do bind
 		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(APPLICATION_GUID.toString(), null), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
 				.build();
-		final CloseableHttpResponse bindResponse = client.execute(bindRequest);
-		assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
-		assertEquals(bindCounter.get(), 1);
-		final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
-		assertTrue(bindResponseJson.has("credentials"));
-		assertFalse(bindResponseJson.has("syslog_drain_url"));
+		try(final CloseableHttpResponse bindResponse = client.execute(bindRequest)) {
+			assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
+			assertEquals(bindCounter.get(), 1);
+			final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
+			assertTrue(bindResponseJson.has("credentials"));
+			assertFalse(bindResponseJson.has("syslog_drain_url"));
 
-		final JsonNode credentials = bindResponseJson.get("credentials");
-		assertEquals(credentials.get("username").asText(), SOME_USERNAME);
-		assertEquals(credentials.get("password").asText(), SOME_PASSWORD);
+			final JsonNode credentials = bindResponseJson.get("credentials");
+			assertEquals(credentials.get("username").asText(), SOME_USERNAME);
+			assertEquals(credentials.get("password").asText(), SOME_PASSWORD);
+		}
 	}
 
 	@Test
 	public void bindRoute() throws Exception {
+		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
+		bindCounter.set(0);
 		// Do bind
 		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, null, new ServiceBrokerHandler.BindResource(null, ROUTE), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
 				.build();
-		final CloseableHttpResponse bindResponse = client.execute(bindRequest);
-		assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
-		final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
-		assertTrue(bindResponseJson.has("credentials"));
-		assertFalse(bindResponseJson.has("syslog_drain_url"));
-		assertEquals(bindResponseJson.get("route_service_url").asText(), ROUTE_SERVICE_URL);
+		try (final CloseableHttpResponse bindResponse = client.execute(bindRequest)) {
+			assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
+			assertEquals(bindCounter.get(), 1);
+			final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
+			assertTrue(bindResponseJson.has("credentials"));
+			assertFalse(bindResponseJson.has("syslog_drain_url"));
+			assertEquals(bindResponseJson.get("route_service_url").asText(), ROUTE_SERVICE_URL);
+		}
 	}
 
 	@Test
@@ -265,9 +319,10 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final HttpUriRequest unbindRequest = RequestBuilder.delete()
 				.setUri(bindingUri + "?service_id=" + BROKER_ID_STATIC + "&" + "plan_id=" + PLAN_ID)
 				.build();
-		final CloseableHttpResponse unbindResponse = client.execute(unbindRequest);
-		assertEquals(unbindResponse.getStatusLine().getStatusCode(), 200);
-		assertEquals(unbindCounter.get(), 1);
+		try (final CloseableHttpResponse unbindResponse = client.execute(unbindRequest)) {
+			assertEquals(unbindResponse.getStatusLine().getStatusCode(), 200);
+			assertEquals(unbindCounter.get(), 1);
+		}
 	}
 
 	// Do unbind
@@ -280,9 +335,10 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final HttpUriRequest deprovisionRequest = RequestBuilder.delete()
 				.setUri(instanceUri + "?service_id=" + BROKER_ID_STATIC + "&" + "plan_id=" + PLAN_ID)
 				.build();
-		final CloseableHttpResponse deprovisionResponse = client.execute(deprovisionRequest);
-		assertEquals(deprovisionResponse.getStatusLine().getStatusCode(), 200);
-		assertEquals(deprovisionCounter.get(), 1);
+		try (final CloseableHttpResponse deprovisionResponse = client.execute(deprovisionRequest)) {
+			assertEquals(deprovisionResponse.getStatusLine().getStatusCode(), 200);
+			assertEquals(deprovisionCounter.get(), 1);
+		}
 	}
 
 	@Test
@@ -292,10 +348,11 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 				.setUri(instanceUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
 				.build();
-		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
-		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 404);
-		final JsonNode errorJson = mapper.readTree(provisionResponse.getEntity().getContent());
-		assertTrue(errorJson.has("description"));
+		try (final CloseableHttpResponse provisionResponse = client.execute(provisionRequest)) {
+			assertEquals(provisionResponse.getStatusLine().getStatusCode(), 404);
+			final JsonNode errorJson = mapper.readTree(provisionResponse.getEntity().getContent());
+			assertTrue(errorJson.has("description"));
+		}
 	}
 
 	private void doProvisionTest(ProvisionBody provisionBody) throws IOException {
@@ -307,12 +364,14 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			  .setUri(instanceUri)
 			  .setEntity(new StringEntity(mapper.writeValueAsString(provisionBody), ContentType.APPLICATION_JSON))
 			  .build();
-		final CloseableHttpResponse provisionResponse = client.execute(provisionRequest);
-		assertEquals(provisionResponse.getStatusLine().getStatusCode(), 201);
-		assertEquals(provisionCounter.get(), 1);
+		try (final CloseableHttpResponse provisionResponse = client.execute(provisionRequest)) {
+			assertEquals(provisionResponse.getStatusLine().getStatusCode(), 201);
+			assertEquals(provisionCounter.get(), 1);
 
-		final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
-		assertTrue(provisionResponseJson.has("dashboard_url"));
-		assertEquals(provisionResponseJson.get("dashboard_url").asText(), DASHBOARD_URL);
+			final JsonNode provisionResponseJson = mapper.readTree(provisionResponse.getEntity().getContent());
+			assertTrue(provisionResponseJson.has("dashboard_url"));
+			assertEquals(provisionResponseJson.get("dashboard_url").asText(), DASHBOARD_URL);
+		}
 	}
+
 }

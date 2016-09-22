@@ -75,4 +75,10 @@ public @interface Service {
 	 * Metadata associated with this service.
 	 */
 	Metadata[] metadata() default {};
+
+	/**
+	 * Does this service support updating plans.
+	 */
+	String planUpdatable() default "false";
+
 }

@@ -79,6 +79,7 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
         final String name = evaluate(service.name());
         final String description = evaluate(service.description());
         final boolean bindable = Boolean.valueOf(evaluate(service.bindable()));
+        final boolean planUpdatable = Boolean.valueOf(evaluate(service.planUpdatable()));
 
         final List<String> tags = new ArrayList<>();
         for (String tag : service.tags()) {
@@ -104,7 +105,7 @@ public class AnnotationCatalogAccessorProvider extends AbstractAnnotationCatalog
             plans.add(new Catalog.Plan(planId, planName, planDescription, free, planMetadata));
         }
 
-        return new CatalogService(id, name, description, bindable, tags, metadata, requires, plans, dashboardClient);
+        return new CatalogService(id, name, description, bindable, tags, metadata, requires, plans, dashboardClient, planUpdatable);
     }
 
     private ServiceDashboardClient buildDashboardClient(DashboardClient dashboardClient) {

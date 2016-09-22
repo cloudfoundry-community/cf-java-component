@@ -17,42 +17,20 @@
 package cf.spring.servicebroker;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Describes the attributes of a service plan that get published in the /v2/catalog endpoint.
- * @author Mike Heath
+ * Marks the method that should be invoked when the service broker receives an update request. Methods annotated with
+ * {@code @Update} must take a single argument of type {@link cf.spring.servicebroker.UpdateRequest} and
+ * have a return type of {@code void}.
+ *
+ * @author Mike Youngstrom
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({})
+@Target(ElementType.METHOD)
 @Documented
-public @interface ServicePlan {
-	/**
-	 * The unique id of the plan.
-	 */
-	String id();
-
-	/**
-	 * The name of the plan.
-	 */
-	String name();
-
-	/**
-	 * A single-line description of the plan.
-	 */
-	String description();
-
-	/**
-	 * Allows the plan to be limited by the non_basic_services_allowed field in a Cloud Foundry Quota. See
-	 * http://docs.cloudfoundry.org/running/managing-cf/quota-plans.html.
-	 * @return
-	 */
-	String free() default "true";
-
-	/**
-	 * Metadata associated with this service plan.
-	 */
-	Metadata[] metadata() default {};
+public @interface Update {
 }

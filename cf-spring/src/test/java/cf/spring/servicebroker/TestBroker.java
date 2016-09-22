@@ -46,6 +46,11 @@ public class TestBroker {
 		return new ProvisionResponse();
 	}
 
+	@Update
+	public void update(UpdateRequest request) {
+		System.out.println("Update instance " + request.getServiceInstanceGuid());
+	}
+
 	@Bind
 	public BindResponse bind(BindRequest request) {
 		Map<String, String> credentials = new HashMap<>();

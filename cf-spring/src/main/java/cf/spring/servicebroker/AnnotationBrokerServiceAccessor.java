@@ -43,11 +43,12 @@ public class AnnotationBrokerServiceAccessor implements BrokerServiceAccessor {
         this.bean = bean;
 
         final Method provisionMethod = findMethodWithAnnotation(clazz, Provision.class);
+        final Method updateMethod = findMethodWithAnnotation(clazz, Update.class);
         final Method deprovisionMethod = findMethodWithAnnotation(clazz, Deprovision.class);
         final Method bindMethod = findMethodWithAnnotation(clazz, Bind.class);
         final Method unbindMethod = findMethodWithAnnotation(clazz, Unbind.class);
 
-        methods = new ServiceBrokerMethods(beanName, description.isBindable(), provisionMethod, deprovisionMethod, bindMethod,
+        methods = new ServiceBrokerMethods(beanName, description.isBindable(), provisionMethod, updateMethod, deprovisionMethod, bindMethod,
               unbindMethod);
     }
 
@@ -59,6 +60,16 @@ public class AnnotationBrokerServiceAccessor implements BrokerServiceAccessor {
     @Override
     public ProvisionResponse provision(ProvisionRequest provisionRequest) throws Throwable {
         return (ProvisionResponse) invokeMethod(methods.getProvision(), provisionRequest);
+    }
+
+    @Override
+    public void update(UpdateRequest updateRequest) throws Throwable {
+        if (methods.getUpdate() == null) {
+            throw new NotFoundException("The service broker with id " + getServiceDescription().getId()
+                  + " is not updatable.");
+        }
+
+        invokeMethod(methods.getUpdate(), updateRequest);
     }
 
     @Override

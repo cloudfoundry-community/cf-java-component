@@ -41,6 +41,11 @@ public interface BrokerServiceAccessor {
     BindResponse bind(BindRequest request) throws Throwable;
 
     /**
+     * Update a service according the specified request.
+     */
+    void update(UpdateRequest request) throws Throwable;
+
+    /**
      * Unbinds an existing service from an existing app according to the specified request.
      */
     void unbind(UnbindRequest request) throws Throwable;
