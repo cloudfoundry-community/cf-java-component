@@ -311,6 +311,17 @@ public class DefaultCloudController implements CloudController {
 		}
 	}
 	
+	@Override
+	public RestCollection<Route>  getServiceInstanceRoutes(Token token, UUID instanceGuid) {
+		final ResultIterator<Route> iterator = new ResultIterator<>(
+				token,
+				V2_SERVICE_INSTANCES +"/"+ instanceGuid.toString() + "/routes",
+				Route.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);	
+	}
+	
 	
 	@Override
 	public Space getSpace(Token token, UUID spaceGuid) {

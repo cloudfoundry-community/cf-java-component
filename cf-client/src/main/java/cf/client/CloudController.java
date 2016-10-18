@@ -205,6 +205,8 @@ public interface CloudController {
 	 * @return the service with the specified guid.
 	 */
 	ServiceInstance getServiceInstance(Token token, UUID instanceGuid);
+	
+	RestCollection<Route> getServiceInstanceRoutes(Token token, UUID instanceGuid);
 
 	/**
 	 * Returns the space.
