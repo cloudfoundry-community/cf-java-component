@@ -20,8 +20,13 @@ import cf.spring.servicebroker.Catalog.CatalogService;
 import cf.spring.servicebroker.Catalog.Plan;
 import cf.spring.servicebroker.ServiceBrokerHandler.ProvisionBody;
 import cf.spring.servicebroker.ServiceBrokerHandler.UpdateBody;
+import cf.spring.servicebroker.VolumeMount.DeviceType;
+import cf.spring.servicebroker.VolumeMount.Mode;
+import cf.spring.servicebroker.VolumeMount.SharedDevice;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -64,6 +69,9 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	private static final UUID APPLICATION_GUID = UUID.randomUUID();
 	private static final String ROUTE = "www.google.com";
 	private static final String ROUTE_SERVICE_URL = "https://someproxy.com";
+	private static final String SYSLOG_DRAIN_URL = "https://somedrain.com";
+	private static final VolumeMount VOLUME_MOUNT =
+			new VolumeMount("driver", "containerDir", Mode.RW, DeviceType.SHARED, new SharedDevice("volumeId", JsonNodeFactory.instance.objectNode().put("empty", true)));
 	private static final UUID BINDING_GUID = UUID.randomUUID();
 
 	private static final Map<String, Object> PARAMETERS;
@@ -111,7 +119,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	@ServiceBroker({
 			@Service(id = BROKER_ID_STATIC, name="test-broker", description = "This is for testing", plans = {
 					@ServicePlan(id = PLAN_ID, name = "test-plan", description = "Some test plan for testing.")
-			}, requires=Permission.ROUTE_FORWARDING),
+			}, requires={Permission.ROUTE_FORWARDING, Permission.SYSLOG_DRAIN, Permission.VOLUME_MOUNT}),
 			@Service(id = BROKER_ID_STATIC_OTHER, name="test-broker-other", description = "This is for testing", plans = {
 					@ServicePlan(id = PLAN_ID_OTHER, name = "test-plan-other", description = "Some test plan for testing.")
 			})
@@ -157,17 +165,20 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		@Bind
 		public BindResponse bind(BindRequest request) {
 			assertEquals(request.getPlanId(), PLAN_ID);
+			BindResponse bindResponse = null;
 			if(request.getBoundResource().getType() == BindRequest.BindingType.APPLICATION) {
 				assertEquals(request.getApplicationGuid(), APPLICATION_GUID);
 				assertEquals(request.getBoundResource().getResource(), APPLICATION_GUID.toString());
+				bindResponse = new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), SYSLOG_DRAIN_URL, null, Collections.singletonList(VOLUME_MOUNT), true);
 			}
 			if(request.getBoundResource().getType() == BindRequest.BindingType.ROUTE) {
 				assertEquals(request.getBoundResource().getResource(), ROUTE);
+				bindResponse = new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), null, ROUTE_SERVICE_URL, true);
 			}
 			assertEquals(request.getBindingGuid(), BINDING_GUID);
 			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
 			bindCounter().incrementAndGet();
-			return new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), null, ROUTE_SERVICE_URL, true);
+			return bindResponse;
 		}
 
 		@Unbind
@@ -283,7 +294,21 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			assertEquals(bindCounter.get(), 1);
 			final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
 			assertTrue(bindResponseJson.has("credentials"));
-			assertFalse(bindResponseJson.has("syslog_drain_url"));
+			assertTrue(bindResponseJson.has("syslog_drain_url"));
+			assertFalse(bindResponseJson.has("route_service_url"));
+			assertTrue(bindResponseJson.has("volume_mounts"));
+			JsonNode volumeMounts = bindResponseJson.get("volume_mounts");
+			assertTrue(volumeMounts.isArray());
+			assertTrue(volumeMounts.has(0));
+			JsonNode volumeMount = volumeMounts.get(0);
+			assertTrue(volumeMount.has("driver"));
+			assertTrue(volumeMount.has("container_dir"));
+			assertTrue(volumeMount.has("device_type"));
+			assertTrue(volumeMount.has("mode"));
+			assertTrue(volumeMount.has("device"));
+			JsonNode device = volumeMount.get("device");
+			assertTrue(device.has("volume_id"));
+			assertTrue(device.has("mount_config"));
 
 			final JsonNode credentials = bindResponseJson.get("credentials");
 			assertEquals(credentials.get("username").asText(), SOME_USERNAME);
@@ -307,6 +332,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
 			assertTrue(bindResponseJson.has("credentials"));
 			assertFalse(bindResponseJson.has("syslog_drain_url"));
+			assertFalse(bindResponseJson.has("volume_mounts"));
 			assertEquals(bindResponseJson.get("route_service_url").asText(), ROUTE_SERVICE_URL);
 		}
 	}
