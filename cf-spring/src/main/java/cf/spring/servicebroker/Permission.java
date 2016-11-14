@@ -33,5 +33,11 @@ public enum Permission {
 		public String toString() {
 			return "route_forwarding";
 		}
+	},
+	VOLUME_MOUNT {
+		@Override
+		public String toString() {
+			return "volume_mount";
+		}
 	}
 }
