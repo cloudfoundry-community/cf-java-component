@@ -79,6 +79,7 @@ public class DefaultCloudController implements CloudController {
 	private static final String V2_PRIVATE_DOMAINS = "/v2/private_domains";
 	private static final String V2_SHARED_DOMAINS = "/v2/shared_domains";
 	private static final String V2_ROUTES = "/v2/routes";
+	private static final String V2_SECURITY_GROUPS = "/v2/security_groups";
 	private static final String V2_SERVICES = "/v2/services";
 	private static final String V2_SERVICE_AUTH_TOKENS = "/v2/service_auth_tokens";
 	private static final String V2_SERVICE_BINDINGS = "/v2/service_bindings";
@@ -430,6 +431,16 @@ public class DefaultCloudController implements CloudController {
 		JsonNode entity = node.get("entity");
 		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(SecurityGroup.class, (ArrayNode)entity.get("security_groups"));
 		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
+	public SecurityGroup updateSecurityGroup(Token token, UUID securityGroupGuid, SecurityGroup securityGroup) {
+		JsonNode jsonNode = putJsonToUri(token, securityGroup, V2_SECURITY_GROUPS, securityGroupGuid);
+        try {
+            return mapper.readValue(jsonNode.get("entity").traverse(), SecurityGroup.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 	}
 
 	@Override

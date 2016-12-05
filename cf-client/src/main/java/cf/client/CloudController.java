@@ -304,10 +304,20 @@ public interface CloudController {
 	RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid);
 
 	/**
+	 * Update an existing security group
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param securityGroupGuid The guid of the security group to be updated
+	 * @param securityGroup the security group to be updated
+	 * @return the updated security group
+	 */
+	SecurityGroup updateSecurityGroup(Token token, UUID securityGroupGuid, SecurityGroup securityGroup);
+
+	/**
 	 * Returns the org.
 	 *
 	 * @param token the token used to authenticate the request.
-	 * @param org guid.
+	 * @param organizationGuid guid.
 	 * @return the org for the given guid
 	 */
 	Organization getOrganization(Token token, UUID organizationGuid);
