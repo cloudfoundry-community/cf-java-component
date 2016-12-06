@@ -314,6 +314,25 @@ public interface CloudController {
 	SecurityGroup updateSecurityGroup(Token token, UUID securityGroupGuid, SecurityGroup securityGroup);
 
 	/**
+	 * Binds a security group to a space
+     *
+	 * @param token the token used to authenticate the request.
+	 * @param securityGroupGuid the guid of the security group to be bound
+	 * @param spaceGuid the guid of the space that the group should be bound to
+	 * @return the updated security group
+	 */
+	SecurityGroup bindSecurityGroup(Token token, UUID securityGroupGuid, UUID spaceGuid);
+
+	/**
+	 * Unbinds a security group from a space
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param securityGroupGuid the guid of the security group to be unbound
+	 * @param spaceGuid the guid of the space that the group should be unbound from
+	 */
+	void unbindSecurityGroup(Token token, UUID securityGroupGuid, UUID spaceGuid);
+
+	/**
 	 * Returns the org.
 	 *
 	 * @param token the token used to authenticate the request.

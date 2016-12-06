@@ -444,6 +444,21 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public SecurityGroup bindSecurityGroup(Token token, UUID securityGroupGuid, UUID spaceGuid) {
+		JsonNode jsonNode = putUri(token, null, V2_SECURITY_GROUPS + "/" + securityGroupGuid + "/spaces", spaceGuid, false);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), SecurityGroup.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void unbindSecurityGroup(Token token, UUID securityGroupGuid, UUID spaceGuid) {
+		deleteUri(token, V2_SECURITY_GROUPS + "/" + securityGroupGuid + "/spaces/" + spaceGuid);
+	}
+
+	@Override
 	public Organization getOrganization(Token token, UUID organizationGuid) {
 		JsonNode jsonNode = fetchResource(token, V2_ORGANIZATIONS +"/"+ organizationGuid.toString());
 		try {
@@ -820,11 +835,17 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	private JsonNode putJsonToUri(Token token, Object json, String uri, UUID guid) {
+	    return putUri(token, json, uri, guid, true);
+	}
+
+	private JsonNode putUri(Token token, Object json, String uri, UUID guid, boolean sendJson) {
 		try {
-			final String requestString = mapper.writeValueAsString(json);
 			final HttpPut put = new HttpPut(target.resolve(uri+"/"+ guid.toString()));
 			put.addHeader(token.toAuthorizationHeader());
-			put.setEntity(new StringEntity(requestString, ContentType.APPLICATION_JSON));
+			if (sendJson) {
+				final String requestString = mapper.writeValueAsString(json);
+				put.setEntity(new StringEntity(requestString, ContentType.APPLICATION_JSON));
+			}
 			final HttpResponse response = httpClient.execute(put);
 			try {
 				validateResponse(response, 201);
