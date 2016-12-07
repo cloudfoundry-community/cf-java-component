@@ -459,6 +459,17 @@ public class DefaultCloudController implements CloudController {
 	}
 
 	@Override
+	public RestCollection<Space> getSpacesForSecurityGroup(Token token, UUID securityGroupGuid) {
+		final ResultIterator<Space> iterator = new ResultIterator<>(
+				token,
+				V2_SECURITY_GROUPS + "/" + securityGroupGuid + "/spaces",
+				Space.class,
+				null,
+				null);
+		return new RestCollection<>(iterator.getSize(), iterator);
+	}
+
+	@Override
 	public Organization getOrganization(Token token, UUID organizationGuid) {
 		JsonNode jsonNode = fetchResource(token, V2_ORGANIZATIONS +"/"+ organizationGuid.toString());
 		try {

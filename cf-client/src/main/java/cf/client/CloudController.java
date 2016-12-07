@@ -333,6 +333,15 @@ public interface CloudController {
 	void unbindSecurityGroup(Token token, UUID securityGroupGuid, UUID spaceGuid);
 
 	/**
+	 * Get spaces associated with a security group
+	 *
+	 * @param token the token used to authenticate the request.
+	 * @param securityGroupGuid the guid of the security group
+	 * @return all the spaces associated with a security group
+	 */
+	RestCollection<Space> getSpacesForSecurityGroup(Token token, UUID securityGroupGuid);
+
+	/**
 	 * Returns the org.
 	 *
 	 * @param token the token used to authenticate the request.
