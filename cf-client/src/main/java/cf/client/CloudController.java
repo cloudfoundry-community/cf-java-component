@@ -460,6 +460,22 @@ public interface CloudController {
 	 */
 	UUID createServiceInstance(Token token, String name, UUID planGuid, UUID spaceGuid, ObjectNode params);
 
+	/**
+	 * Get a user
+	 * @param token the token used to authenticate the request
+	 * @param userId the id of the user to retrieve (this is also the UAA id)
+	 * @return
+	 */
+	User getUser(Token token, UUID userId);
+
+	/**
+	 * Create a user
+	 * @param token the token used to authenticate the request
+	 * @param uaaUserGuid the guid of the existing UAA user
+	 * @return
+	 */
+	UUID createUser(Token token, UUID uaaUserGuid);
+
 	UUID createUserProvidedServiceInstance(Token token, String name, UUID spaceGuid, ObjectNode params);
 
 	ServiceInstance updateServiceInstance(Token token, UUID serviceInstanceGuid, ServiceInstance serviceInstance);
@@ -488,7 +504,6 @@ public interface CloudController {
 	RestCollection<PrivateDomain> getPrivateDomains(Token token);
 
 	/**
-<<<<<<< HEAD
 	 * Get the private domain for a given GUID.
 	 * @param token
 	 * @param privateDomainGuid

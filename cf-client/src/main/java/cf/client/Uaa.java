@@ -16,6 +16,10 @@
  */
 package cf.client;
 
+import cf.client.model.UaaUser;
+
+import java.util.UUID;
+
 /**
  * @author Mike Heath
  */
@@ -25,4 +29,8 @@ public interface Uaa {
 	Token getClientToken(String client, String clientSecret);
 
 	TokenContents checkToken(String client, String clientSecret, Token token);
+
+	UUID createUser(Token token, String username, String password, String origin);
+
+	UaaUser getUser(Token token, String username);
 }

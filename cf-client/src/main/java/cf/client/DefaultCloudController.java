@@ -87,6 +87,7 @@ public class DefaultCloudController implements CloudController {
 	private static final String V2_SERVICE_PLANS = "/v2/service_plans";
 	private static final String V2_SPACES = "/v2/spaces";
 	private static final String V2_ORGANIZATIONS = "/v2/organizations";
+	private static final String V2_USERS = "/v2/users";
 	private static final String V2_USER_PROVIDED_SERVICE_INSTANCES = "/v2/user_provided_service_instances";
 	
 	private static final String V2_EVENTS = "/v2/events";
@@ -632,6 +633,24 @@ public class DefaultCloudController implements CloudController {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public User getUser(Token token, UUID userId) {
+		JsonNode jsonNode = fetchResource(token, V2_USERS + "/" + userId);
+		try {
+			return mapper.readValue(jsonNode.get("entity").traverse(), User.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public UUID createUser(Token token, UUID uaaUserGuid) {
+		final ObjectNode json = mapper.createObjectNode();
+		json.put("guid", uaaUserGuid.toString());
+
+		return postJsonToUri(token, json, V2_USERS);
 	}
 
 	@Override
