@@ -1,6 +1,7 @@
 package cf.spring.servicebroker;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import cf.common.JsonObject;
 
@@ -101,6 +102,7 @@ public class VolumeMount extends JsonObject {
 
 	public enum DeviceType {
 		SHARED {
+			@JsonValue
 			@Override
 			public String toString() {
 				return "shared";
@@ -110,12 +112,14 @@ public class VolumeMount extends JsonObject {
 
 	public enum Mode {
 		R {
+			@JsonValue
 			@Override
 			public String toString() {
 				return "r";
 			}
 		},
 		RW {
+			@JsonValue
 			@Override
 			public String toString() {
 				return "rw";
