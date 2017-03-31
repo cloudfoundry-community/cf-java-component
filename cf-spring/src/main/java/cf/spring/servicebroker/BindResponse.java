@@ -76,7 +76,7 @@ public class BindResponse extends JsonObject {
 	 * @param volumeMounts this should be a list of volumes to mount in containers with this service.  Null if not applicable.
 	 */
 	public BindResponse(List<VolumeMount> volumeMounts) {
-		this(JsonNodeFactory.instance.objectNode().put("empty", true), null, null, volumeMounts, true);
+		this(JsonNodeFactory.instance.objectNode(), null, null, volumeMounts, true);
 	}
 
 	/**
