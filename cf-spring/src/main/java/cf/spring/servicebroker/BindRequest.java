@@ -16,6 +16,7 @@
  */
 package cf.spring.servicebroker;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -30,9 +31,10 @@ public class BindRequest {
 	private final UUID applicationGuid;
 	private final Binding binding;
 	private final String planId;
+	private final Map<String, Object> parameters;
 
 
-	public BindRequest(UUID serviceInstanceGuid, UUID bindingGuid, BindingType type, String boundResource, String planId) {
+	public BindRequest(UUID serviceInstanceGuid, UUID bindingGuid, BindingType type, String boundResource, String planId, Map<String, Object> parameters) {
 		this.serviceInstanceGuid = serviceInstanceGuid;
 		this.bindingGuid = bindingGuid;
 		if (type == BindingType.APPLICATION) {
@@ -42,6 +44,7 @@ public class BindRequest {
 		}
 		this.binding = new Binding(type, boundResource);
 		this.planId = planId;
+		this.parameters = parameters;
 	}
 
 	/**
@@ -60,6 +63,10 @@ public class BindRequest {
 	 */
 	public UUID getBindingGuid() {
 		return bindingGuid;
+	}
+
+	public Map<String, Object> getParameters() {
+		return parameters;
 	}
 
 	/**

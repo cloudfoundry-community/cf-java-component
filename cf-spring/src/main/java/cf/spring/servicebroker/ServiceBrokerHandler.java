@@ -110,7 +110,8 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 							UUID.fromString(bindingId),
 							type,
 							boundResource,
-							bindBody.getPlanId());
+							bindBody.getPlanId(),
+							bindBody.getParameters());
 					final BindResponse bindResponse = accessor.bind(bindRequest);
 					if (bindResponse.isCreated()) {
 						response.setStatus(HttpServletResponse.SC_CREATED);
