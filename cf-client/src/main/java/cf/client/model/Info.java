@@ -40,7 +40,7 @@ public class Info extends JsonObject {
 			@JsonProperty(value="authorization_endpoint", required=true) URI authorizationEndpoint,
 			@JsonProperty(value="token_endpoint", required=true) URI tokenEndpoint,
 			@JsonProperty(value="doppler_logging_endpoint", required=true) URI dopplerLoggingEndpoint,
-			@JsonProperty(value="logging_endpoint", required=true) URI loggingEndpoint) {
+			@JsonProperty(value="logging_endpoint", required=false) URI loggingEndpoint) {
 		this.name = name;
 		this.version = version;
 		this.authorizationEndpoint = authorizationEndpoint;
@@ -65,6 +65,7 @@ public class Info extends JsonObject {
 		return tokenEndpoint;
 	}
 	
+	@Deprecated
 	public URI getLoggingEndpoint() {
 		return loggingEndpoint;
 	}
