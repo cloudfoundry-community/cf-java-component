@@ -100,6 +100,9 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 					} else if (bindBody.getBindResource().getRoute() != null) {
 						type = BindRequest.BindingType.ROUTE;
 						boundResource = bindBody.getBindResource().getRoute();
+					} else if (bindBody.getBindResource().getCredentialClientId() != null) {
+						type = BindRequest.BindingType.SERVICE_KEY;
+						boundResource = bindBody.getBindResource().getCredentialClientId();
 					} else {
 						type = BindRequest.BindingType.APPLICATION;
 						boundResource = bindBody.getApplicationGuid().toString();
@@ -363,20 +366,28 @@ public class ServiceBrokerHandler implements HttpRequestHandler {
 
 	static class BindResource extends JsonObject {
 		public static final String APP_GUID = "app_guid";
+		public static final String CREDENTIAL_CLIENT_ID = "credential_client_id";
 		public static final String ROUTE = "route";
 
 		private final String appGuid;
+		private final String credentialClientId;
 		private final String route;
 
 		public BindResource(
 				@JsonProperty(APP_GUID) String appGuid,
+				@JsonProperty(CREDENTIAL_CLIENT_ID) String credentialClientId,
 				@JsonProperty(ROUTE) String route) {
 			this.appGuid = appGuid;
+			this.credentialClientId = credentialClientId;
 			this.route = route;
 		}
 
 		public String getAppGuid() {
 			return appGuid;
+		}
+
+		public String getCredentialClientId() {
+			return credentialClientId;
 		}
 
 		public String getRoute() {

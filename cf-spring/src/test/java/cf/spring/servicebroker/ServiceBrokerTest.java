@@ -70,6 +70,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	private static final String ROUTE = "www.google.com";
 	private static final String ROUTE_SERVICE_URL = "https://someproxy.com";
 	private static final String SYSLOG_DRAIN_URL = "https://somedrain.com";
+	private static final String CREDENTIAL_CLIENT_ID = "some_client_id";
 	private static final VolumeMount VOLUME_MOUNT =
 			new VolumeMount("driver", "containerDir", Mode.RW, DeviceType.SHARED, new SharedDevice("volumeId", JsonNodeFactory.instance.objectNode().put("empty", true)));
 	private static final UUID BINDING_GUID = UUID.randomUUID();
@@ -174,6 +175,10 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 			if(request.getBoundResource().getType() == BindRequest.BindingType.ROUTE) {
 				assertEquals(request.getBoundResource().getResource(), ROUTE);
 				bindResponse = new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), null, ROUTE_SERVICE_URL, true);
+			}
+			if(request.getBoundResource().getType() == BindRequest.BindingType.SERVICE_KEY) {
+				assertEquals(request.getBoundResource().getResource(), CREDENTIAL_CLIENT_ID);
+				bindResponse = new BindResponse(new Credentials(SOME_USERNAME, SOME_PASSWORD), null, null, true);
 			}
 			assertEquals(request.getBindingGuid(), BINDING_GUID);
 			assertEquals(request.getServiceInstanceGuid(), SERVICE_INSTANCE_GUID);
@@ -284,7 +289,7 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
 		bindCounter.set(0);
 		// Do bind
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(APPLICATION_GUID.toString(), null), Collections.emptyMap());
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(APPLICATION_GUID.toString(), null, null), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
@@ -317,11 +322,33 @@ public class ServiceBrokerTest extends AbstractServiceBrokerTest {
 	}
 
 	@Test
+	public void bindServiceKey() throws Exception {
+		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
+		bindCounter.set(0);
+		// Do bind
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, APPLICATION_GUID, new ServiceBrokerHandler.BindResource(null, CREDENTIAL_CLIENT_ID, null), Collections.emptyMap());
+		final HttpUriRequest bindRequest = RequestBuilder.put()
+				.setUri(bindingUri)
+				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
+				.build();
+		try (final CloseableHttpResponse bindResponse = client.execute(bindRequest)) {
+			assertEquals(bindResponse.getStatusLine().getStatusCode(), 201);
+			assertEquals(bindCounter.get(), 1);
+			final JsonNode bindResponseJson = mapper.readTree(bindResponse.getEntity().getContent());
+			assertTrue(bindResponseJson.has("credentials"));
+
+			final JsonNode credentials = bindResponseJson.get("credentials");
+			assertEquals(credentials.get("username").asText(), SOME_USERNAME);
+			assertEquals(credentials.get("password").asText(), SOME_PASSWORD);
+		}
+	}
+
+	@Test
 	public void bindRoute() throws Exception {
 		final AtomicInteger bindCounter = context.getBean("bindCounter", AtomicInteger.class);
 		bindCounter.set(0);
 		// Do bind
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, null, new ServiceBrokerHandler.BindResource(null, ROUTE), Collections.emptyMap());
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID_STATIC, PLAN_ID, null, new ServiceBrokerHandler.BindResource(null, null, ROUTE), Collections.emptyMap());
 		final HttpUriRequest bindRequest = RequestBuilder.put()
 				.setUri(bindingUri)
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
