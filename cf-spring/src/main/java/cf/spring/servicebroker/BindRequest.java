@@ -88,6 +88,7 @@ public class BindRequest {
 
 	public enum BindingType {
 		APPLICATION,
+		SERVICE_KEY,
 		ROUTE
 	}
 

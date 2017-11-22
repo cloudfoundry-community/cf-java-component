@@ -84,7 +84,7 @@ public class ConflictTest extends AbstractServiceBrokerTest {
 	@Test
 	public void bindConflict() throws Exception {
 		final UUID applicationGuid = UUID.randomUUID();
-		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, applicationGuid, new ServiceBrokerHandler.BindResource(applicationGuid.toString(), null), Collections.emptyMap());
+		final ServiceBrokerHandler.BindBody bindBody = new ServiceBrokerHandler.BindBody(BROKER_ID, PLAN_ID, applicationGuid, new ServiceBrokerHandler.BindResource(applicationGuid.toString(), null, null), Collections.emptyMap());
 		final HttpUriRequest provisionRequest = RequestBuilder.put()
 				.setUri("http://localhost:8080/v2/service_instances/" + UUID.randomUUID() + "/service_bindings/" + UUID.randomUUID())
 				.setEntity(new StringEntity(mapper.writeValueAsString(bindBody), ContentType.APPLICATION_JSON))
