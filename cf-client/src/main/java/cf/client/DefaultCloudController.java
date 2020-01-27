@@ -16,19 +16,12 @@
  */
 package cf.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-
+import cf.client.model.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -42,30 +35,13 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cf.client.model.AppUsageEvent;
-import cf.client.model.Application;
-import cf.client.model.ApplicationInstance;
-import cf.client.model.ApplicationInstanceStats;
-import cf.client.model.Event;
-import cf.client.model.Info;
-import cf.client.model.Organization;
-import cf.client.model.PrivateDomain;
-import cf.client.model.Route;
-import cf.client.model.SecurityGroup;
-import cf.client.model.Service;
-import cf.client.model.ServiceAuthToken;
-import cf.client.model.ServiceBinding;
-import cf.client.model.ServiceInstance;
-import cf.client.model.ServicePlan;
-import cf.client.model.SharedDomain;
-import cf.client.model.Space;
-import cf.client.model.User;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Mike Heath
@@ -427,10 +403,12 @@ public class DefaultCloudController implements CloudController {
 
 	@Override
 	public RestCollection<SecurityGroup> getSecurityGroupsForSpace(Token token, UUID spaceGuid) {
-		//Hack until this issue is fixed: https://www.pivotaltracker.com/story/show/82055042
-		JsonNode node = fetchResource(token, V2_SPACES+"/"+spaceGuid.toString()+"?inline-relations-depth=1");
-		JsonNode entity = node.get("entity");
-		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(SecurityGroup.class, (ArrayNode)entity.get("security_groups"));
+		final ResultIterator<SecurityGroup> iterator = new ResultIterator<>(
+			token,
+			V2_SPACES+"/"+spaceGuid.toString()+"/security_groups",
+			SecurityGroup.class,
+			null,
+			null);
 		return new RestCollection<>(iterator.getSize(), iterator);
 	}
 
