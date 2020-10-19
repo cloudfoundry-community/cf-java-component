@@ -181,7 +181,7 @@
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>
-			<url>http://repo.springsource.org/milestone</url>
+			<url>https://repo.springsource.org/milestone</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
