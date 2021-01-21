@@ -20,7 +20,7 @@
 
 	<properties>
 		<httpclient.version>4.3.6</httpclient.version>
-		<jackson.version>2.2.2</jackson.version>
+		<jackson.version>2.9.10.7</jackson.version>
 		<jdk.version>1.8</jdk.version>
 		<jcommander.version>1.30</jcommander.version>
 		<logback.version>1.0.13</logback.version>
